@@ -1,0 +1,33 @@
+#panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#panel .camera {
+    height: 50%;
+    width: 50%;
+    object-fit: contain;
+    position: relative;
+    background: yellow;
+    display: inline-block;
+}
+
+#panel .camera .name {
+    background: red;
+    position: absolute;
+    color: white;
+    right: 0;
+    text-shadow: 2px 2px 2px black;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#panel .camera img {
+    height: 100%;
+    width: 100%;
+    object-fit: fill;
+}

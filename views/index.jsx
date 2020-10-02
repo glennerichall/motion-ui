@@ -1,8 +1,22 @@
 var React = require('react');
 
 function Streams(props) {
-    let images = props.streams.map(stream=><img src={stream.url}/>);
-    return <div>{images}</div>;
+    let images = props.streams.map(stream =>
+        <div className="camera"  key={stream.id}>
+            <div className="name">{stream.name}</div>
+            <img src={stream.url}/>
+        </div>
+    );
+    return (
+        <html>
+        <head>
+            <link rel="stylesheet" href="/css/index.css"/>
+        </head>
+        <body>
+        <div id="panel">{images}</div>
+        </body>
+        </html>
+    );
 }
 
 module.exports = Streams;
