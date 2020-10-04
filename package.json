@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bump-patch": "git add . && git commit && npm version patch && git push",
+    "deploy":  "pm2 deploy ecosystem.config.js production"
   },
   "author": "",
   "license": "ISC",
