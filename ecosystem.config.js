@@ -4,12 +4,10 @@ module.exports = {
             script: 'index.js',
             watch: 'true',
             name: 'motion-ui',
-            env: {
-                env_production: {
-                    NODE_ENV: 'production',
-                    API_HOST: 'http://192.168.1.110:3000',
-                    STREAM_HOST: 'https://zm.velor.ca'
-                }
+            env_production: {
+                NODE_ENV: 'production',
+                API_HOST: 'http://192.168.1.110:3000',
+                STREAM_HOST: 'https://zm.velor.ca'
             }
         }
     ],
