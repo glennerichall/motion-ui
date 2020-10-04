@@ -20,7 +20,7 @@ module.exports = {
             host: '192.168.1.110',
             ref: 'origin/master',
             repo: 'git@github.com:glennerichall/motion-ui.git',
-            path: '~/motion-ui',
+            path: '/home/glenn/motion-ui',
             'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
         }
     }
