@@ -12,7 +12,6 @@
     "express": "^4.17.1",
     "express-react-views": "^0.11.0",
     "node-fetch": "^2.6.1",
-    "pm2": "^4.5.0",
     "ps-node": "^0.1.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
