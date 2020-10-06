@@ -1,3 +1,8 @@
-require('./src')();
+const events = require('./src/events');
 
-// require('./src/list_configs')();
+(async () => {
+        await events.init();
+        await events.migrate();
+        await require('./src')();
+    }
+)();

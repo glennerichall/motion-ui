@@ -24,10 +24,10 @@ app.get('/', async (req, res) => {
 
 
 module.exports = async () => {
-    const config = await read_configs();
-    if (!!config) {
-        console.log(`found ${config.cameras.length} camera(s) in ${config.glob.motion_conf}`);
-    }
+    // const config = await read_configs();
+    // if (!!config) {
+    //     console.log(`found ${config.cameras.length} camera(s) in ${config.glob.motion_conf}`);
+    // }
 
     await promisify(app.listen).bind(app)(port);
     console.log(`listening on port http://localhost:${port}`);

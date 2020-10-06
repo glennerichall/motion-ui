@@ -1,10 +1,9 @@
 const express = require('express');
 var router = express.Router();
 
-const MotionApi = require('./motion-api');
-const apiHost = process.env.API_HOST;
-const streamHost = process.env.STREAM_HOST;
-const api = new MotionApi(apiHost, {streamHost});
+var Camera = require('./camera');
+
+const events = require('./events');
 
 // async function getStreams() {
 //     let host = process.env.STREAM_HOST;
@@ -19,8 +18,13 @@ const api = new MotionApi(apiHost, {streamHost});
 // }
 
 module.exports.getStreams = async function getStreams() {
-    const cameras = await api.getCameras();
-    return await Promise.all(cameras.map(camera => camera.toObject()));
+    let cameras = await Camera.getCameras();
+    let events = await cameras[0].getEvents();
+    return await Camera.getStreams();
+};
+
+module.exports.getEvents = async function getEvents() {
+    events.getEvents()
 };
 
 module.exports.router = router

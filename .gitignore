@@ -92,3 +92,5 @@ typings/
 *.http
 
 .idea/
+
+motion.db
