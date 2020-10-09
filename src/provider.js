@@ -7,7 +7,7 @@ const streamHost = process.env.STREAM_HOST;
 module.exports = class Provider {
 
     constructor(req) {
-        let xhost = req && req.headers['X-Stream-Host'];
+        let xhost = req && req.header('X-Stream-Host');
         console.log(`xhost: ${xhost}`);
         this.api = new MotionApi(apiHost, {streamHost: xhost || streamHost});
     }
