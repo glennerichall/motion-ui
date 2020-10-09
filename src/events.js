@@ -10,8 +10,8 @@ class Events extends Database {
         super(options);
     }
 
-    init() {
-        super.init();
+    async init() {
+        await super.init();
         this.queryEventsStmt = this.db.prepare(queryEventsSql);
     }
 
