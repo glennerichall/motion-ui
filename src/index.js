@@ -15,6 +15,7 @@ app.use(router);
 
 
 app.get('/', async (req, res) => {
+
     res.render('index',
         {
             streams: await getStreams(req)

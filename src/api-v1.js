@@ -1,36 +1,22 @@
 const express = require('express');
-var router = express.Router();
-
-var Camera = require('./camera');
-
+let router = express.Router();
+let Provider = require('./provider');
 const events = require('./events');
 
-// async function getStreams() {
-//     let host = process.env.STREAM_HOST;
-//
-//     return config.cameras.map(camera => {
-//         return {
-//             url: `${host}/${camera.camera_id}/stream`,
-//             id: camera.camera_id,
-//             name: camera.camera_name
-//         };
-//     });
-// }
-
-module.exports.getStreams = async function getStreams() {
-    let cameras = await Camera.getCameras();
+module.exports.getStreams = async function getStreams(req) {
+    let cameras = await new Provider(req).getCameras();
     let events = await cameras[0].getEvents();
-    return await Camera.getStreams();
+    return await new Provider(req).getStreams();
 };
 
 module.exports.getEvents = async function getEvents() {
-    events.getEvents()
+    // events.getEvents()
 };
 
 module.exports.router = router
 
     .get('/streams', async (req, res) => {
-        const streams = await getStreams();
+        const streams = await getStreams(req);
         if (!!streams) {
             res.send(streams);
         } else {

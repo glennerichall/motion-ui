@@ -77,9 +77,17 @@ class Camera {
         }
     }
 
+    async getHost() {
+        return this.api.streamHost;
+    }
+
+    async getUrl() {
+        return `${await this.getHost()}/${await this.getId()}/stream`
+    }
+
     async toObject() {
         return {
-            url: `${this.api.streamHost}/${await this.getId()}/stream`,
+            url: await this.getUrl(),
             id: await this.getId(),
             name: await this.getName()
         }
@@ -135,9 +143,9 @@ class MotionApi {
             .filter(x => x.trim().length)
             .map(camera => {
                 let match = camera.match(patternConnection1);
-                if(!match) match = camera.match(patternConnection2);
-                if(!match) return null;
-                const {groups:{id, name}} = match;
+                if (!match) match = camera.match(patternConnection2);
+                if (!match) return null;
+                const {groups: {id, name}} = match;
                 return new Camera(this.api, id.trim(), name.trim());
             });
     }

@@ -6,8 +6,8 @@ module.exports = {
             name: 'motion-ui',
             env_production: {
                 NODE_ENV: 'production',
-                API_HOST: 'http://192.168.1.110:8080',
-                STREAM_HOST: 'https://zm.velor.ca'
+                API_HOST: 'localhost:8080',
+                STREAM_HOST: 'localhost:8081'
             }
         }
     ],
