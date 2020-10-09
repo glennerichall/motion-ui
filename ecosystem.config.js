@@ -6,8 +6,8 @@ module.exports = {
             name: 'motion-ui',
             env_production: {
                 NODE_ENV: 'production',
-                API_HOST: 'localhost:8080',
-                STREAM_HOST: 'localhost:8081'
+                API_HOST: 'http://localhost:8080',
+                STREAM_HOST: 'http://localhost:8081'
             }
         }
     ],
