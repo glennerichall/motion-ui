@@ -3,10 +3,26 @@ const path = require('path');
 const Database = require('better-sqlite3');
 
 const queryVersionSql = 'select * from migrations order by id desc limit 1;';
-const updateVersionSql = 'insert into migrations (version, installation) values(?, ?);';
+const bumpVersionSql = 'insert into migrations (version, installation) values(?, ?);';
 
 const migpath = path.join(__dirname, 'migrations');
-const initSql = path.join(migpath, 'migrate.1.sql');
+
+const initSql = `
+create table if not exists migrations
+(
+    id integer not null
+        constraint migrations_pk
+            primary key autoincrement,
+    version      int     not null,
+    installation text    not null
+);
+
+create unique index if not exists migrations_id_uindex
+    on migrations (id);
+
+create unique index if not exists migrations_version_uindex
+    on migrations (version);
+`;
 
 class Events {
 
@@ -16,34 +32,30 @@ class Events {
 
     _initStatements() {
         this.queryVersionStmt = this.db.prepare(queryVersionSql);
-        this.updateVersionStmt = this.db.prepare(updateVersionSql);
+        this.bumpVersionStmt = this.db.prepare(bumpVersionSql);
     }
 
-    async updateVersion(migVersion) {
-        this.updateVersionStmt.run(migVersion, new Date().toISOString());
+    async bumpVersion(migVersion) {
+        this.bumpVersionStmt.run(migVersion, new Date().toISOString());
     }
 
     async init() {
         this.db = new Database(this.options.name, this.options);
-        try {
-            this._initStatements();
-        } catch (e) {
-            const sql = (await fs.readFile(initSql)).toString();
-            await this.db.exec(sql);
-            this._initStatements();
-            this.updateVersion(1);
-        }
+        await this.db.exec(initSql);
+        this._initStatements();
+        await this.migrate();
     }
 
     async migrate() {
         const files = await fs.readdir(migpath);
-        const curVersion = this.queryVersionStmt.get();
+
         for (let file of files) {
+            const curVersion = this.queryVersionStmt.get();
             const migVersion = file.match(/migrate\.(?<version>\d+)\.sql/).groups.version;
-            if (migVersion > curVersion) {
-                const sql = (await fs.readFile(file)).toString();
+            if (curVersion === undefined || migVersion > curVersion) {
+                const sql = (await fs.readFile(path.join(migpath,file))).toString();
                 this.db.exec(sql);
-                this.updateVersion(migVersion);
+                this.bumpVersion(migVersion);
             }
         }
     }

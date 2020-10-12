@@ -4,6 +4,8 @@ const {promisify} = require('util');
 const port = process.env.port || 3000;
 const read_configs = require('./read-configs');
 
+const version = require('../package').version;
+
 app.set('views', __dirname + '/../views');
 app.set('view engine', 'jsx');
 app.engine('jsx', require('express-react-views').createEngine());
@@ -18,7 +20,8 @@ app.get('/', async (req, res) => {
 
     res.render('index',
         {
-            streams: await getStreams(req)
+            streams: await getStreams(req),
+            version
         }
     );
 });

@@ -31,3 +31,15 @@
     width: 100%;
     object-fit: fill;
 }
+
+#version {
+    position: sticky;
+    padding-left: 7px;
+    padding-right: 7px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    color: grey;
+    display: inline-block;
+    z-index: 100;
+}

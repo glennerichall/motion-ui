@@ -9,12 +9,13 @@ function Streams(props) {
     );
     return (
         <html>
-        <head>
-            <link rel="stylesheet" href="/css/index.css"/>
-        </head>
-        <body>
-        <div id="panel">{images}</div>
-        </body>
+            <head>
+                <link rel="stylesheet" href="/css/index.css"/>
+            </head>
+            <body>
+                <div id="panel">{images}</div>
+                <div id="version">{props.version}</div>
+            </body>
         </html>
     );
 }

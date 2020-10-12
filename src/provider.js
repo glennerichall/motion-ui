@@ -8,7 +8,6 @@ module.exports = class Provider {
 
     constructor(req) {
         let xhost = req && req.header('X-Stream-Host');
-        console.log(`xhost: ${xhost}`);
         this.api = new MotionApi(apiHost, {streamHost: xhost || streamHost});
     }
 
