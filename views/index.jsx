@@ -10,10 +10,10 @@ function Streams(props) {
     return (
         <html>
             <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                 <link rel="stylesheet" href="/css/index.css"/>
-                <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"/>
+                <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials"/>
                 <meta name="mobile-web-app-capable" content="yes"/>
-
             </head>
             <body>
                 <div id="panel">{images}</div>
