@@ -11,7 +11,7 @@ function Streams(props) {
         <html>
             <head>
                 <link rel="stylesheet" href="/css/index.css"/>
-                <link rel="manifest" href="/manifest.webmanifest"/>
+                <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"/>
                 <meta name="mobile-web-app-capable" content="yes"/>
 
             </head>
