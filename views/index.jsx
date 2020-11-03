@@ -11,7 +11,7 @@ function Streams(props) {
         <html>
             <head>
                 <link rel="stylesheet" href="/css/index.css"/>
-                <link rel="manifest" href="/motion-ui.manifest"/>
+                <link rel="manifest" href="/manifest.webmanifest"/>
                 <meta name="mobile-web-app-capable" content="yes"/>
 
             </head>
