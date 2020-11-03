@@ -33,11 +33,11 @@ const patternConnection1 = /Camera\s(?<name>.+)\sCamera\s(?<id>.+)\s--\s${name}\
 const patternConnection2 = /Camera\s(?<id>.+)\s--\s(?<name>.+)\s(?<status>Lost connection|NOT RUNNING|Connection OK)/;
 
 class Camera {
-    constructor(api, id, name, configs) {
+    constructor(api, id, name, status, configs) {
         this.api = api;
         this.id = id;
         this.name = name || null;
-        this.status = null;
+        this.status = status || null;
         this.configs = configs || null;
     }
 
@@ -89,7 +89,8 @@ class Camera {
         return {
             url: await this.getUrl(),
             id: await this.getId(),
-            name: await this.getName()
+            name: await this.getName(),
+            status: await this.getStatus()
         }
     }
 }
@@ -145,8 +146,13 @@ class MotionApi {
                 let match = camera.match(patternConnection1);
                 if (!match) match = camera.match(patternConnection2);
                 if (!match) return null;
-                const {groups: {id, name}} = match;
-                return new Camera(this.api, id.trim(), name.trim());
+                const {groups: {id, name, status}} = match;
+                return new Camera(
+                    this.api,
+                    id.trim(),
+                    name.trim(),
+                    status.toLowerCase()
+                        .replace(' ', '-'));
             });
     }
 

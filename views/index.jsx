@@ -2,7 +2,7 @@ var React = require('react');
 
 function Streams(props) {
     let images = props.streams.map(stream =>
-        <div className="camera"  key={stream.id}>
+        <div className={["camera"].concat(stream.status).join(' ')} key={stream.id}>
             <div className="name">{stream.name}</div>
             <img src={stream.url}/>
         </div>

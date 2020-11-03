@@ -20,6 +20,7 @@ body::-webkit-scrollbar {
         height: 50%;
         width: 50%;
     }
+
 }
 
 @media screen and (orientation: portrait)  {
@@ -27,6 +28,28 @@ body::-webkit-scrollbar {
         height: 50%;
         width: 100%;
     }
+    #panel .camera.lost-connection::before {
+        content: 'Connection lost';
+    }
+
+    #panel .camera.lost-connection {
+        height: inherit;
+        text-align: right;
+    }
+
+    #panel .camera.lost-connection .name {
+        display: inline-block;
+        position: relative;
+    }
+}
+
+
+#panel .camera.lost-connection .name {
+    background: orange;
+}
+
+#panel .camera.lost-connection img {
+    display: none;
 }
 
 #panel .camera {
@@ -54,7 +77,7 @@ body::-webkit-scrollbar {
 }
 
 #version {
-    position: sticky;
+    position: fixed;
     padding-left: 7px;
     padding-right: 7px;
     background: white;
