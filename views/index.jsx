@@ -11,7 +11,9 @@ function Streams(props) {
         <html>
             <head>
                 <link rel="stylesheet" href="/css/index.css"/>
+                <link rel="manifest" href="/motion-ui.manifest"/>
                 <meta name="mobile-web-app-capable" content="yes"/>
+
             </head>
             <body>
                 <div id="panel">{images}</div>

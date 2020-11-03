@@ -9,7 +9,8 @@ const version = require('../package').version;
 app.set('views', __dirname + '/../views');
 app.set('view engine', 'jsx');
 app.engine('jsx', require('express-react-views').createEngine());
-app.use('/css', express.static('css'));
+
+app.use('/', express.static('static'));
 
 const {router, getStreams} = require('./api-v1');
 
