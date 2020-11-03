@@ -4,8 +4,8 @@ let Provider = require('./provider');
 const events = require('./events');
 
 module.exports.getStreams = async function getStreams(req) {
-    let cameras = await new Provider(req).getCameras();
-    let events = await cameras[0].getEvents();
+    // let cameras = await new Provider(req).getCameras();
+    // let events = await cameras[0].getEvents();
     return await new Provider(req).getStreams();
 };
 

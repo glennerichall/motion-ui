@@ -29,8 +29,8 @@ const snakeToCamel = (str) => str.replace(
 );
 
 const patternStatus = /Camera\s(?<id>.+)Detection status\s(?<status>NOT RUNNING|ACTIVE)/;
-const patternConnection1 = /Camera\s(?<name>.+)\sCamera\s(?<id>.+)\s--\s${name}\s(?<status>NOT RUNNING|Connection OK)/;
-const patternConnection2 = /Camera\s(?<id>.+)\s--\s(?<name>.+)\s(?<status>NOT RUNNING|Connection OK)/;
+const patternConnection1 = /Camera\s(?<name>.+)\sCamera\s(?<id>.+)\s--\s${name}\s(?<status>Lost connection|NOT RUNNING|Connection OK)/;
+const patternConnection2 = /Camera\s(?<id>.+)\s--\s(?<name>.+)\s(?<status>Lost connection|NOT RUNNING|Connection OK)/;
 
 class Camera {
     constructor(api, id, name, configs) {
