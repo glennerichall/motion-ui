@@ -147,7 +147,7 @@ class MotionApi {
                 if (!match) match = camera.match(patternConnection2);
                 if (!match) return null;
                 const {groups: {id, name, status}} = match;
-                return new Camera(
+                return this.newCamera(
                     this.api,
                     id.trim(),
                     name.trim(),
@@ -157,9 +157,15 @@ class MotionApi {
     }
 
     getCamera(id) {
-        return new Camera(this.api, id);
+        return this.newCamera(this.api, id);
     }
 
+    newCamera(...args) {
+        return new Camera(...args);
+    }
 }
 
-module.exports = MotionApi;
+module.exports = {
+    MotionApi,
+    Camera
+}

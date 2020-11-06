@@ -16,7 +16,6 @@ const {router, getStreams} = require('./api-v1');
 
 app.use(router);
 
-
 app.get('/', async (req, res) => {
 
     res.render('index',

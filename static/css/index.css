@@ -57,17 +57,47 @@ body::-webkit-scrollbar {
     position: relative;
     background: lightgrey;
     display: inline-block;
+    user-select: none;
+}
+
+#panel .camera .header div {
+    display: inline-block;
 }
 
 #panel .camera .name {
     background: red;
-    position: absolute;
     color: white;
-    right: 0;
     text-shadow: 2px 2px 2px black;
     margin: 10px;
     padding: 5px;
     border-radius: 3px;
+}
+
+#panel .camera .events.has-events {
+    visibility: visible;
+}
+
+#panel .camera .events.has-events:hover {
+    background: rgba(100,100,100,0.8);
+    cursor: pointer;
+}
+
+#panel .camera .events {
+    --size: 1.5em;
+    color: white;
+    text-shadow: 2px 2px 2px black;
+    border: 1px solid grey;
+    border-radius: 50%;
+    width: var(--size);
+    height: var(--size);
+    text-align: center;
+    line-height: var(--size);
+    visibility: collapse;
+}
+
+#panel .camera .header {
+    right: 0;
+    position: absolute;
 }
 
 #panel .camera img {
@@ -75,6 +105,8 @@ body::-webkit-scrollbar {
     width: 100%;
     object-fit: fill;
 }
+
+
 
 #version {
     position: fixed;
