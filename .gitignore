@@ -94,3 +94,5 @@ typings/
 .idea/
 
 motion.db
+
+ecosystem.config.js
