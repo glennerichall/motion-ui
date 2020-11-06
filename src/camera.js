@@ -13,7 +13,7 @@ module.exports.Camera = class Camera extends MotionCamera {
 
     async getEventCount() {
         let count = await db.getEventCount(this.id);
-        return count;
+        return count.total;
     }
 
     async toObject() {

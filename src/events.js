@@ -3,8 +3,8 @@ const options = {
     name: process.env.EVENTS || './motion.db'
 };
 
-const queryEventsSql = 'select * from events where camera = ? order by event';
-const countEventsSql = 'select count(*) as total from events where camera = ? order by event';
+const queryEventsSql = 'select * from events where camera = ? order by event, time';
+const countEventsSql = 'select camera, count(distinct event) as total from events where camera = @camera OR @camera IS NULL group by camera'
 
 class Events extends Database {
     constructor(options) {
@@ -22,8 +22,14 @@ class Events extends Database {
         return events;
     }
 
-    getEventCount(camera) {
-        return this.countEventsStmt.get(camera).total;
+    async getEventCount(camera) {
+        camera = camera || null;
+        if(camera == null){
+            let count = this.countEventsStmt.all({camera});
+            return count;
+        }
+        let count = this.countEventsStmt.get({camera});
+        return count || {camera, total: 0};
     }
 }
 

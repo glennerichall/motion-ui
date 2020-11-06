@@ -33,12 +33,19 @@ module.exports.router = router
 
     })
 
-    .get('/motion/pictures/:camera/:event', (req, res) => {
+    .get('/motion/movies/:camera', (req, res) => {
 
     })
 
-    .get('/motion/movies/:camera', (req, res) => {
+    .get('/motion/events/:camera/count', async (req, res) => {
+        const {camera} = req.params;
+        let count = await events.getEventCount(camera);
+        res.send(count);
+    })
 
+    .get('/motion/events/count', async (req, res) => {
+        let count = await events.getEventCount();
+        res.send(count);
     });
 
 

@@ -83,16 +83,18 @@ body::-webkit-scrollbar {
 }
 
 #panel .camera .events {
+    font-size: 0.8em;
     --size: 1.5em;
-    color: white;
-    text-shadow: 2px 2px 2px black;
-    border: 1px solid grey;
-    border-radius: 50%;
-    width: var(--size);
+    border: 1px solid #535353;
+    border-radius: calc(var(--size) / 2 );
+    min-width: var(--size);
     height: var(--size);
     text-align: center;
     line-height: var(--size);
     visibility: collapse;
+    background: rgb(169, 169, 167);
+    padding-left: 0.3em;
+    padding-right: 0.3em;
 }
 
 #panel .camera .header {

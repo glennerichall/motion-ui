@@ -3,7 +3,7 @@ let classNames = require('classnames');
 
 function Streams(props) {
     let images = props.streams.map(stream =>
-        <div className={classNames("camera", stream.status)} key={stream.id}>
+        <div id={'cam-' + stream.id} className={classNames("camera", stream.status)} key={stream.id}>
             <div className="header">
                 <div className={
                     classNames(
@@ -24,10 +24,15 @@ function Streams(props) {
             <link rel="stylesheet" href="/css/index.css"/>
             <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials"/>
             <meta name="mobile-web-app-capable" content="yes"/>
+            <script src="./js/index.js"/>
         </head>
         <body>
         <div id="panel">{images}</div>
         <div id="version">{props.version}</div>
+
+        <script>
+            autoRefreshEvents();
+        </script>
         </body>
         </html>
     );
