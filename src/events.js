@@ -1,6 +1,6 @@
 const Database = require('./database');
 const options = {
-    name: './motion.db'
+    name: process.env.EVENTS || './motion.db'
 };
 
 const queryEventsSql = 'select * from events where camera = ? order by event';

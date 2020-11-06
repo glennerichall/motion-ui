@@ -7,7 +7,8 @@ module.exports = {
             env_production: {
                 NODE_ENV: 'production',
                 API_HOST: 'http://localhost:8080',
-                STREAM_HOST: 'http://192.168.1.110:8081'
+                STREAM_HOST: 'http://192.168.1.110:8081',
+                EVENTS: '/home/glenn/motion-ui/motion.db'
             }
         }
     ],
