@@ -4,21 +4,21 @@ const options = {
     name: process.env.EVENTS || './motion.db'
 };
 
-const queryEventsSql = 'select * from events where camera = ? order by event, time';
+const queryEventsSql = 'select * from event_logs where camera = ? order by event';
 
 const countEventsSql = `
     select camera, 
            count(distinct event) as total 
-    from events 
-    where camera = @camera OR @camera IS NULL 
+    from event_logs
+    where (camera = @camera OR @camera IS NULL)
     group by camera
 `;
 
 const countByDayEventsSql = `
     select camera,
            count(distinct event)      as total,
-           strftime('%Y-%m-%d', time) as date
-    from events
+           strftime('%Y-%m-%d', begin) as date
+    from event_logs
     where (strftime('%Y-%m-%d', @date) = date OR @date IS NULL)
       AND (camera = @camera OR @camera IS NULL)
     group by camera, date
