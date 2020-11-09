@@ -5,13 +5,11 @@ function Streams(props) {
     let images = props.streams.map(stream =>
         <div id={'cam-' + stream.id} className={classNames("camera", stream.status)} key={stream.id}>
             <div className="header">
-                <div className={
-                    classNames(
-                        'events',
-                        {'has-events': stream.eventCount})
-                }>
-                    {stream.eventCount}
+                <div className='events'>
+                    <div className='all'/>
+                    <div className='today'/>
                 </div>
+                <div className='last'/>
                 <div className="name">{stream.name}</div>
             </div>
             <img src={stream.url} draggable="false"/>

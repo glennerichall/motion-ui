@@ -52,7 +52,7 @@ class Events {
         for (let file of files) {
             const curVersion = this.queryVersionStmt.get();
             const migVersion = file.match(/migrate\.(?<version>\d+)\.sql/).groups.version;
-            if (curVersion === undefined || migVersion > curVersion) {
+            if (curVersion === undefined || migVersion > curVersion.version) {
                 const sql = (await fs.readFile(path.join(migpath,file))).toString();
                 this.db.exec(sql);
                 this.bumpVersion(migVersion);

@@ -1,6 +1,6 @@
 body {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 body::-webkit-scrollbar {
@@ -15,7 +15,7 @@ body::-webkit-scrollbar {
     right: 0;
 }
 
-@media screen and (orientation: landscape)  {
+@media screen and (orientation: landscape) {
     #panel .camera {
         height: 50%;
         width: 50%;
@@ -23,11 +23,12 @@ body::-webkit-scrollbar {
 
 }
 
-@media screen and (orientation: portrait)  {
+@media screen and (orientation: portrait) {
     #panel .camera {
         height: 50%;
         width: 100%;
     }
+
     #panel .camera.lost-connection::before {
         content: 'Connection lost';
     }
@@ -73,26 +74,44 @@ body::-webkit-scrollbar {
     border-radius: 3px;
 }
 
-#panel .camera .events.has-events {
+#panel .camera .events .has-events {
     visibility: visible;
 }
 
-#panel .camera .events.has-events:hover {
-    background: rgba(100,100,100,0.8);
+#panel .camera .events .has-events:hover {
+    background: rgba(100, 100, 100, 0.8);
     cursor: pointer;
 }
 
-#panel .camera .events {
+#panel .camera .events .has-events:first-of-type {
+    border-top-left-radius: calc(var(--size) / 3);
+    border-bottom-left-radius: calc(var(--size) / 3);
+}
+
+#panel .camera .events .has-events:last-of-type {
+    border-top-right-radius: calc(var(--size) / 3);
+    border-bottom-right-radius: calc(var(--size) / 3);
+}
+
+#panel .camera .events .has-events + .has-events {
+    border-left: none;
+}
+
+#panel .camera .events * {
     font-size: 0.8em;
     --size: 1.5em;
     border: 1px solid #535353;
-    border-radius: calc(var(--size) / 2 );
+
     min-width: var(--size);
     height: var(--size);
     text-align: center;
     line-height: var(--size);
+
     visibility: collapse;
-    background: rgb(169, 169, 167);
+
+    background: whitesmoke;
+    opacity: 0.8;
+
     padding-left: 0.3em;
     padding-right: 0.3em;
 }
@@ -109,15 +128,21 @@ body::-webkit-scrollbar {
 }
 
 
-
 #version {
     position: fixed;
     padding-left: 7px;
     padding-right: 7px;
     background: white;
+    opacity: 0.8;
     border-radius: 5px;
     border: 1px solid lightgray;
     color: grey;
     display: inline-block;
     z-index: 100;
+}
+
+#version::before {
+    content: 'version.  ';
+    font-size: 0.7em;
+    line-height: 1em;
 }

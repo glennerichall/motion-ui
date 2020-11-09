@@ -11,6 +11,7 @@ module.exports.getEvents = async function getEvents() {
     // events.getEvents()
 };
 
+
 module.exports.router = router
 
     .get('/streams', async (req, res) => {
@@ -37,15 +38,33 @@ module.exports.router = router
 
     })
 
-    .get('/motion/events/:camera/count', async (req, res) => {
+    .get('/motion/events/:camera/count', (req, res, next) => {
         const {camera} = req.params;
-        let count = await events.getEventCount(camera);
-        res.send(count);
+        const builder = events.getEventCount().for(camera);
+        req.builder = builder;
+        next();
     })
 
-    .get('/motion/events/count', async (req, res) => {
-        let count = await events.getEventCount();
-        res.send(count);
-    });
+    .get('/motion/events/count', (req, res, next) => {
+        const builder = events.getEventCount();
+        req.builder = builder;
+        next();
+    })
+
+    .use(async (req, res, next) => {
+        const {builder} = req;
+        if (builder) {
+            let {date} = req.query;
+            if (date) date = date.toLowerCase();
+
+            if (date === 'today') builder.today();
+            else if (date === 'everyday') builder.everyDay();
+
+            const count = await builder.fetch();
+            res.send(count);
+        } else {
+            next();
+        }
+    })
 
 
