@@ -12,7 +12,7 @@ app.use(cors())
 
 app.use('/', express.static('static'));
 
-app.get('/version', cors(), (req, res) => {
+app.get('/version',(req, res) => {
     res.send({version});
 });
 
@@ -24,9 +24,9 @@ module.exports = async () => {
     await promisify(app.listen).bind(app)(port);
     console.log(`listening on port http://localhost:${port}/`);
 
-    const socket = scoketio(app.server);
-
-    socket.on('connection', client => {
-
-    });
+    // const socket = scoketio(app.server);
+    //
+    // socket.on('connection', client => {
+    //
+    // });
 };
