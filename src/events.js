@@ -1,34 +1,57 @@
 const Database = require('./database');
-const moment = require('moment');
+const {format} = require('date-fns');
 const options = {
     name: process.env.EVENTS || './motion.db'
 };
 
 const queryEventsSql = 'select * from event_logs where camera = ? order by event';
 
-const countEventsSql = `
-    select camera, 
-           count(distinct event) as total 
-    from event_logs
-    where (camera = @camera OR @camera IS NULL)
-    group by camera
-`;
-
-const countByDayEventsSql = `
+const queryEventCountSql = `
     select camera,
-           count(distinct event)      as total,
+           count(distinct event)       as total,
            strftime('%Y-%m-%d', begin) as date
     from event_logs
-    where (strftime('%Y-%m-%d', @date) = date OR @date IS NULL)
+    where end is not null
+      AND
+        (strftime('%Y-%m-%d', @date) = date
+            OR
+         @date = 'latest' AND date = (select max(strftime('%Y-%m-%d', begin))
+                                      from event_logs as el
+                                      where el.camera = event_logs.camera)
+            OR
+         @date IS NULL)
       AND (camera = @camera OR @camera IS NULL)
-    group by camera, date
+    group by camera,
+             case
+                 when @date = 'latest' then 1
+                 else date
+                 end;
+`;
+
+const queryLastEventSql = `
+    select max(begin) as begin,
+           id,
+           event,
+           end,
+           camera
+    from event_logs
+    where end is not null
+      and (strftime('%Y-%m-%d', @date) = begin OR
+           @date = 'latest' OR
+           @date IS NULL)
+      and (camera = @camera or @camera is null)
+    group by camera,
+             case
+                 when @date = 'latest' then 1
+                 else strftime('%Y-%m-%d', begin)
+                 end
 `;
 
 class Builder {
     constructor(events) {
         this.events = events;
         this.camera = null;
-        this.all();
+        this.everyDay();
     }
 
     for(camera) {
@@ -41,27 +64,33 @@ class Builder {
     }
 
     at(date) {
-        this.statement = this.events.countByDayEventsStmt;
-        this.date = date;
+        this.date = format(date, 'yyyy-MM-dd');
         return this;
     }
 
     everyDay() {
-        this.statement = this.events.countByDayEventsStmt;
         this.date = null;
         return this;
     }
 
-    all() {
-        this.statement = this.events.countEventsStmt;
-        this.date = undefined;
+    latest() {
+        this.date = 'latest';
+        return this;
+    }
+
+    count() {
+        this.statement = this.events.queryEventCountStmt;
+        return this;
+    }
+
+    last()  {
+        this.statement = this.events.queryLastEventStmt;
         return this;
     }
 
     async fetch() {
         let {camera, statement, date} = this;
         let fetch = (camera !== null ? statement.get : statement.all).bind(statement);
-        date = !date ? null : moment(date).format('YYYY-MM-DD hh:mm:ss');
         let count = await fetch({camera, date});
         return count || {camera, date, total: 0}
     }
@@ -75,8 +104,8 @@ class Events extends Database {
     async init() {
         await super.init();
         this.queryEventsStmt = this.db.prepare(queryEventsSql);
-        this.countEventsStmt = this.db.prepare(countEventsSql);
-        this.countByDayEventsStmt = this.db.prepare(countByDayEventsSql);
+        this.queryEventCountStmt = this.db.prepare(queryEventCountSql);
+        this.queryLastEventStmt = this.db.prepare(queryLastEventSql);
     }
 
     async getEvents(camera) {
@@ -84,10 +113,13 @@ class Events extends Database {
         return events;
     }
 
-    getEventCount() {
-        return new Builder(this);
+    getLastEvent(camera) {
+        return this.queryLastEventStmt.get({camera});
     }
 
+    getBuilder() {
+        return new Builder(this);
+    }
 }
 
 module.exports = new Events(options);

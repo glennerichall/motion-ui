@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            script: 'index.js',
+            script: 'index.jsx',
             watch: 'true',
             name: 'motion-ui',
             env_production: {

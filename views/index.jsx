@@ -1,39 +1,22 @@
-let React = require('react');
-let classNames = require('classnames');
+import regeneratorRuntime from "regenerator-runtime";
 
-function Streams(props) {
-    let images = props.streams.map(stream =>
-        <div id={'cam-' + stream.id} className={classNames("camera", stream.status)} key={stream.id}>
-            <div className="header">
-                <div className='events'>
-                    <div className='all'/>
-                    <div className='today'/>
-                </div>
-                <div className='last'/>
-                <div className="name">{stream.name}</div>
-            </div>
-            <img src={stream.url} draggable="false"/>
-        </div>
+import {render} from 'react-dom';
+import React from 'react';
+import 'whatwg-fetch';
+
+import Streams from './streams';
+
+(async () => {
+    const api = await (await fetch('http://localhost:3000/version')).json();
+    const streams = await (await fetch('http://localhost:3000/streams')).json();
+    const events = await (await fetch('http://localhost:3000/events/count?date=everyday')).json();
+    const lastEvent = await (await fetch('http://localhost:3000/events/last?date=latest')).json();
+    render(
+        <Streams streams={streams}
+                 version={api.version}
+                 events={events}
+                 lastEvent={lastEvent}
+        ></Streams>,
+        document.getElementById('root')
     );
-    return (
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <link rel="stylesheet" href="/css/index.css"/>
-            <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials"/>
-            <meta name="mobile-web-app-capable" content="yes"/>
-            <script src="./js/index.js"/>
-        </head>
-        <body>
-        <div id="panel">{images}</div>
-        <div id="version">{props.version}</div>
-
-        <script>
-            autoRefreshEvents();
-        </script>
-        </body>
-        </html>
-    );
-}
-
-module.exports = Streams;
+})();

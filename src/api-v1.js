@@ -2,10 +2,12 @@ const express = require('express');
 let router = express.Router();
 let Provider = require('./provider');
 const events = require('./events');
+const cors = require('cors')
 
-module.exports.getStreams = async function getStreams(req) {
+
+async function getStreams(req) {
     return await new Provider(req).getStreams();
-};
+}
 
 module.exports.getEvents = async function getEvents() {
     // events.getEvents()
@@ -13,6 +15,8 @@ module.exports.getEvents = async function getEvents() {
 
 
 module.exports.router = router
+
+    .use(cors())
 
     .get('/streams', async (req, res) => {
         const streams = await getStreams(req);
@@ -30,41 +34,36 @@ module.exports.router = router
         else res.status(404).end();
     })
 
-    .get('/motion/pictures/:camera', (req, res) => {
+    .get('/pictures/:camera', (req, res) => {
 
     })
 
-    .get('/motion/movies/:camera', (req, res) => {
+    .get('/movies/:camera', (req, res) => {
 
     })
 
-    .get('/motion/events/:camera/count', (req, res, next) => {
-        const {camera} = req.params;
-        const builder = events.getEventCount().for(camera);
-        req.builder = builder;
-        next();
-    })
+    .get(['/events/:camera/:what', '/events/:what'], async (req, res) => {
+        const {camera, what} = req.params;
 
-    .get('/motion/events/count', (req, res, next) => {
-        const builder = events.getEventCount();
-        req.builder = builder;
-        next();
-    })
+        const builder = events.getBuilder();
+        if (camera) builder.for(camera);
 
-    .use(async (req, res, next) => {
-        const {builder} = req;
-        if (builder) {
-            let {date} = req.query;
-            if (date) date = date.toLowerCase();
+        let {date} = req.query;
+        if (date) date = date.toLowerCase();
 
-            if (date === 'today') builder.today();
-            else if (date === 'everyday') builder.everyDay();
+        if (date === 'today') builder.today();
+        else if (date === 'everyday') builder.everyDay();
+        else if (date === 'latest') builder.latest();
 
-            const count = await builder.fetch();
-            res.send(count);
+        if (builder[what]) {
+            builder[what]();
+
+            const info = await builder.fetch();
+            res.send(info);
         } else {
-            next();
+            res.status(404).send('not found');
         }
     })
+
 
 

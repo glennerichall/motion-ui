@@ -6,19 +6,32 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump-patch": "git add . && git commit && npm version patch && git push",
-    "deploy": "pm2 deploy ecosystem.config.js production"
+    "deploy": "pm2 deploy ecosystem.config.js production",
+    "preinstall": "npx npm-force-resolutions",
+    "build": "parcel build views/index.html -d static",
+    "watch": "parcel watch views/index.html -d static"
   },
   "author": "",
   "license": "ISC",
+  "resolutions": {
+    "node-forge": "^0.10.0"
+  },
   "dependencies": {
     "better-sqlite3": "^7.1.1",
     "classnames": "^2.2.6",
+    "cors": "^2.8.5",
+    "date-fns": "^2.16.1",
     "express": "^4.17.1",
-    "express-react-views": "^0.11.0",
-    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "ps-node": "^0.1.6",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "regenerator-runtime": "^0.13.7",
+    "socket.io": "^3.0.1"
+  },
+  "devDependencies": {
+    "node-forge": "^0.10.0",
+    "parcel-bundler": "^1.12.4",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "whatwg-fetch": "^3.5.0"
   }
 }

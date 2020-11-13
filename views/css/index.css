@@ -1,0 +1,195 @@
+body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+#panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+@media screen and (orientation: landscape) {
+    #panel .camera {
+        height: 50%;
+        width: 50%;
+    }
+
+}
+
+@media screen and (orientation: portrait) {
+    #panel .camera {
+        height: 50%;
+        width: 100%;
+    }
+
+    #panel .camera.lost-connection::before {
+        content: 'Connection lost';
+    }
+
+    #panel .camera.lost-connection {
+        height: inherit;
+        text-align: right;
+    }
+
+    #panel .camera.lost-connection .name {
+        display: inline-block;
+        position: relative;
+    }
+}
+
+
+#panel .camera.lost-connection .name {
+    background: orange;
+}
+
+#panel .camera.lost-connection img {
+    display: none;
+}
+
+#panel .camera {
+    object-fit: contain;
+    position: relative;
+    background: lightgrey;
+    display: inline-block;
+    user-select: none;
+}
+
+#panel .camera .header  div {
+    display: inline-block;
+}
+
+#panel .camera .name {
+    background: red;
+    color: white;
+    text-shadow: 2px 2px 2px black;
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#panel .camera .events.has-events {
+    visibility: visible;
+}
+
+#panel .camera .events.has-events :hover {
+    cursor: pointer;
+}
+
+#panel .camera .events.has-events :first-child {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+#panel .camera .events.has-events :last-child {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#panel .camera .events {
+    visibility: collapse;
+}
+
+#panel .camera .events div + div {
+    border-left: none;
+}
+
+#panel .camera .events * {
+    font-size: 0.8em;
+    --size: 1.5em;
+    border: 1px solid grey;
+
+    min-width: var(--size);
+    height: var(--size);
+    text-align: center;
+    line-height: var(--size);
+
+    background: whitesmoke;
+    opacity: 0.8;
+
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+}
+
+#panel .camera .header {
+    right: 0;
+    position: absolute;
+    padding: 10px;
+}
+
+#panel .camera img {
+    height: 100%;
+    width: 100%;
+    object-fit: fill;
+}
+
+#panel .camera .header .last.has-last {
+    visibility: visible;
+}
+
+#panel .camera .header .last {
+    display: block;
+    visibility: collapse;
+}
+
+
+#panel .camera .header  .last .day {
+    display: block;
+}
+
+.heart-beat.pending {
+    background-color: white;
+}
+
+.has-events ~ .heart-beat {
+    margin-top: -1em;
+}
+
+.heart-beat {
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 2s;
+    position: absolute;
+    right: 10px;
+    margin-top: 10px;
+}
+
+
+#panel .camera .header .last > * {
+    display: inline-block;
+    font-size: 0.7em;
+    background: grey;
+    padding: 0.2em 0.3em;
+    border-radius: 3px;
+    line-height: 1em;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+}
+
+#version {
+    position: fixed;
+    padding-left: 7px;
+    padding-right: 7px;
+    background: white;
+    opacity: 0.8;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    color: grey;
+    display: inline-block;
+    z-index: 100;
+}
+
+#version::before {
+    content: 'version.  ';
+    font-size: 0.7em;
+    line-height: 1em;
+}
