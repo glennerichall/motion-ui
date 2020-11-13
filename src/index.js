@@ -12,7 +12,7 @@ app.use(cors())
 
 app.use('/', express.static('static'));
 
-app.get('/version', (req, res) => {
+app.get('/version', cors(), (req, res) => {
     res.send({version});
 });
 
