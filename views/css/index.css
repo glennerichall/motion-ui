@@ -175,21 +175,32 @@ body::-webkit-scrollbar {
     text-shadow: 1px 1px 3px black;
 }
 
-#version {
+#process {
     position: fixed;
+}
+
+#version {
     padding-left: 7px;
     padding-right: 7px;
     background: white;
     opacity: 0.8;
-    border-radius: 5px;
+    border-radius: 3px;
     border: 1px solid lightgray;
     color: grey;
-    display: inline-block;
+    display: block;
     z-index: 100;
+    font-size: 0.7em;
 }
 
 #version::before {
     content: 'version.  ';
     font-size: 0.7em;
     line-height: 1em;
+}
+
+#cpu {
+    z-index: 1000;
+    position: absolute;
+    margin-top: 10px;
+    border-radius: 3px;
 }

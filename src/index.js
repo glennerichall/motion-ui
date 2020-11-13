@@ -10,15 +10,20 @@ const version = require('../package').version;
 
 app.use(cors())
 
+// app.use((req, res, next) => {
+//     console.log(req.url);
+//     next();
+// })
+
 app.use('/', express.static('static'));
 
-app.get('/version',(req, res) => {
+app.get('/version', (req, res) => {
     res.send({version});
 });
 
-const {router} = require('./api-v1');
+const {router: v1} = require('./api-v1');
 
-app.use(router);
+app.use('/v1', v1);
 
 module.exports = async () => {
     await promisify(app.listen).bind(app)(port);

@@ -1,6 +1,8 @@
 import React, {Fragment, Component} from 'react';
 import classNames from 'classnames';
-import {format} from "date-fns";
+import {fetch} from './js/index';
+
+const api = 'v1';
 
 const DateTime = (props) => {
     const {lastEvent} = props;
@@ -31,24 +33,21 @@ class StreamInfo extends Component {
     }
 
     componentDidMount() {
-        this.timerID = setInterval(
-            () => this.tick(),
-            5000   // 5 seconds
-        );
         this.tick();
     }
 
     componentWillUnmount() {
-        clearInterval(this.timerID);
+        clearTimeout(this.timerID);
     }
 
     tick() {
+
         const {id} = this.props.stream;
         this.setState({pending: true});
         (async () => {
-            const events = await (await fetch(`/events/${id}/count`)).json();
-            const today = await (await fetch(`/events/${id}/count?date=today`)).json();
-            const lastEvent = await (await fetch(`/events/${id}/last?date=latest`)).json();
+            const events = await fetch(`${api}/events/${id}/count`);
+            const today = await fetch(`${api}/events/${id}/count?date=today`);
+            const lastEvent = await fetch(`${api}/events/${id}/last?date=latest`);
 
             this.setState({
                 events,
@@ -56,6 +55,10 @@ class StreamInfo extends Component {
                 lastEvent
             });
 
+            this.timerID = setTimeout(
+                () => this.tick(),
+                5000   // 5 seconds
+            );
             setTimeout(() => this.setState({pending: false}), 1000);
         })();
     }
@@ -112,11 +115,8 @@ export default class Streams extends Component {
 
     tick() {
         (async () => {
-            const api = await (await fetch('/version')).json();
-            const streams = await (await fetch('/streams')).json();
-
+            const streams = await fetch(`${api}/streams`);
             this.setState({
-                version: api.version,
                 streams
             });
         })();
@@ -125,13 +125,12 @@ export default class Streams extends Component {
     render() {
         if (!this.state) return (<div/>);
 
-        const {streams, version} = this.state;
+        const {streams} = this.state;
 
         let cameras = streams.map(stream => <Stream key={stream.id} stream={stream}/>);
         return (
             <Fragment>
                 <div id="panel">{cameras}</div>
-                <div id="version">{version}</div>
             </Fragment>
         );
     }

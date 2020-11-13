@@ -12,17 +12,17 @@ const queryEventCountSql = `
            strftime('%Y-%m-%d', begin) as date
     from event_logs
     where end is not null
-      AND
-        (strftime('%Y-%m-%d', @date) = date
-            OR
-         @date = 'latest' AND date = (select max(strftime('%Y-%m-%d', begin))
-                                      from event_logs as el
-                                      where el.camera = event_logs.camera)
-            OR
-         @date IS NULL)
+      AND (strftime('%Y-%m-%d', @date) = date
+        OR
+           @date = 'latest' AND date = (select max(strftime('%Y-%m-%d', begin))
+                                        from event_logs as el
+                                        where el.camera = event_logs.camera)
+        OR
+           @date IS NULL)
       AND (camera = @camera OR @camera IS NULL)
     group by camera,
              case
+                 when @date is null then 1
                  when @date = 'latest' then 1
                  else date
                  end;
@@ -83,22 +83,30 @@ class Builder {
         return this;
     }
 
-    last()  {
+    last() {
         this.statement = this.events.queryLastEventStmt;
         return this;
     }
 
     async fetch() {
-        let {camera, statement, date} = this;
-        let fetch = (camera !== null ? statement.get : statement.all).bind(statement);
-        let count = await fetch({camera, date});
-        return count || {camera, date, total: 0}
+        try {
+            let {camera, statement, date} = this;
+            let fetch = (camera !== null ? statement.get : statement.all).bind(statement);
+            let count = await fetch({camera, date});
+            return count || {camera, date, total: 0}
+        } catch (e) {
+            return null;
+        }
     }
 }
 
 class Events extends Database {
     constructor(options) {
-        super(options);
+        options = options || {};
+        super({
+            readonly: true,
+            ...options
+        });
     }
 
     async init() {
