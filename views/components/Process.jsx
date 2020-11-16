@@ -1,5 +1,5 @@
 import React, {Fragment, Component} from 'react';
-import {fetch} from './js/index';
+import {fetch} from '../js';
 
 const api = 'v1';
 
