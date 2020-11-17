@@ -1,6 +1,6 @@
-import React, {Component} from "react";
+import React, {useState, useEffect} from "react";
 import classNames from "classnames";
-import {connect} from "react-redux";
+import {fetch} from "../js";
 
 const DateTime = (props) => {
     const {lastEvent} = props;
@@ -20,28 +20,45 @@ const DateTime = (props) => {
     );
 };
 
-class StreamInfo extends Component {
-    constructor(props) {
-        super(props);
-    }
+export default props => {
+    const {events, name} = props;
 
-    render() {
-        const {all, today, last} = this.props.events;
-        const {name} = this.props;
-        return (
-            <div className="header">
-                <div className={classNames("events", {'has-events': !!all.total})}>
-                    <div className="all">{all && all.total}</div>
-                    <div className='today'>{today && today.total}</div>
-                </div>
+    const [count, setCount] = useState({
+        all: {total: 0},
+        today: {total: 0},
+        last: null
+    });
 
-                <div className="name">{name}</div>
-                <DateTime lastEvent={last}/>
-                <div className={classNames("heart-beat", {pending})}/>
+    useEffect(() => {
+        (async () => {
+            try {
+                const all = fetch(events.all);
+                const today = fetch(events.today);
+                const last = fetch(events.last);
+
+                setCount({
+                    all: await all,
+                    today: await today,
+                    last: await last
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        })();
+    }, [events]);
+
+    const {all, today, last} = count;
+    return (
+        <div className="header">
+            <div className={classNames("events", {'has-events': !!all.total})}>
+                <div className="all">{all && all.total}</div>
+                <div className='today'>{today && today.total}</div>
             </div>
-        );
-    }
-}
 
+            <div className="name">{name}</div>
+            <DateTime lastEvent={last}/>
+            {/*<div className={classNames("heart-beat", {pending})}/>*/}
+        </div>
+    );
+};
 
-export default connect()(StreamInfo);

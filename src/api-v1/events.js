@@ -1,9 +1,10 @@
 const express = require('express');
 const events = require('../events');
+const pubsub = require('../pubsub');
 
 module.exports.router = express.Router()
 
-    .get(['/:camera/:what', '/events/:what'], async (req, res) => {
+    .get(['/:camera/:what', '/:what'], async (req, res) => {
         const {camera, what} = req.params;
 
         const builder = events.getBuilder();
@@ -25,4 +26,13 @@ module.exports.router = express.Router()
         } else {
             res.status(404).send('not found');
         }
+    })
+
+    .post('/:camera', async (req, res) => {
+        var requestIP = req.connection.remoteAddress;
+        console.log(requestIP)
+        const {camera} = req.params;
+        const {type} = req.query;
+        pubsub.emit('new-event', {camera, type});
+        res.send('done');
     });

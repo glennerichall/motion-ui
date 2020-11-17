@@ -1,8 +1,5 @@
-import React, {Fragment, Component} from 'react';
+import React, {useRef, Component, useState, useEffect} from 'react';
 import {fetch} from '../js';
-
-const api = 'v1';
-
 
 class Stats extends Component {
     setRef = ref => this.ref = ref;
@@ -93,48 +90,34 @@ class Stats extends Component {
 
 }
 
-export default class Process extends Component {
+export default props => {
+    const stats = useRef(null);
 
-    setStats = ref => this.stats = ref;
+    const {versionSrc, processSrc} = props;
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            version: 0,
-            cpu: 0
-        }
-    }
+    const [version, setVersion] = useState(0);
 
-    componentDidMount() {
-        this.tick();
+    useEffect(() => {
         (async () => {
-            const res = await fetch(`/version`);
-            this.setState({version: res.version});
+            const res = await fetch(versionSrc);
+            setVersion(res.version);
         })();
-    }
+    }, [versionSrc]);
 
-    componentWillUnmount() {
-        clearTimeout(this.timerID);
-    }
+    useEffect(() => {
+        const fetchCpu = async () => {
+            const proc = await fetch(processSrc);
+            if (stats) stats.current.update(proc.cpu, 100);
+        };
+        const id = setInterval(fetchCpu, 1000);
+        return () => clearInterval(id);
+    }, [processSrc]);
 
-    tick() {
-        (async () => {
-            const proc = await fetch(`/${api}/process`);
-            this.stats.update(proc.cpu, 100);
-            this.timerID = setTimeout(
-                () => this.tick(),
-                1000   // 1 second
-            );
-        })();
-    }
+    return (
+        <div id="process">
+            <div id="version">{version}</div>
+            <Stats ref={stats}/>
+        </div>
+    );
 
-    render() {
-        const {version} = this.state;
-        return (
-            <div id="process">
-                <div id="version">{version}</div>
-                <Stats ref={this.setStats}/>
-            </div>
-        );
-    }
 }

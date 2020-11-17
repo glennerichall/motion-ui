@@ -1,28 +1,22 @@
-import React, {Fragment, Component} from 'react';
-import {connect} from "react-redux";
-
+import React, {useState, useEffect} from 'react';
 import classNames from 'classnames';
 import Stream from "./Stream";
+import {fetch} from "../js";
 
-class Streams extends Component {
+export default props => {
+    const {src} = props;
+    const [streams, setStreams] = useState([]);
 
-    constructor(props) {
-        super(props);
-    }
+    useEffect(() => {
+        (async () => {
+            const streams = await fetch(src);
+            setStreams(streams);
+        })();
+    }, [src]);
 
-    render() {
-        const {streams} = this.props;
-        let cameras = streams.map(stream =>
-            <Stream key={stream.id} stream={stream}/>);
-        return (
-            <div id="panel">{cameras}</div>
-        );
-    }
-}
-
-const mapStateToProps = (state) => {
-    const {streams} = state;
-    return streams;
-}
-
-export default connect(mapStateToProps)(Streams);
+    let cameras = streams.map(stream =>
+        <Stream key={stream.id} stream={stream}/>);
+    return (
+        <div id="panel">{cameras}</div>
+    );
+};
