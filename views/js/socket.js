@@ -1,5 +1,7 @@
 import {io} from 'socket.io-client';
 
-export const socket = io(`ws://${location.host}/`, {
+const protocol = location.protocol === 'https' ? 'wss' : 'ws';
+
+export const socket = io(`${protocol}://${location.host}/`, {
     reconnectionDelayMax: 10000
 });
