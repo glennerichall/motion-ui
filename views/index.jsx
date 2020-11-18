@@ -1,4 +1,3 @@
-import regeneratorRuntime from "regenerator-runtime";
 import 'babel-polyfill';
 
 import React, {Fragment} from 'react';

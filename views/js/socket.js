@@ -1,10 +1,11 @@
-import {io} from 'socket.io-client';
+import io from 'socket.io-client';
 
 const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
 
 console.log(`${protocol}://${location.host}/`);
 
-export const socket = io(`${protocol}://${location.host}/`, {
-    reconnectionDelayMax: 10000,
-    secure: protocol === 'wss'
-});
+export const socket = io();
+
+socket.on('connect', () => {
+    console.log('Connected to websocket');
+})
