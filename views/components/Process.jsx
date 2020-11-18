@@ -1,5 +1,5 @@
 import React, {useRef, Component, useState, useEffect} from 'react';
-import {fetch} from '../js';
+import {fetch} from '../js/fetch';
 
 class Stats extends Component {
     setRef = ref => this.ref = ref;

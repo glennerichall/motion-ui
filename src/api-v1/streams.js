@@ -11,6 +11,11 @@ const withEvents = stream => {
         all: `/v1/events/${id}/count`,
         today: `/v1/events/${id}/count?date=today`,
         last: `/v1/events/${id}/last?date=latest`,
+        status: `/v1/events/${id}/status`
+    };
+    stream.notifications = {
+        eventStart: 'motion-event-start',
+        eventEnd: 'motion-event-end',
     };
     return stream;
 };

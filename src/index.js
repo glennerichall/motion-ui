@@ -1,14 +1,6 @@
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-
-const {promisify} = require('util');
-const port = process.env.port || 3000;
-
+const {app, init, express} = require('./server');
 const cors = require('cors')
-
 const version = require('../package').version;
-const pubsub = require('./pubsub');
 
 app.use(cors())
 
@@ -27,8 +19,4 @@ const {router: v1} = require('./api-v1');
 
 app.use('/v1', v1);
 
-module.exports = async () => {
-    await promisify(server.listen).bind(server)(port);
-    pubsub.init(server);
-    console.log(`listening on port http://localhost:${port}/`);
-};
+module.exports = init;

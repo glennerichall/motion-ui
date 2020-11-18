@@ -1,8 +1,23 @@
 const express = require('express');
 const events = require('../events');
-const pubsub = require('../pubsub');
+const {io} = require('../server');
+const authorizeWhitelistIps = require('../block-ip');
+
+const cameras = {};
 
 module.exports.router = express.Router()
+
+    .get('/:camera/status', (req, res) => {
+        const {camera} = req.params;
+        const recording = cameras[camera];
+        const status = recording ? 'recording' : 'idle';
+
+        // TODO camera exists
+        res.send({
+            camera,
+            status
+        });
+    })
 
     .get(['/:camera/:what', '/:what'], async (req, res) => {
         const {camera, what} = req.params;
@@ -28,11 +43,17 @@ module.exports.router = express.Router()
         }
     })
 
-    .post('/:camera', async (req, res) => {
-        var requestIP = req.connection.remoteAddress;
-        console.log(requestIP)
+
+    .post('/:camera', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;
         const {type} = req.query;
-        pubsub.emit('new-event', {camera, type});
+
+        // FIXME use database ???
+        if (type === 'start') {
+            cameras[camera] = true;
+        } else {
+            cameras[camera] = false;
+        }
+        io.emit(`motion-event-${type}`, {camera, type});
         res.send('done');
-    });
+    })

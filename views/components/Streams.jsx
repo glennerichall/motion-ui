@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import classNames from 'classnames';
 import Stream from "./Stream";
-import {fetch} from "../js";
+import {fetch} from '../js/fetch';
 
 export default props => {
     const {src} = props;

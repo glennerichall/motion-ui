@@ -8,16 +8,6 @@ import Streams from './components/Streams';
 import Process from './components/Process';
 import {processUrl, streamsUrl, versionUrl} from "./constants";
 
-import { io } from 'socket.io-client';
-
-const socket = io("ws://localhost:3000/", {
-    reconnectionDelayMax: 10000
-});
-
-socket.on('new-event', event=>{
-    console.log(event);
-});
-
 const App = props =>
     (
         <Fragment>
