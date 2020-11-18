@@ -50,7 +50,6 @@ export default props => {
 
         (async () => {
             const {status} = (await fetch(events.status));
-            console.log(status);
             setEventStarted(status === 'recording');
         })();
 
