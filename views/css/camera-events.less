@@ -1,0 +1,96 @@
+.events {
+  visibility: collapse;
+  position: relative;
+
+  :not(.event-status) {
+    display: none;
+  }
+
+  &.has-events {
+    visibility: visible;
+
+    * {
+      display: inherit;
+    }
+
+    .event-count {
+      :hover {
+        cursor: pointer;
+      }
+
+      :first-child {
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+
+      :last-child {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+      }
+    }
+  }
+
+  .last-event {
+    display: block;
+
+    .day {
+      display: block;
+    }
+
+    > * {
+      display: inline-block;
+      font-size: 0.7em;
+      background: grey;
+      padding: 0.2em 0.3em;
+      border-radius: 3px;
+      line-height: 1em;
+      color: white;
+      text-shadow: 1px 1px 3px black;
+    }
+
+  }
+
+  .event-count {
+    margin-bottom: 5px;
+
+    div + div {
+      border-left: none;
+    }
+
+    * {
+      font-size: 0.8em;
+      --size: 1.5em;
+      border: 1px solid grey;
+
+      min-width: var(--size);
+      height: var(--size);
+      text-align: center;
+      line-height: var(--size);
+
+      background: whitesmoke;
+      opacity: 0.8;
+
+      padding-left: 0.3em;
+      padding-right: 0.3em;
+    }
+  }
+
+
+}
+
+div.event-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: -5px;
+  margin-top: 15px;
+  background-color: red;
+}
+
+&.recording .event-status {
+  display: inline-block;
+  animation: pulse 2s infinite;
+}

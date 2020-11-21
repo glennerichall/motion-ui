@@ -28,14 +28,15 @@
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
-    "socket.io-client": "^2.0.3",
     "@babel/core": "^7.12.3",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.6",
+    "less": "^3.12.2",
     "node-forge": "^0.10.0",
     "parcel-bundler": "^1.12.4",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "socket.io-client": "^2.0.3"
   }
 }

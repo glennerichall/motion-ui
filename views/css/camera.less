@@ -1,0 +1,97 @@
+#panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .camera {
+    object-fit: contain;
+    position: relative;
+    background: lightgrey;
+    display: inline-block;
+    user-select: none;
+
+    &.recording {
+      //transition: width 1s, height 1s;
+
+      &.has-last-event {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 100;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    }
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: fill;
+    }
+
+    &.lost-connection {
+      img {
+        display: none;
+      }
+    }
+
+    @import 'camera-header.less';
+
+    @import 'camera-events.less';
+  }
+
+}
+
+@media screen and (orientation: landscape) {
+  #panel .camera {
+    height: 50%;
+    width: 50%;
+  }
+}
+
+@media screen and (orientation: portrait) {
+  #panel .camera {
+    height: 50%;
+    width: 100%;
+  }
+
+  #panel .camera.lost-connection::before {
+    content: 'Connection lost';
+  }
+
+  #panel .camera.lost-connection {
+    height: inherit;
+    text-align: right;
+  }
+
+  #panel .camera.lost-connection .name {
+    display: inline-block;
+    position: relative;
+  }
+}
+
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+.has-events ~ .event-status {
+  margin-top: -1em;
+}

@@ -7,6 +7,11 @@ import Streams from './components/Streams';
 import Process from './components/Process';
 import {processUrl, streamsUrl, versionUrl} from "./constants";
 
+import './css/camera.less';
+import './css/index.css';
+
+import './js/service-worker';
+
 const App = props =>
     (
         <Fragment>
