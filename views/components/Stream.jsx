@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from "react";
+import React, {Fragment, useState, useEffect, useRef} from "react";
 import classNames from "classnames";
 import {socket} from "../js/socket";
 import {fetch} from "../js/fetch";
-import Events from "./Events";
+import EventCount from "./EventCount";
 import {acquireToken, releaseToken, hasToken} from "../js/token";
 
 export default props => {
@@ -11,6 +11,7 @@ export default props => {
 
     const [eventStatus, setEventStatus] = useState('idle');
     const [token, setToken] = useState({});
+    const camRef = useRef(null);
 
     useEffect(() => {
         if (eventStatus === 'idle') {
@@ -46,13 +47,52 @@ export default props => {
     }, [notifications]);
 
     return (
-        <div id={'cam-' + id}
-             className={classNames("camera", status, eventStatus, {'has-last-event': hasToken(token)})}>
-            <div className="header">
-                <Events events={events} eventStatus={eventStatus}/>
-                <div className="name">{name}</div>
+        <Fragment>
+            <div id={'cam-' + id}
+                 ref={camRef}
+                 onTransitionEnd={() => { camRef.current.style.transition = null;}}
+                 className={classNames("camera", status, eventStatus, {'fullscreen': hasToken(token)})}>
+                <div className="header">
+                    <EventCount events={events} eventStatus={eventStatus}/>
+                    <div className="name">{name}</div>
+                </div>
+                <img src={url} draggable="false"
+                     onClick={() => {
+                         console.log('tits')
+                         if (hasToken(token)) {
+                             // const rect = camRef.current.getBoundingClientRect();
+                             // camRef.current.style.top = rect.top + 'px';
+                             // camRef.current.style.left = rect.left + 'px';
+                             // camRef.current.style.width = rect.width + 'px';
+                             // camRef.current.style.height = rect.height + 'px';
+                             releaseToken(token);
+                             // setTimeout(() => {
+                             //     camRef.current.style.transition = 'width 1s, height 1s, top 1s, left 1s';
+                             //     camRef.current.style.top = null;
+                             //     camRef.current.style.left = null;
+                             //     camRef.current.style.width = null;
+                             //     camRef.current.style.height = null;
+                             //
+                             // }, 100)
+                         } else {
+                             // const rect = camRef.current.getBoundingClientRect();
+                             // camRef.current.style.top = rect.top + 'px';
+                             // camRef.current.style.left = rect.left + 'px';
+                             // camRef.current.style.width = rect.width + 'px';
+                             // camRef.current.style.height = rect.height + 'px';
+                             acquireToken(setToken);
+                             // setTimeout(() => {
+                             //     camRef.current.style.transition = 'width 1s, height 1s, top 1s, left 1s';
+                             //     camRef.current.style.top = null;
+                             //     camRef.current.style.left = null;
+                             //     camRef.current.style.width = null;
+                             //     camRef.current.style.height = null;
+                             //
+                             // }, 100)
+                         }
+                     }}/>
             </div>
-            <img src={url} draggable="false"/>
-        </div>
+            <div className="camera placeholder"></div>
+        </Fragment>
     );
 }

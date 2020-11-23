@@ -12,10 +12,16 @@ module.exports = class Provider {
         this.api.newCamera = function (...args) {
             return new Camera(...args);
         }
+        this.req = req;
     }
 
     getApi() {
         return this.api;
+    }
+
+    getCamera(){
+        const {camera} = this.req.params;
+        return this.getApi().getCamera(camera || null);
     }
 
     async getCameras() {

@@ -8,9 +8,15 @@ async function getStreams(req) {
 const withEvents = stream => {
     const {id} = stream;
     stream.events = {
-        all: `/v1/events/${id}/count`,
-        today: `/v1/events/${id}/count?date=today`,
-        last: `/v1/events/${id}/last?date=latest`,
+        count:{
+            all: `/v1/events/${id}/count`,
+            today: `/v1/events/${id}/count?date=today`,
+            last: `/v1/events/${id}?date=latest&last=true`,
+        },
+        files:{
+            all: `/v1/events/${id}`,
+            today: `/v1/events/${id}?date=today`
+        },
         status: `/v1/events/${id}/status`
     };
     stream.notifications = {
@@ -20,7 +26,7 @@ const withEvents = stream => {
     return stream;
 };
 
-module.exports.router = express.Router()
+module.exports = express.Router()
     .get('/', async (req, res) => {
         const streams = await getStreams(req);
         if (!!streams) {

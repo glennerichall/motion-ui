@@ -96,3 +96,5 @@ typings/
 motion.db
 
 ecosystem.config.js
+
+bin/

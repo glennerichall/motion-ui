@@ -1,11 +1,12 @@
 const express = require('express');
-const events = require('../events');
+const events = require('../events/events');
 const {io} = require('../server');
 const authorizeWhitelistIps = require('../block-ip');
+const Provider = require('../provider');
 
 const cameras = {};
 
-module.exports.router = express.Router()
+module.exports = express.Router()
 
     .get('/:camera/status', (req, res) => {
         const {camera} = req.params;
@@ -19,28 +20,30 @@ module.exports.router = express.Router()
         });
     })
 
-    .get(['/:camera/:what', '/:what'], async (req, res) => {
-        const {camera, what} = req.params;
 
-        const builder = events.getBuilder();
-        if (camera) builder.for(camera);
 
-        let {date} = req.query;
-        if (date) date = date.toLowerCase();
+    .get('/count', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const count = await camera.getEventCount(req.query);
+        res.send(count);
+    })
 
-        if (date === 'today') builder.today();
-        else if (date === 'everyday') builder.everyDay();
-        else if (date === 'latest') builder.latest();
+    .get('/count/:camera', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const count = await camera.getEventCount(req.query);
+        res.send(count);
+    })
 
-        if (builder[what]) {
-            builder[what]();
+    .get('/', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.getEvents(req.params);
+        res.send(events);
+    })
 
-            const info = await builder.fetch();
-            if (info) res.send(info);
-            else res.status(500).send('internal error');
-        } else {
-            res.status(404).send('not found');
-        }
+    .get('/:camera', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.getEvents(req.params);
+        res.send(events);
     })
 
 
@@ -57,3 +60,9 @@ module.exports.router = express.Router()
         io.emit(`motion-event-${type}`, {camera, type});
         res.send('done');
     })
+
+
+module.exports.routes = {
+    events: '/',
+    status : '/:camera/status',
+}

@@ -3,8 +3,8 @@ const {parse} = require('./config-parser');
 
 const urls = {
     config_list: '{host}/{camid}/config/list',                // Lists all the configuration values for the camera.
-    config_set: '{host}/{camid}/config/set?{parm}={value1}',  //Set the value for the requested parameter
-    config_get: '{host}/{camid}/config/get?query={parm}',     // Return the value currently set for the parameter.
+    config_set: '{host}/{camid}/config/set?{param}={value1}',  //Set the value for the requested parameter
+    config_get: '{host}/{camid}/config/get?query={param}',     // Return the value currently set for the parameter.
     config_write: '{host}/{camid}/config/write',              // Write the current parameters to the file.
     detection_status: '{host}/{camid}/detection/status',         // Return the current status of the camera.
     detection_connection: '{host}/{camid}/detection/connection',       // Return the connection status of the camera.
@@ -85,6 +85,10 @@ class Camera {
         return `${await this.getHost()}/${await this.getId()}/stream`
     }
 
+    async getTargetDir() {
+        return await this.api.requestConfigGet(await this.getId(), {param: 'target_dir'});
+    }
+
     async toObject() {
         return {
             url: await this.getUrl(),
@@ -102,22 +106,27 @@ class WebControl {
 
         for (let key in urls) {
             let method = 'request' + snakeToCamel(key);
-            this[method] = async (camid) => this.requestText(urls[key], camid);
+            this[method] = async (camid, options) => this.requestText(urls[key], camid, options);
         }
     }
 
-    getUrl(url, camid) {
-        return url
+    getUrl(url, camid, options = {}) {
+        let res = url
             .replace('{host}', this.host)
             .replace('{camid}', camid || '0');
+
+        for (let key in options) {
+            res = res.replace(`{${key}}`, options[key]);
+        }
+        return res;
     }
 
-    request(url, camid) {
-        return fetch(this.getUrl(url, camid));
+    request(url, camid, options) {
+        return fetch(this.getUrl(url, camid, options));
     }
 
-    async requestText(url, camid) {
-        let response = await this.request(url, camid);
+    async requestText(url, camid, options) {
+        let response = await this.request(url, camid, options);
         return response.text();
     }
 }

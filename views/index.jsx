@@ -1,24 +1,8 @@
 import 'babel-polyfill';
-
-import React, {Fragment} from 'react';
+import React from 'react';
 import {render} from 'react-dom';
 
-import Streams from './components/Streams';
-import Process from './components/Process';
-import {processUrl, streamsUrl, versionUrl} from "./constants";
-
-import './css/camera.less';
-import './css/index.css';
-
-import './js/service-worker';
-
-const App = props =>
-    (
-        <Fragment>
-            <Streams src={streamsUrl}/>
-            <Process versionSrc={versionUrl} processSrc={processUrl}/>
-        </Fragment>
-    );
+import App from "./components/App";
 
 (async () => {
     render(<App/>,

@@ -1,4 +1,4 @@
-const events = require('./src/events');
+const events = require('./src/events/events');
 
 (async () => {
         await events.init();

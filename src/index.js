@@ -9,14 +9,16 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/', express.static('static'));
+if(process.env.NODE_ENV === 'development') {
+    app.use('/', express.static('bin'));
+}else {
+    app.use('/', express.static('static'));
+}
 
 app.get('/version', (req, res) => {
     res.send({version});
 });
 
-const {router: v1} = require('./api-v1');
-
-app.use('/v1', v1);
+app.use('/v1', require('./api-v1'));
 
 module.exports = init;

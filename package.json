@@ -9,7 +9,7 @@
     "deploy": "pm2 deploy ecosystem.config.js production",
     "preinstall": "npx npm-force-resolutions",
     "build": "parcel build views/index.html -d static  --no-source-maps",
-    "watch": "parcel watch views/index.html -d static"
+    "watch": "parcel watch views/index.html -d bin"
   },
   "author": "",
   "license": "ISC",
