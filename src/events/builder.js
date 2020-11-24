@@ -1,4 +1,5 @@
 const {format} = require('date-fns');
+const {queryEventsSql, queryEventCountSql} = require('./queries');
 
 class RequestBuilder {
     constructor(events) {
@@ -7,7 +8,8 @@ class RequestBuilder {
             camera: null,
             date: null
         };
-        this.statement = null;
+        this.sql = null;
+        this.fields = {};
     }
 
     for(camera) {
@@ -39,9 +41,28 @@ class RequestBuilder {
         return this;
     }
 
+    getParams() {
+        return this.params;
+    }
+
+    getFields() {
+        return this.fields;
+    }
+
+    getSql() {
+        return this.sql;
+    }
+
+    getStatement(sql, fields) {
+        return this.events.getStatement(sql, fields);
+    }
+
     async fetch() {
         try {
-            let {statement, params} = this;
+            let sql = this.getSql();
+            let params = this.getParams();
+            let fields = this.getFields();
+            const statement = this.getStatement(sql, fields);
             return statement.all(params);
         } catch (e) {
             return null;
@@ -52,20 +73,21 @@ class RequestBuilder {
 class EventCountBuilder extends RequestBuilder {
     constructor(events) {
         super(events)
-        this.statement = this.events.queryEventCountStmt;
-        this.params = {
-            ...this.params,
-            groupbycamera: null,
-            groupbydate: null
+        this.fields = {
+            ...this.fields,
+            groupby: null
         }
+        this.sql = queryEventCountSql;
     }
 
-    groupBy(groups) {
-        if (!Array.isArray(groups)) groups = groups.split(',');
-        this.params = {
-            ...this.params,
-            groupbycamera: groups.includes('camera') ? 1 : 0,
-            groupbydate: groups.includes('date') ? 1 : 0
+    groupBy(fields) {
+        // fields may only contain camera or date
+        const validFields = ['camera', 'date'];
+        if (fields.split(',').every(field => validFields.includes(field))) {
+            this.fields = {
+                ...this.fields,
+                groupby: fields
+            }
         }
         return this;
     }
@@ -78,14 +100,16 @@ class EventCountBuilder extends RequestBuilder {
 
     async fetch() {
         let count = await super.fetch();
-        let {groupbycamera, groupbydate, camera} = this.params;
-        if (!groupbycamera && !camera) {
+        let {camera} = this.getParams();
+        let {groupby} = this.getFields();
+        groupby = groupby ? groupby.split(',') : [];
+        if (!groupby.includes('camera') && !camera) {
             count.forEach(elem => delete elem.camera);
         }
-        if (!groupbydate) {
+        if (!groupby.includes('date')) {
             count.forEach(elem => delete elem.date);
         }
-        if(count.length === 1) count = count[0];
+        if (count.length === 1) count = count[0];
         return count;
     }
 }
@@ -93,7 +117,55 @@ class EventCountBuilder extends RequestBuilder {
 class EventBuilder extends RequestBuilder {
     constructor(events) {
         super(events)
-        this.statement = this.events.queryEventsStmt;
+        this.params = {
+            ...this.params,
+            limit: null
+        };
+        this.fields = {
+            ...this.fields,
+            orderby: null
+        }
+        this.sql = queryEventsSql;
+    }
+
+    apply(params) {
+        super.apply(params);
+        if (params.orderBy) this.orderBy(params.orderBy);
+        if (params.limit) this.limit(params.limit);
+        return this;
+    }
+
+    orderBy(fields) {
+        const validFields = ['camera', 'date', 'begin', 'end', 'id', 'event'];
+        const validDirections = ['asc', 'desc'];
+
+        if (fields.split(',').every(
+            field => {
+                const [name, direction] = field.split(/\s+/);
+                return validFields.includes(name.trim()) &&
+                    (!direction || validDirections.includes(direction.trim()));
+            })) {
+            this.fields = {
+                ...this.fields,
+                orderby: fields
+            }
+        }
+        return this;
+    }
+
+    limit(n) {
+        this.params = {
+            ...this.params,
+            limit: n
+        };
+        return this;
+    }
+
+    async fetch() {
+        let events = await super.fetch();
+        const {limit} = this.getParams();
+        if (events.length === 1 && limit == 1) events = events[0];
+        return events;
     }
 }
 

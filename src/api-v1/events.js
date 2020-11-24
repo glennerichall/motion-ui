@@ -20,8 +20,6 @@ module.exports = express.Router()
         });
     })
 
-
-
     .get('/count', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const count = await camera.getEventCount(req.query);
@@ -36,13 +34,13 @@ module.exports = express.Router()
 
     .get('/', async (req, res) => {
         const camera = await new Provider(req).getCamera();
-        const events = await camera.getEvents(req.params);
+        const events = await camera.getEvents(req.query);
         res.send(events);
     })
 
     .get('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
-        const events = await camera.getEvents(req.params);
+        const events = await camera.getEvents(req.query);
         res.send(events);
     })
 

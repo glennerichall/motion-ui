@@ -14,7 +14,8 @@ const queryEventsSql = `
     where end is not null
       AND (camera = @camera OR @camera IS NULL)
       AND (strftime('%Y-%m-%d', @date) = date OR @date IS NULL)
-    order by camera, begin;
+    order by $orderby
+    limit case when @limit is null then 9223372036854775807 else @limit end;
 `;
 
 /*
@@ -29,8 +30,7 @@ const queryEventCountSql = `
     where end is not null
       AND (camera = @camera OR @camera IS NULL)
       AND (strftime('%Y-%m-%d', @date) = date OR @date IS NULL)
-    group by case @groupbycamera when 1 then camera else 1 end, 
-             case @groupbydate when 1 then date else 1 end
+    group by $groupby
 `;
 
 const queryLastEventSql = `

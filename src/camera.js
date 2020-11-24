@@ -19,7 +19,7 @@ module.exports.Camera = class Camera extends MotionCamera {
 
         let targetDir = await this.getTargetDir();
 
-        events.forEach(event => {
+        events.forEach && events.forEach(event => {
             if (event.filename) {
                 event.filename = event.filename.replace(targetDir, '');
             }

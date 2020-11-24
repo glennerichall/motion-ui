@@ -9,9 +9,9 @@ const withEvents = stream => {
     const {id} = stream;
     stream.events = {
         count:{
-            all: `/v1/events/${id}/count`,
-            today: `/v1/events/${id}/count?date=today`,
-            last: `/v1/events/${id}?date=latest&last=true`,
+            all: `/v1/events/count/${id}`,
+            today: `/v1/events/count/${id}?date=today`,
+            last: `/v1/events/${id}?orderBy=begin desc&limit=1`,
         },
         files:{
             all: `/v1/events/${id}`,

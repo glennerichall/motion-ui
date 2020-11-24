@@ -7,6 +7,8 @@ const bumpVersionSql = 'insert into migrations (version, installation) values(?,
 
 const migpath = path.join(__dirname, 'migrations');
 
+const crypto = require("crypto");
+
 const initSql = `
 create table if not exists migrations
 (
@@ -24,10 +26,11 @@ create unique index if not exists migrations_version_uindex
     on migrations (version);
 `;
 
-class Events {
+class DatabaseManager {
 
     constructor(options) {
         this.options = options;
+        this.prepared = {};
     }
 
     _initStatements() {
@@ -53,11 +56,26 @@ class Events {
             const curVersion = this.queryVersionStmt.get();
             const migVersion = file.match(/migrate\.(?<version>\d+)\.sql/).groups.version;
             if (curVersion === undefined || migVersion > curVersion.version) {
-                const sql = (await fs.readFile(path.join(migpath,file))).toString();
+                const sql = (await fs.readFile(path.join(migpath, file))).toString();
                 this.db.exec(sql);
                 this.bumpVersion(migVersion);
             }
         }
+    }
+
+    getStatement(sql, params) {
+        const key = crypto
+            .createHash("MD5")
+            .update(sql + JSON.stringify(params))
+            .digest('hex');
+        if (!this.prepared[key]) {
+            for (let param in params) {
+                const value = params[param];
+                sql = sql.replace('$' + param, value);
+            }
+            this.prepared[key] = this.prepare(sql);
+        }
+        return this.prepared[key];
     }
 
     prepare(sql) {
@@ -65,4 +83,4 @@ class Events {
     }
 }
 
-module.exports = Events;
+module.exports = DatabaseManager;
