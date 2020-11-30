@@ -6,7 +6,13 @@ const Provider = require('./provider');
 const logfile = process.env.LOG_FILE;
 
 (async () => {
-    const file = logfile || await new Provider().getApi().getLogFile();
+    let file = null;
+    while (!file) {
+        try {
+            file = logfile || await new Provider().getApi().getLogFile();
+        } catch (err) {}
+    }
+
     console.log(`watching log file at ${file}`);
     const tail = new Tail(file);
 
@@ -17,7 +23,7 @@ const logfile = process.env.LOG_FILE;
         if (line.match(exprStopped)) {
             console.log('Motion has stopped');
             io.emit('motion-stopped', {
-                offline:true
+                offline: true
             });
         } else if (line.match(exprRestarting)) {
             console.log('Motion is restarting');
