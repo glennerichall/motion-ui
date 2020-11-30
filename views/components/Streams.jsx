@@ -29,8 +29,7 @@ export default props => {
 
         socket.on('motion-online', events => {
             console.log('motion is online')
-            setTimeout(() => setOnline(true), 2000);
-
+            setTimeout(() => setOnline(true), 10 * 1000 /* 10 seconds */);
         });
 
         return () => {

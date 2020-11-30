@@ -13,6 +13,7 @@ const connection = client => {
 const init = async () => {
     await promisify(server.listen).bind(server)(port);
     console.log(`listening on port http://localhost:${port}/`);
+    io.emit('version-update');
 }
 
 const io = socket(server);
