@@ -1,32 +1,36 @@
 const {io} = require('./server');
+const Tail = require('nodejs-tail');
+
 const Provider = require('./provider');
 
-let status = {}
-
-async function getStatus() {
-    const cameras = await new Provider().getCameras();
-    return cameras.map(camera => camera.toStatus())
-        .reduce(async (status, camera) => {
-            status = await status;
-            camera = await camera;
-            status[camera.id] = camera.status;
-            return status;
-        }, {});
-}
+const logfile = process.env.LOG_FILE;
 
 (async () => {
-    status = await getStatus();
-})();
+    const file = logfile || await new Provider().getApi().getLogFile();
+    console.log(`watching log file at ${file}`);
+    const tail = new Tail(file);
 
-// heartbeat
-setInterval(async () => {
-    const current = await getStatus();
-    for (let camera in status) {
-        if (status[camera] !== current[camera]) {
-            io.emit('motion-status-changed', {
-                ...current[camera],
-                previous: status[camera]
+    let exprStopped = /\[0:motion\].+main: Threads finished/;
+    let exprRestarting = /\[0:motion\].+motion_restart: Restarting motion/;
+    let exprRestarted = /\[0:motion\].+main: Motion thread \d+ restart/;
+    tail.on('line', (line) => {
+        if (line.match(exprStopped)) {
+            console.log('Motion has stopped');
+            io.emit('motion-stopped', {
+                offline:true
             });
+        } else if (line.match(exprRestarting)) {
+            console.log('Motion is restarting');
+            io.emit('motion-restarting');
+        } else if (line.match(exprRestarted)) {
+            console.log('Motion is online');
+            io.emit('motion-online');
         }
-    }
-}, 1000);
+    })
+
+    tail.on('close', () => {
+        console.log('watching stopped');
+    })
+
+    tail.watch();
+})();

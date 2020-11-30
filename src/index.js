@@ -4,8 +4,19 @@ const version = require('../package').version;
 
 app.use(cors())
 
+let previsoulog = null;
+let count = 0;
 app.use((req, res, next) => {
-    console.log(req.url);
+    if(req.url == previsoulog){
+        count++;
+    } else {
+        if(count > 1) {
+            console.log('previous message ' + count + ' times');
+        }
+        previsoulog = req.url;
+        console.log(req.url);
+        count = 1;
+    }
     next();
 })
 

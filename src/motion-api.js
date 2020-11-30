@@ -154,6 +154,10 @@ class MotionApi {
         return cameras.map(camera => camera.match(patternStatus).groups.id.trim());
     }
 
+    getLogFile() {
+        return this.getCamera(0).requestConfig('log_file');
+    }
+
     async getCameras() {
         const connection = await this.api.requestDetectionConnection();
         return connection

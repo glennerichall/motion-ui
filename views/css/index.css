@@ -10,6 +10,7 @@ body::-webkit-scrollbar {
 
 #process {
     position: fixed;
+    z-index: 1000;
 }
 
 #version {
@@ -23,6 +24,7 @@ body::-webkit-scrollbar {
     display: block;
     z-index: 100;
     font-size: 0.7em;
+    user-select: none;
 }
 
 #version::before {
@@ -31,10 +33,20 @@ body::-webkit-scrollbar {
     line-height: 1em;
 }
 
-#cpu {
-    z-index: 1000;
-    position: absolute;
-    margin-top: 10px;
+#process .graph {
+    margin-top: 3px;
+    display: block;
     border-radius: 3px;
+}
+
+#offline {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 3em;
 }
 

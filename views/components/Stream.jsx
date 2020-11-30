@@ -70,6 +70,8 @@ export default props => {
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
                 <img src={url} draggable="false"
+                     onError={()=>console.log('error')}
+                     onStalled={()=>console.log('stalled')}
                      onClick={() => {
                          if (hasToken(token)) {
                              // const rect = camRef.current.getBoundingClientRect();

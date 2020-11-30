@@ -1,6 +1,5 @@
 const express = require('express');
-const osu = require('node-os-utils');
-const cpu = osu.cpu;
+const {cpu, drive, mem} = require('node-os-utils');
 
 const cors = require('cors')
 
@@ -10,8 +9,14 @@ module.exports = express.Router()
     .use('/streams', require('./streams'))
 
     .get('/process', async (req, res) => {
-        const usage = await cpu.usage();
-        res.json({cpu: usage});
+        const cpuUsage = cpu.usage();
+        const driveUsage = drive.info();
+        const memUsage = mem.info();
+        res.json({
+            cpu: await cpuUsage,
+            drive: Number.parseFloat((await driveUsage).usedPercentage),
+            mem: 100 - (await memUsage).freeMemPercentage
+        });
     })
 
-// require('../heart-beat');
+require('../heart-beat');
