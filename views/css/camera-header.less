@@ -4,7 +4,7 @@
   position: absolute;
   padding: 10px;
 
-  div {
+  > div {
     display: inline-block;
   }
 
@@ -16,6 +16,31 @@
     padding: 5px;
     border-radius: 3px;
     float: right;
+    cursor: pointer;
+  }
+
+  .details {
+
+    &.visible {
+      display: grid;
+      grid-template-columns: auto auto;
+    }
+
+    span:nth-child(odd) {
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    span:nth-child(even) {
+      font-style: italic;
+    }
+
+    display: none;
+    background: whitesmoke;
+    float: left;
+    padding: 10px;
+    border-radius: 3px;
+    margin-right: 5px;
   }
 }
 

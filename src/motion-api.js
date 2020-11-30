@@ -37,7 +37,6 @@ class Camera {
         this.api = api;
         this.id = id;
         this.name = name || null;
-        this.status = status || null;
         this.configs = configs || null;
     }
 
@@ -54,11 +53,9 @@ class Camera {
     }
 
     async getStatus() {
-        if (!this.status) {
-            const status = await this.api.requestDetectionStatus(this.id);
-            this.status = status && status.replace('\n', '').match(patternStatus)[2];
-        }
-        return this.status;
+        let status = await this.api.requestDetectionStatus(this.id);
+        status = status && status.replace('\n', '').match(patternStatus)[2];
+        return status;
     }
 
     async getName() {
@@ -77,25 +74,37 @@ class Camera {
         }
     }
 
-    async getHost() {
+    getHost() {
         return this.api.streamHost;
     }
 
-    async getUrl() {
-        return `${await this.getHost()}/${await this.getId()}/stream`
+    getUrl() {
+        return `${this.getHost()}/${this.getId()}/stream`
     }
 
-    async getTargetDir() {
-        return await this.api.requestConfigGet(await this.getId(), {param: 'target_dir'});
+    async requestConfig(param) {
+        return (await this.api.requestConfigGet(this.getId(), {param})).split('\n')
+            [1].split('=')[1].trim();
     }
 
-    async toObject() {
-        return {
-            url: await this.getUrl(),
-            id: await this.getId(),
-            name: await this.getName(),
-            status: await this.getStatus()
-        }
+    getTargetDir() {
+        return this.requestConfig('target_dir');
+    }
+
+    getNetCamUrl() {
+        return this.requestConfig('netcam_url');
+    }
+
+    getNetCamHighRes() {
+        return this.requestConfig('netcam_highres');
+    }
+
+    getWidth() {
+        return this.requestConfig('width');
+    }
+
+    getHeight() {
+        return this.requestConfig('height');
     }
 }
 

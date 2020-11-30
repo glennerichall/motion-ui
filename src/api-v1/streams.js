@@ -1,5 +1,6 @@
 const express = require('express');
 let Provider = require('../provider');
+const {io} = require('../server');
 
 async function getStreams(req) {
     return await new Provider(req).getStreams();
@@ -8,12 +9,12 @@ async function getStreams(req) {
 const withEvents = stream => {
     const {id} = stream;
     stream.events = {
-        count:{
+        count: {
             all: `/v1/events/count/${id}`,
             today: `/v1/events/count/${id}?date=today`,
             last: `/v1/events/${id}?orderBy=begin desc&limit=1`,
         },
-        files:{
+        files: {
             all: `/v1/events/${id}`,
             today: `/v1/events/${id}?date=today`
         },
@@ -22,9 +23,12 @@ const withEvents = stream => {
     stream.notifications = {
         eventStart: 'motion-event-start',
         eventEnd: 'motion-event-end',
+        statusChanged: 'motion-status-changed'
     };
+    stream.details = `/v1/streams/${id}/details`;
     return stream;
 };
+
 
 module.exports = express.Router()
     .get('/', async (req, res) => {
@@ -44,4 +48,18 @@ module.exports = express.Router()
             withEvents(stream);
             res.json(stream);
         } else res.status(404).end();
+    })
+
+    .get('/:camera/details', async (req, res) => {
+        const details = await new Provider(req).getCamera().toDetails();
+        res.send(details);
+    })
+
+    .post('/:camera/status', async (req, res) => {
+        io.emit('motion-status-changed',
+            {
+                camera: req.params.camera,
+                status: req.query.type
+            });
+        res.send('done');
     });

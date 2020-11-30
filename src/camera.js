@@ -10,6 +10,7 @@ module.exports.Camera = class Camera extends MotionCamera {
         super(...args);
     }
 
+
     async getEvents(params) {
         const events = await getBuilder()
             .events()
@@ -36,5 +37,38 @@ module.exports.Camera = class Camera extends MotionCamera {
             .fetch();
 
         return count;
+    }
+
+    // TODO: externalize into a serializer class
+
+    async toStream() {
+        return {
+            url: this.getUrl(),
+            id: this.getId(),
+            name: await this.getName(),
+            status: await this.getStatus()
+        }
+    }
+
+    async toDetails() {
+        const netCamHighRes = this.getNetCamHighRes();
+        const netCamUrl = this.getNetCamUrl();
+        const width = this.getWidth();
+        const height = this.getHeight();
+
+        return {
+            id: this.getId(),
+            netCamHighResUrl: await netCamHighRes,
+            netCamUrl: await netCamUrl,
+            width: await width,
+            height: await height
+        };
+    }
+
+    async toStatus() {
+        return {
+            id: this.getId(),
+            status: await this.getStatus()
+        };
     }
 };
