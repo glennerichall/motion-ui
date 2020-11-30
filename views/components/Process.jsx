@@ -1,6 +1,7 @@
 import React, {useRef, Component, useState, useEffect} from 'react';
 import {fetch} from '../js/fetch';
 import Graph from './Graph';
+import {socket} from "../js/socket";
 
 export default props => {
     const cpuStats = useRef(null);
@@ -11,12 +12,26 @@ export default props => {
 
     const [version, setVersion] = useState(0);
 
+
     useEffect(() => {
+        // initial get version
         (async () => {
             const res = await fetch(versionSrc);
             setVersion(res.version);
         })();
+
+        // on disconnected, re-fetch version, it may be because of server update
+        socket.on('connect', () => {
+            (async () => {
+                const res = await fetch(versionSrc);
+                if (version != 0 && version < res.version) {
+                    location.reload();
+                }
+            })();
+        });
+        return () => socket.off('connect');
     }, [versionSrc]);
+
 
     useEffect(() => {
         const fetchCpu = async () => {

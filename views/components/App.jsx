@@ -31,11 +31,6 @@ export default props => {
             setConnected(false);
         });
 
-        socket.on('version-update', ()=>{
-            console.log('version update need to reload');
-            location.reload();
-        })
-
         return () => {
             socket.off('connect');
             socket.off('disconnect');
