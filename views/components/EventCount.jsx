@@ -5,6 +5,8 @@ import {socket} from "../js/socket";
 import DateTime from "./DateTime";
 import startOfTomorrow from 'date-fns/startOfTomorrow';
 import startOfDay from 'date-fns/startOfDay';
+import {push} from "./Frame";
+import Events from "./Events";
 
 export default props => {
     const {events, eventStatus} = props;
@@ -55,10 +57,15 @@ export default props => {
         <Fragment>
             <div className="event-status"/>
             <div className={classNames("events", {'has-events': !!all.total})}>
-
                 <div className="event-count">
-                    <div className="all">{all && all.total}</div>
-                    <div className='today'>{(today && today.total) || '-'}</div>
+                    <div className="all"
+                         onClick={() => push(<Events src={events.all} name='all'/>)}>
+                        {all && all.total}
+                    </div>
+                    <div className='today'
+                         onClick={() => push(<Events src={events.today} name='today'/>)}>
+                        {(today && today.total) || '-'}
+                    </div>
                 </div>
                 <DateTime lastEvent={last}/>
             </div>

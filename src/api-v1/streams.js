@@ -14,10 +14,12 @@ const withEvents = stream => {
             today: `/v1/events/count/${id}?date=today`,
             last: `/v1/events/${id}?orderBy=begin desc&limit=1`,
         },
-        files: {
-            all: `/v1/events/${id}`,
-            today: `/v1/events/${id}?date=today`
+        data: {
+            all: `/v1/events/${id}/data`,
+            today: `/v1/events/${id}/data?date=today`
         },
+        all: `/v1/events/${id}`,
+        today: `/v1/events/${id}?date=today`,
         status: `/v1/events/${id}/status`
     };
     stream.notifications = {

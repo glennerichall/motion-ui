@@ -53,9 +53,14 @@ class Camera {
     }
 
     async getStatus() {
-        let status = await this.api.requestDetectionStatus(this.id);
-        status = status && status.replace('\n', '').match(patternStatus)[2];
-        return status;
+        // let status = await this.api.requestDetectionConnection(this.id);
+        // status = status && status.replace('\n', '').match(patternStatus)[2];
+        const connection = await this.api.requestDetectionConnection(this.id);
+        let match = connection.match(patternConnection1);
+        if (!match) match = connection.match(patternConnection2);
+        if (!match) return null;
+        const {status} = match.groups;
+        return status.toLowerCase().replace(' ', '-');
     }
 
     async getName() {

@@ -36,9 +36,9 @@ export default props => {
     useEffect(() => {
         const fetchCpu = async () => {
             const proc = await fetch(processSrc);
-            if (cpuStats) cpuStats.current.update(proc.cpu, 100);
-            if (memStats) memStats.current.update(proc.mem, 100);
-            if (driveStats) driveStats.current.update(proc.drive, 100);
+            cpuStats?.current?.update(proc.cpu, 100);
+            memStats?.current?.update(proc.mem, 100);
+            driveStats?.current?.update(proc.drive, 100);
         };
         const id = setInterval(fetchCpu, 1000);
         return () => clearInterval(id);

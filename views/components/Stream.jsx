@@ -39,7 +39,6 @@ export default props => {
         });
 
         socket.on(statusChanged, event => {
-            console.log(event)
             if (event.camera === id) {
                 setConnectionStatus(event.status);
             }

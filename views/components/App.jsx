@@ -12,13 +12,23 @@ import '../css/index.css';
 import '../js/service-worker';
 import {socket} from "../js/socket";
 
+import Frame, {push} from "./Frame";
+
 export default props => {
     const [connected, setConnected] = useState(false);
+
     if (!connected && socket.connected) setConnected(true);
 
     const forceUpdate = useState(false)[1];
 
     useEffect(() => {
+
+        push(
+            <Fragment>
+                <Process versionSrc={versionUrl} processSrc={processUrl}/>
+                <Streams src={streamsUrl}/>
+            </Fragment>
+        );
 
         const id = setTimeout(() => forceUpdate(true), 500);
 
@@ -38,12 +48,12 @@ export default props => {
         }
     }, [1]);
 
-    return (
-        connected ?
-            <Fragment>
-                <Streams src={streamsUrl}/>
-                <Process versionSrc={versionUrl} processSrc={processUrl}/>
-            </Fragment> :
-            <Spinner/>
-    );
+
+    if (!connected) {
+        return <Spinner/>;
+    }
+    return <Fragment>
+
+        <Frame/>
+    </Fragment>;
 };
