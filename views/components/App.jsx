@@ -38,6 +38,7 @@ export default props => {
         return () => {
             socket.off('connect');
             socket.off('disconnect');
+            socket.off('version-update');
         }
     }, [1]);
 

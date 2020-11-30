@@ -7,7 +7,7 @@ import {socket} from "../js/socket";
 export default props => {
     const {src} = props;
     const [streams, setStreams] = useState([]);
-    const [online, setOnline] = useState(true);
+    const [online, setOnline] = useState(streams.length != 0);
 
     useEffect(() => {
         (async () => {
@@ -17,7 +17,6 @@ export default props => {
     }, [src, online]);
 
     useEffect(() => {
-        console.log('tites')
         socket.on('motion-stopped', events => {
             console.log('motion is offline')
             setOnline(false);
