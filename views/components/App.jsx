@@ -32,6 +32,7 @@ export default props => {
         });
 
         socket.on('version-update', ()=>{
+            console.log('version update need to reload');
             location.reload();
         })
 
