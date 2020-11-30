@@ -3,8 +3,28 @@ const events = require('../events/events');
 const {io} = require('../server');
 const authorizeWhitelistIps = require('../block-ip');
 const Provider = require('../provider');
+const formatDuration = require('date-fns/formatDuration');
+const intervalToDuration = require('date-fns/intervalToDuration');
 
 const cameras = {};
+
+const update = (events) => {
+    const calcDuation = event => {
+        const {begin, end} = event;
+        const duration = intervalToDuration({
+            start: new Date(begin),
+            end: new Date(end)
+        });
+        event.duration = formatDuration(duration);
+    }
+
+    if (!Array.isArray(events)) {
+        calcDuation(events);
+    } else {
+        events.forEach(calcDuation);
+    }
+    return events;
+}
 
 module.exports = express.Router()
 
@@ -35,13 +55,13 @@ module.exports = express.Router()
     .get('/', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getEvents(req.query);
-        res.send(events);
+        res.send(update(events));
     })
 
     .get('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getEvents(req.query);
-        res.send(events);
+        res.send(update(events));
     })
 
 
@@ -62,5 +82,5 @@ module.exports = express.Router()
 
 module.exports.routes = {
     events: '/',
-    status : '/:camera/status',
+    status: '/:camera/status',
 }
