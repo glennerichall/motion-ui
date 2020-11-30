@@ -18,7 +18,7 @@ const logfile = process.env.LOG_FILE;
 
     let exprStopped = /\[0:motion\].+main: Threads finished/;
     let exprRestarting = /\[0:motion\].+motion_restart: Restarting motion/;
-    let exprRestarted = /\[0:motion\].+main: Motion thread \d+ restart/;
+    let exprRestarted = /\[0:motion\].+motion_restart: Motion restarted/;
     tail.on('line', (line) => {
         if (line.match(exprStopped)) {
             console.log('Motion has stopped');
