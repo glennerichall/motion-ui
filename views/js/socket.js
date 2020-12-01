@@ -4,7 +4,7 @@ const browser = Bowser.getParser(window.navigator.userAgent);
 console.log(browser.getBrowser());
 
 const isValidBrowser = browser.satisfies({
-    chrome: ">=99",
+    chrome: ">=16",
     firefox: ">=11",
     opera: ">=12.1",
     edge: ">=12",

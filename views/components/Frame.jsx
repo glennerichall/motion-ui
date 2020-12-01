@@ -21,18 +21,19 @@ export function popView() {
     }
 }
 
-export function onFrameChanged(listener){
+export function onFrameChanged(listener) {
     subscribe(SHOW_STACK, (_, elem) => {
         listener(elem);
     });
 }
 
 export default props => {
-    const [current, setCurrent] = useState(-1);
+    const [current, setCurrent] = useState(stack.length - 1);
 
     useEffect(() => {
-        subscribe(SHOW_STACK, (_, elem) => {
-            setCurrent(elem);
+        subscribe(SHOW_STACK, (_, index) => {
+            console.log('pusj')
+            setCurrent(index);
         });
         return () => unsubscribe(SHOW_STACK);
     }, [1]);

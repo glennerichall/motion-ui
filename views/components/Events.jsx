@@ -20,14 +20,18 @@ export default props => {
     const elems = events.map(event => <Event key={event.id} id={event.id} event={event}/>);
 
     return (
-        <div className={classNames('event-list', name)}>
-            <span className="header id"></span>
-            <span className="header camera"></span>
-            <span className="header start"></span>
-            <span className="header end"></span>
-            <span className="header duration"></span>
-            <span className="header link"></span>
-            {elems}
-        </div>
+        <table className={classNames('event-list', name)}>
+            <thead>
+                <tr>
+                    <th className="id"></th>
+                    <th className="camera"></th>
+                    <th className="start"></th>
+                    <th className="end"></th>
+                    <th className="duration"></th>
+                    <th className="link"></th>
+                </tr>
+            </thead>
+            <tbody>{elems}</tbody>
+        </table>
     );
 }

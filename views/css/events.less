@@ -1,12 +1,14 @@
 
-
-
 .event-list {
-  display: grid;
-  grid-template-columns: auto auto auto auto auto auto;
   position: absolute;
+  table-layout: auto;
+  user-select: none;
 
-  > .header {
+  td, th {
+    padding: 3px 10px;
+  }
+
+  thead tr {
     background: black;
     color: white;
     width: 100%;
@@ -15,45 +17,77 @@
     padding-bottom: 3px;
     margin: 3px 10px;
 
-    &.id:before {
+    .id:before {
       content: 'Id';
     }
-    &.camera:before {
+
+    .camera:before {
       content: 'Camera';
     }
-    &.start:before {
+
+    .start:before {
       content: 'Start';
     }
-    &.end:before {
+
+    .end:before {
       content: 'End';
     }
-    &.duration:before {
+
+    .duration:before {
       content: 'Duration';
     }
+
   }
 
-  > :nth-child(6) ~ * {
-    margin: 3px 10px;
-    border-bottom: 1px solid grey;
-    width: 100%;
-  }
+  tbody tr {
+    &:hover {
+      background: red;
+    }
 
-  > :nth-child(6n + 7){
-    font-size: 0.7em;
+    &:active {
+      background: darkred;
+    }
+
+    cursor: pointer;
+
+    :nth-child(1) {
+      font-size: 0.7em;
+    }
+
+
   }
 }
 
 @media screen and (max-width: 570px) {
   .event-list {
-    grid-template-columns: auto auto auto auto auto;
 
-    > :nth-child(6n+4) {
-      display: none;
+    > tr {
+      :nth-child(4) {
+        display: none;
+      }
+
+      &:first-child {
+        .camera:before {
+          content: 'Cam';
+        }
+      }
     }
+  }
+}
 
-    > .header {
-      &.camera:before {
-        content: 'Cam';
+
+@media screen and (max-width: 450px) {
+  .event-list {
+
+    > tr {
+      :nth-child(5) {
+        display: none;
+      }
+
+      &:first-child {
+        .camera:before {
+          content: 'Cam';
+        }
       }
     }
   }

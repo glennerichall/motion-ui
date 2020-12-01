@@ -6,13 +6,13 @@ export default props => {
     const {id, begin, end, camera, duration} = event;
 
     return (
-        <Fragment>
-            <span>{id}</span>
-            <span>{camera}</span>
-            <span>{begin}</span>
-            <span>{end}</span>
-            <span>{duration}</span>
-            <a></a>
-        </Fragment>
+        <tr>
+            <td>{id}</td>
+            <td>{camera}</td>
+            <td>{begin}</td>
+            <td>{end}</td>
+            <td>{duration}</td>
+            <td><a>link</a></td>
+        </tr>
     );
 }
