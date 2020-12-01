@@ -1,5 +1,9 @@
 const {format} = require('date-fns');
-const {queryEventsSql, queryEventCountSql} = require('./queries');
+const {
+    queryEventsSql,
+    queryEventCountSql,
+    queryForEventData
+} = require('./queries');
 
 class RequestBuilder {
     constructor(events) {
@@ -21,7 +25,6 @@ class RequestBuilder {
     }
 
     at(date) {
-        date = format(date, 'yyyy-MM-dd');
         this.params = {
             ...this.params,
             date
@@ -30,7 +33,7 @@ class RequestBuilder {
     }
 
     today() {
-        return this.at(new Date());
+        return this.at(format(new Date(), 'yyyy-MM-dd'));
     }
 
     apply(params) {
@@ -169,6 +172,35 @@ class EventBuilder extends RequestBuilder {
     }
 }
 
+class EventDataBuilder extends RequestBuilder {
+    constructor(events) {
+        super(events)
+        this.params = {
+            ...this.params,
+            event: null
+        }
+        this.sql = queryForEventData;
+    }
+
+    apply(params) {
+        super.apply(params);
+        if (params.event) this.event(params.event);
+        return this;
+    }
+
+    event(event) {
+        this.params = {
+            ...this.params,
+            event
+        }
+    }
+
+    async fetch() {
+        let events = await super.fetch();
+        return events;
+    }
+}
+
 class Builder {
     constructor(database) {
         this.database = database;
@@ -180,6 +212,10 @@ class Builder {
 
     events() {
         return new EventBuilder(this.database);
+    }
+
+    data() {
+        return new EventDataBuilder(this.database);
     }
 }
 

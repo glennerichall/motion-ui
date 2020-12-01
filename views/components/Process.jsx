@@ -1,7 +1,7 @@
 import React, {useRef, Component, useState, useEffect} from 'react';
 import {fetch} from '../js/fetch';
 import Graph from './Graph';
-import {socket} from "../js/socket";
+import {getSocket} from "../js/socket";
 
 export default props => {
     const cpuStats = useRef(null);
@@ -12,6 +12,7 @@ export default props => {
 
     const [version, setVersion] = useState(0);
 
+    const socket = getSocket();
 
     useEffect(() => {
         // initial get version
@@ -45,7 +46,7 @@ export default props => {
     }, [processSrc]);
 
     return (
-        <div id="process">
+        <div id="process" style={props.style}>
             <div id="version">{version}</div>
             <Graph ref={cpuStats} name='cpu' id='cpu' color='white'/>
             <Graph ref={memStats} name='mem' id='mem'/>

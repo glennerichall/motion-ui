@@ -1,0 +1,60 @@
+
+
+
+.event-list {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  position: absolute;
+
+  > .header {
+    background: black;
+    color: white;
+    width: 100%;
+    text-align: left;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin: 3px 10px;
+
+    &.id:before {
+      content: 'Id';
+    }
+    &.camera:before {
+      content: 'Camera';
+    }
+    &.start:before {
+      content: 'Start';
+    }
+    &.end:before {
+      content: 'End';
+    }
+    &.duration:before {
+      content: 'Duration';
+    }
+  }
+
+  > :nth-child(6) ~ * {
+    margin: 3px 10px;
+    border-bottom: 1px solid grey;
+    width: 100%;
+  }
+
+  > :nth-child(6n + 7){
+    font-size: 0.7em;
+  }
+}
+
+@media screen and (max-width: 570px) {
+  .event-list {
+    grid-template-columns: auto auto auto auto auto;
+
+    > :nth-child(6n+4) {
+      display: none;
+    }
+
+    > .header {
+      &.camera:before {
+        content: 'Cam';
+      }
+    }
+  }
+}

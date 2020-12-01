@@ -2,9 +2,10 @@ import React, {useState, useEffect} from 'react';
 import classNames from 'classnames';
 import Stream from "./Stream";
 import {fetch} from '../js/fetch';
-import {socket} from "../js/socket";
+import {getSocket} from "../js/socket";
 
 export default props => {
+    const socket = getSocket();
     const {src} = props;
     const [streams, setStreams] = useState([]);
     const [online, setOnline] = useState(true);

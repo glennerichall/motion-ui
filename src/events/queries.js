@@ -33,27 +33,40 @@ const queryEventCountSql = `
     group by $groupby
 `;
 
-const queryLastEventSql = `
-    select max(begin) as begin,
+const queryEventDataSql = `
+    select camera,
+           strftime('%Y-%m-%d', time) as date,
+           time,
+           type,
            id,
            event,
-           end,
-           camera
-    from event_logs
-    where end is not null
-      and (strftime('%Y-%m-%d', @date) = begin OR
-           @date = 'latest' OR
-           @date IS NULL)
-      and (camera = @camera or @camera is null)
-    group by camera,
-             case
-                 when @date = 'latest' then 1
-                 else strftime('%Y-%m-%d', begin)
-                 end
+           filename
+    from events
+    where (camera = @camera OR @camera IS NULL)
+      AND (strftime('%Y-%m-%d', @date) = date OR @date IS NULL)
+      AND (type = @type OR @type IS NULL)
+    order by $orderby
+    limit case when @limit is null then 9223372036854775807 else @limit end;
+`;
+
+const queryForEventData = `
+    select camera,
+           strftime('%Y-%m-%d', time) as date,
+           time,
+           type,
+           id,
+           event,
+           filename,
+           frame
+    from events
+    where (camera = @camera OR @camera IS NULL)
+    and (event = @event or @event IS NULL)
+    order by camera, event, type, time, frame;
 `;
 
 module.exports = {
     queryEventsSql,
     queryEventCountSql,
-    queryLastEventSql
+    queryEventDataSql,
+    queryForEventData
 }

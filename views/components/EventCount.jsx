@@ -1,11 +1,10 @@
 import React, {useState, useEffect, Fragment} from "react";
 import classNames from "classnames";
 import {fetch} from '../js/fetch';
-import {socket} from "../js/socket";
 import DateTime from "./DateTime";
 import startOfTomorrow from 'date-fns/startOfTomorrow';
 import startOfDay from 'date-fns/startOfDay';
-import {push} from "./Frame";
+import {pushView} from "./Frame";
 import Events from "./Events";
 
 export default props => {
@@ -59,11 +58,11 @@ export default props => {
             <div className={classNames("events", {'has-events': !!all.total})}>
                 <div className="event-count">
                     <div className="all"
-                         onClick={() => push(<Events src={events.all} name='all'/>)}>
+                         onClick={() => pushView(<Events src={events.all} name='all'/>)}>
                         {all && all.total}
                     </div>
                     <div className='today'
-                         onClick={() => push(<Events src={events.today} name='today'/>)}>
+                         onClick={() => pushView(<Events src={events.today} name='today'/>)}>
                         {(today && today.total) || '-'}
                     </div>
                 </div>

@@ -3,6 +3,8 @@ import classNames from "classnames";
 import {fetch} from "../js/fetch";
 import Event from "./Event";
 
+import '../css/events.less';
+
 export default props => {
 
     const {src, name} = props;
@@ -19,11 +21,12 @@ export default props => {
 
     return (
         <div className={classNames('event-list', name)}>
-            <span className="header">Id</span>
-            <span className="header">Camera</span>
-            <span className="header">Start</span>
-            <span className="header">End</span>
-            <span className="header">Duration</span>
+            <span className="header id"></span>
+            <span className="header camera"></span>
+            <span className="header start"></span>
+            <span className="header end"></span>
+            <span className="header duration"></span>
+            <span className="header link"></span>
             {elems}
         </div>
     );

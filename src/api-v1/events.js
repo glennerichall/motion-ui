@@ -64,6 +64,12 @@ module.exports = express.Router()
         res.send(update(events));
     })
 
+    .get('/data/:camera/:event', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.getData(req.params);
+        res.send(events);
+    })
+
 
     .post('/:camera', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;

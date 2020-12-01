@@ -1,6 +1,7 @@
 const express = require('express');
 let Provider = require('../provider');
 const {io} = require('../server');
+const authorizeWhitelistIps = require('../block-ip');
 
 async function getStreams(req) {
     return await new Provider(req).getStreams();
@@ -57,7 +58,7 @@ module.exports = express.Router()
         res.send(details);
     })
 
-    .post('/:camera/status', async (req, res) => {
+    .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
         io.emit('motion-status-changed',
             {
                 camera: req.params.camera,

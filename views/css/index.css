@@ -50,33 +50,13 @@ body::-webkit-scrollbar {
     font-size: 3em;
 }
 
-.event-list {
-    display: grid;
-    grid-template-columns: auto auto auto auto auto;
-    grid-column-gap: 1px;
-    position: absolute;
-}
 
 .frame-header {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.event-list > .header {
-    margin-top: 10px;
-    background: black;
-    color: white;
-    width: 100%;
-    text-align: center;
-    padding-top: 3px;
-    padding-bottom: 3px;
 
-    margin-bottom: 10px;
-}
-
-.event-list > * {
-    margin: 3px 10px;
-}
 
 #back-btn {
     cursor: pointer;

@@ -1,12 +1,14 @@
 import React, {Fragment, useState, useEffect, useRef} from "react";
 import classNames from "classnames";
-import {socket} from "../js/socket";
+import {getSocket} from "../js/socket";
 import {fetch} from "../js/fetch";
 import EventCount from "./EventCount";
 import StreamInfo from "./StreamInfo";
 import {acquireToken, releaseToken, hasToken} from "../js/token";
 
 export default props => {
+
+    const socket = getSocket();
 
     const {id, status, url, events, name, notifications} = props.stream;
 

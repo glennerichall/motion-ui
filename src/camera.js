@@ -10,6 +10,23 @@ module.exports.Camera = class Camera extends MotionCamera {
         super(...args);
     }
 
+    async getData(params) {
+        const events = await getBuilder()
+            .data()
+            .for(this.getId())
+            .apply(params)
+            .fetch();
+
+        let targetDir = await this.getTargetDir();
+
+        events?.forEach(event => {
+            if (event.filename) {
+                event.filename = event.filename.replace(targetDir, '');
+            }
+        });
+
+        return events;
+    }
 
     async getEvents(params) {
         const events = await getBuilder()
@@ -17,15 +34,6 @@ module.exports.Camera = class Camera extends MotionCamera {
             .for(this.getId())
             .apply(params)
             .fetch();
-
-        let targetDir = await this.getTargetDir();
-
-        events.forEach && events.forEach(event => {
-            if (event.filename) {
-                event.filename = event.filename.replace(targetDir, '');
-            }
-        });
-
         return events;
     }
 
