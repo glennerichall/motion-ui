@@ -2,7 +2,6 @@ import {subscribe, publish, unsubscribe} from 'pubsub-js';
 import React, {useState, useEffect, Fragment} from "react";
 
 const stack = [];
-let count = 0;
 
 export const SHOW_STACK = 'show-stack';
 
@@ -29,7 +28,7 @@ export function onFrameChanged(listener){
 }
 
 export default props => {
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(-1);
 
     useEffect(() => {
         subscribe(SHOW_STACK, (_, elem) => {

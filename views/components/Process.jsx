@@ -41,7 +41,8 @@ export default props => {
             memStats?.current?.update(proc.mem, 100);
             driveStats?.current?.update(proc.drive, 100);
         };
-        const id = setInterval(fetchCpu, 1000);
+        const id = setInterval(fetchCpu, 5 * 1000);
+        fetchCpu();
         return () => clearInterval(id);
     }, [processSrc]);
 

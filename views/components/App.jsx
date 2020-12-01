@@ -21,8 +21,6 @@ export default function App(props) {
     const [connected, setConnected] = useState(socket.connected);
     const [isFrameRoot, setFrameRoot] = useState(true);
 
-    if (!connected && socket.connected) setConnected(true);
-
     useEffect(() => {
         pushView(
             <Fragment>
@@ -48,6 +46,11 @@ export default function App(props) {
         onFrameChanged(index => {
             setFrameRoot(index == 0);
         })
+
+        // if when rendering socket was not connected and if it has connected
+        // before useEffect is called, socket.on('connect') will not be registered
+        // then App will never be show, thus check after 1sec if socket is connected.
+        setTimeout(()=>{setConnected(socket.connected)}, 1000);
 
         return () => {
             socket.off('connect');
