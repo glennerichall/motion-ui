@@ -60,13 +60,27 @@ const queryForEventData = `
            frame
     from events
     where (camera = @camera OR @camera IS NULL)
-    and (event = @event or @event IS NULL)
+        and (event = @event or @event IS NULL)
     order by camera, event, type, time, frame;
+`;
+
+const deleteEventsSql = `
+    delete from event_logs
+    where (camera = @camera OR @camera IS NULL)
+        and (event = @event or @event IS NULL);
+`;
+
+const deleteEventDataSql = `
+    delete from events
+    where (camera = @camera OR @camera IS NULL)
+      and (event = @event or @event IS NULL);
 `;
 
 module.exports = {
     queryEventsSql,
     queryEventCountSql,
     queryEventDataSql,
-    queryForEventData
+    queryForEventData,
+    deleteEventsSql,
+    deleteEventDataSql
 }

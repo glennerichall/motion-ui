@@ -2,18 +2,20 @@ const {format} = require('date-fns');
 const {
     queryEventsSql,
     queryEventCountSql,
-    queryForEventData
+    queryForEventData,
+    deleteEventsSql,
+    deleteEventDataSql
 } = require('./queries');
 
-class RequestBuilder {
+class QueryBuilder {
     constructor(events) {
         this.events = events;
         this.params = {
-            camera: null,
-            date: null
+            camera: null
         };
         this.sql = null;
         this.fields = {};
+        this.method = null;
     }
 
     for(camera) {
@@ -24,23 +26,8 @@ class RequestBuilder {
         return this;
     }
 
-    at(date) {
-        this.params = {
-            ...this.params,
-            date
-        };
-        return this;
-    }
-
-    today() {
-        return this.at(format(new Date(), 'yyyy-MM-dd'));
-    }
-
     apply(params) {
-        if (params.date === 'today') this.today();
-        else if (params.date) this.at(params.date);
-
-        if (params.camera) this.for(params.camera);
+        if (params?.camera) this.for(params.camera);
         return this;
     }
 
@@ -60,20 +47,76 @@ class RequestBuilder {
         return this.events.getStatement(sql, fields);
     }
 
-    async fetch() {
+    getStatementMethod() {
+        return this.method;
+    }
+
+    async send() {
         try {
             let sql = this.getSql();
             let params = this.getParams();
             let fields = this.getFields();
             const statement = this.getStatement(sql, fields);
-            return statement.all(params);
+            const method = this.getStatementMethod();
+            return statement[method](params);
         } catch (e) {
             return null;
         }
     }
 }
 
-class EventCountBuilder extends RequestBuilder {
+class NonRequestBuilder extends QueryBuilder {
+    constructor(events) {
+        super(events);
+        this.method = 'run';
+    }
+
+    async exec() {
+        return this.send();
+    }
+}
+
+class RequestBuilder extends QueryBuilder {
+    constructor(events) {
+        super(events);
+        this.method = 'all';
+    }
+
+    async fetch() {
+        return this.send();
+    }
+}
+
+class RequestDatedBuilder extends RequestBuilder {
+    constructor(events) {
+        super(events);
+        this.params = {
+            ...this.params,
+            date: null
+        };
+    }
+
+    apply(params) {
+        super.apply(params);
+        if (params?.date === 'today') this.today();
+        else if (params?.date) this.at(params.date);
+        return this;
+    }
+
+    at(date) {
+        this.params = {
+            ...this.params,
+            date
+        };
+        return this;
+    }
+
+    today() {
+        return this.at(format(new Date(), 'yyyy-MM-dd'));
+    }
+}
+
+class EventCountBuilder extends RequestDatedBuilder {
     constructor(events) {
         super(events)
         this.fields = {
@@ -117,7 +160,7 @@ class EventCountBuilder extends RequestBuilder {
     }
 }
 
-class EventBuilder extends RequestBuilder {
+class EventBuilder extends RequestDatedBuilder {
     constructor(events) {
         super(events)
         this.params = {
@@ -133,8 +176,8 @@ class EventBuilder extends RequestBuilder {
 
     apply(params) {
         super.apply(params);
-        if (params.orderBy) this.orderBy(params.orderBy);
-        if (params.limit) this.limit(params.limit);
+        if (params?.orderBy) this.orderBy(params.orderBy);
+        if (params?.limit) this.limit(params.limit);
         return this;
     }
 
@@ -184,7 +227,7 @@ class EventDataBuilder extends RequestBuilder {
 
     apply(params) {
         super.apply(params);
-        if (params.event) this.event(params.event);
+        if (params?.event) this.event(params.event);
         return this;
     }
 
@@ -199,6 +242,56 @@ class EventDataBuilder extends RequestBuilder {
         let events = await super.fetch();
         return events;
     }
+}
+
+class DeleteBuilder extends NonRequestBuilder {
+    constructor(events) {
+        super(events);
+        this.params = {
+            ...this.params,
+            event: null
+        };
+    }
+
+    apply(params) {
+        super.apply(params);
+        if (params?.event) this.event(params.event);
+        return this;
+    }
+
+    event(event) {
+        this.params = {
+            ...this.params,
+            event
+        };
+        return this;
+    }
+}
+
+class DeleteEventLogs extends DeleteBuilder {
+    constructor(events) {
+        super(events);
+        this.sql = deleteEventsSql;
+    }
+}
+
+class DeleteEventData extends DeleteBuilder {
+    constructor(events) {
+        super(events);
+        this.sql = deleteEventDataSql;
+    }
+}
+
+function toDispatcherProxy() {
+    const targets = Array.from(arguments);
+    return new Proxy({}, {
+        get: (obj, prop) => {
+            if (prop !== 'exec' && prop !== 'fetch') {
+                return (...args) => toDispatcherProxy(...targets.map(target => target[prop](...args)));
+            }
+            return async (...args) => await Promise.all(targets.map(target => target[prop](...args)));
+        }
+    });
 }
 
 class Builder {
@@ -216,6 +309,13 @@ class Builder {
 
     data() {
         return new EventDataBuilder(this.database);
+    }
+
+    remove() {
+        return toDispatcherProxy(
+            new DeleteEventLogs(this.database),
+            new DeleteEventData(this.database),
+        );
     }
 }
 

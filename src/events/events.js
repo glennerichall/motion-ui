@@ -24,6 +24,10 @@ class Events extends Database {
         }
     }
 
+    async deleteEvents(camera) {
+
+    }
+
     getBuilder(options = {}) {
         return new Builder(this);
     }

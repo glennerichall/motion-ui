@@ -15,7 +15,7 @@ app.use((req, res, next) => {
             console.log('previous message ' + count + ' times');
         }
         previsoulog = req.url;
-        console.log(req.url);
+        console.log(req.method.toUpperCase() + ': ' +  req.url);
         count = 1;
     }
     next();

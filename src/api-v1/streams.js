@@ -81,7 +81,7 @@ module.exports = express.Router()
     })
 
     .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
-        io.emit(notifications.streams.statusChanged,
+        io.emit(notifications.streams.connectionStatusChanged,
             {
                 camera: req.params.camera,
                 status: req.query.type

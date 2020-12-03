@@ -30,6 +30,7 @@ socket.on('reconnect', () => {
     }
     flatten(notifications)
         .forEach(event => {
+            console.log('registering ' + event)
             socket.on(event, data => {
                 publish(event, data);
             })

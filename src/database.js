@@ -10,19 +10,33 @@ const migpath = path.join(__dirname, 'migrations');
 const crypto = require("crypto");
 
 const initSql = `
-create table if not exists migrations
-(
-    id integer not null
-        constraint migrations_pk
-            primary key autoincrement,
-    version      int     not null,
-    installation text    not null
-);
+    create table if not exists migrations
+    (
+        id
+        integer
+        not
+        null
+        constraint
+        migrations_pk
+        primary
+        key
+        autoincrement,
+        version
+        int
+        not
+        null,
+        installation
+        text
+        not
+        null
+    );
 
-create unique index if not exists migrations_id_uindex
+    create
+    unique index if not exists migrations_id_uindex
     on migrations (id);
 
-create unique index if not exists migrations_version_uindex
+create
+    unique index if not exists migrations_version_uindex
     on migrations (version);
 `;
 
@@ -43,7 +57,9 @@ class DatabaseManager {
     }
 
     async init() {
-        this.db = new Database(this.options.name, this.options);
+        this.db = new Database(this.options.name, {
+            readonly: false
+        });
         await this.db.exec(initSql);
         this._initStatements();
         await this.migrate();

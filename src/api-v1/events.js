@@ -90,19 +90,35 @@ module.exports = express.Router()
         res.send(events);
     })
 
-    .post('/:camera', authorizeWhitelistIps, async (req, res) => {
+    .delete('/:camera', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.deleteEvents();
+        res.send(events);
+    })
+
+    .delete('/:camera/:event', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.deleteEvents(req.params);
+        res.send(events);
+    })
+
+    .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;
         const {type} = req.query;
-        let status = 'idle';
-        cameraEventStatus[camera] = false;
 
         // FIXME use database ???
         if (type.toLowerCase() === 'start') {
             cameraEventStatus[camera] = true;
             status = 'recording';
+        } else if (type.toLowerCase() === 'end') {
+            cameraEventStatus[camera] = false;
+            status = 'idle';
+        } else {
+            res.status(400).send('invalid status');
+            return;
         }
 
-        const event = notifications.events.event;
+        const event = notifications.events.eventTriggered;
         io.emit(event, {camera, status});
         res.send('done');
     })
