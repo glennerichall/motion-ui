@@ -19,4 +19,8 @@ module.exports = express.Router()
         });
     })
 
+    .get('/notifications', (req, res) => {
+        res.send(require('../constants').notifications);
+    });
+
 require('../heart-beat');

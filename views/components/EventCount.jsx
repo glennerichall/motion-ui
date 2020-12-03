@@ -24,7 +24,7 @@ export default props => {
         try {
             const all = fetch(events.count.all);
             const today = fetch(events.count.today);
-            const last = fetch(events.count.last);
+            const last = fetch(events.last);
 
             setCount({
                 all: await all,

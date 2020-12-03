@@ -6,7 +6,9 @@ const Provider = require('../provider');
 const formatDuration = require('date-fns/formatDuration');
 const intervalToDuration = require('date-fns/intervalToDuration');
 
-const cameras = {};
+const cameraEventStatus = {};
+
+const {notifications} = require('../constants');
 
 const update = (events) => {
     const calcDuation = event => {
@@ -27,10 +29,28 @@ const update = (events) => {
 }
 
 module.exports = express.Router()
+    .get('/notifications', (req, res) => {
+        res.send(notifications.events);
+    })
+
+    .get('/status', async (req, res) => {
+        const cameras = await new Provider(req).getCameras();
+
+        const status = cameras.map(camera => {
+            const recording = cameraEventStatus[camera.getId()];
+            const status = recording ? 'recording' : 'idle';
+            return {
+                camera: camera.getId(),
+                status
+            };
+        });
+
+        res.send(status);
+    })
 
     .get('/:camera/status', (req, res) => {
         const {camera} = req.params;
-        const recording = cameras[camera];
+        const recording = cameraEventStatus[camera];
         const status = recording ? 'recording' : 'idle';
 
         // TODO camera exists
@@ -70,18 +90,20 @@ module.exports = express.Router()
         res.send(events);
     })
 
-
     .post('/:camera', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;
         const {type} = req.query;
+        let status = 'idle';
+        cameraEventStatus[camera] = false;
 
         // FIXME use database ???
-        if (type === 'start') {
-            cameras[camera] = true;
-        } else {
-            cameras[camera] = false;
+        if (type.toLowerCase() === 'start') {
+            cameraEventStatus[camera] = true;
+            status = 'recording';
         }
-        io.emit(`motion-event-${type}`, {camera, type});
+
+        const event = notifications.events.event;
+        io.emit(event, {camera, status});
         res.send('done');
     })
 

@@ -1,9 +1,9 @@
-import {subscribe, publish, unsubscribe} from 'pubsub-js';
-import React, {useState, useEffect, Fragment} from "react";
+import {subscribe, publish, unsubscribe} from '../js/pubsub';
+import React, {useState, useEffect} from "react";
 
 const stack = [];
 
-export const SHOW_STACK = 'show-stack';
+export const SHOW_STACK = 'show-frame';
 
 function update() {
     publish(SHOW_STACK, stack.length - 1);
@@ -22,7 +22,7 @@ export function popView() {
 }
 
 export function onFrameChanged(listener) {
-    subscribe(SHOW_STACK, (_, elem) => {
+    subscribe(SHOW_STACK, (elem) => {
         listener(elem);
     });
 }
@@ -31,11 +31,10 @@ export default props => {
     const [current, setCurrent] = useState(stack.length - 1);
 
     useEffect(() => {
-        subscribe(SHOW_STACK, (_, index) => {
-            console.log('pusj')
+        const token = subscribe(SHOW_STACK, (index) => {
             setCurrent(index);
         });
-        return () => unsubscribe(SHOW_STACK);
+        return () => unsubscribe(token);
     }, [1]);
 
     const elem = stack[current];

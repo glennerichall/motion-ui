@@ -2,10 +2,11 @@ import React, {useState, useEffect} from 'react';
 import classNames from 'classnames';
 import Stream from "./Stream";
 import {fetch} from '../js/fetch';
-import {getSocket} from "../js/socket";
+import {subscribe, unsubscribe} from '../js/pubsub';
+import {getNotifications} from "../js/notifications";
 
 export default props => {
-    const socket = getSocket();
+    const {motion} = getNotifications();
     const {src} = props;
     const [streams, setStreams] = useState([]);
     const [online, setOnline] = useState(true);
@@ -18,24 +19,19 @@ export default props => {
     }, [src, online]);
 
     useEffect(() => {
-        socket.on('motion-stopped', events => {
-            console.log('motion is offline')
+
+        const stopped = subscribe(motion.stopped, events => {
             setOnline(false);
         });
 
-        socket.on('motion-restarting', events => {
-
-        });
-
-        socket.on('motion-online', events => {
-            console.log('motion is online')
+        const online = subscribe(motion.online, events => {
+            // wait for streams to stabilize
             setTimeout(() => setOnline(true), 30 * 1000 /* 30 seconds */);
         });
 
         return () => {
-            socket.off('motion-stopped');
-            socket.off('motion-restarting');
-            socket.off('motion-online');
+            unsubscribe(stopped);
+            unsubscribe(online);
         }
     }, [1] /* once */)
 

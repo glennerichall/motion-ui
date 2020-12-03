@@ -1,5 +1,8 @@
 import React, {Fragment, useState, useEffect, useRef} from "react";
 
+import icon from '../icons/remove.png';
+import iconHover from '../icons/remove-hover.png';
+
 export default props => {
 
     const {event} = props;
@@ -12,7 +15,10 @@ export default props => {
             <td>{begin}</td>
             <td>{end}</td>
             <td>{duration}</td>
-            <td><a>link</a></td>
+            <td>
+                <img className="danger btn" src={icon} />
+                <img className="danger btn hover" src={iconHover} />
+            </td>
         </tr>
     );
 }

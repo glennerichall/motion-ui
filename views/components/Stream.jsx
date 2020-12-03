@@ -1,16 +1,15 @@
 import React, {Fragment, useState, useEffect, useRef} from "react";
 import classNames from "classnames";
-import {getSocket} from "../js/socket";
 import {fetch} from "../js/fetch";
 import EventCount from "./EventCount";
 import StreamInfo from "./StreamInfo";
 import {acquireToken, releaseToken, hasToken} from "../js/token";
+import {subscribe, unsubscribe} from '../js/pubsub';
+import {getNotifications} from "../js/notifications";
 
 export default props => {
-
-    const socket = getSocket();
-
-    const {id, status, url, events, name, notifications} = props.stream;
+    const notifications = getNotifications();
+    const {id, status, url, name, events} = props.stream;
 
     const [eventStatus, setEventStatus] = useState('idle');
     const [connectionStatus, setConnectionStatus] = useState(status);
@@ -27,21 +26,13 @@ export default props => {
     }, [eventStatus]);
 
     useEffect(() => {
-        const {eventStart, eventEnd, statusChanged} = notifications;
-        socket.on(eventStart, event => {
+        const event = subscribe(notifications.events.eventTriggered, event => {
             if (event.camera === id) {
-                setEventStatus('recording');
+                setEventStatus(event.status);
             }
         });
 
-        socket.on(eventEnd, event => {
-            if (event.camera === id) {
-                setEventStatus('idle');
-            }
-        });
-
-        socket.on(statusChanged, event => {
-            console.log(event)
+        const connection = subscribe(notifications.streams.connectionStatusChanged, event => {
             if (event.camera === id) {
                 setConnectionStatus(event.status);
             }
@@ -53,9 +44,8 @@ export default props => {
         })();
 
         return () => {
-            socket.off(eventStart);
-            socket.off(eventEnd);
-            socket.off(statusChanged);
+            unsubscribe(event);
+            unsubscribe(connection);
         }
     }, [notifications]);
 

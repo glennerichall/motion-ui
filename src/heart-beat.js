@@ -1,6 +1,6 @@
 const {io} = require('./server');
 const Tail = require('nodejs-tail');
-
+const {notifications} = require('./constants');
 const Provider = require('./provider');
 
 const logfile = process.env.LOG_FILE;
@@ -22,15 +22,15 @@ const logfile = process.env.LOG_FILE;
     tail.on('line', (line) => {
         if (line.match(exprStopped)) {
             console.log('Motion has stopped');
-            io.emit('motion-stopped', {
+            io.emit(notifications.motion.stopped, {
                 offline: true
             });
         } else if (line.match(exprRestarting)) {
             console.log('Motion is restarting');
-            io.emit('motion-restarting');
+            io.emit(notifications.motion.restarting);
         } else if (line.match(exprRestarted)) {
             console.log('Motion is online');
-            io.emit('motion-online');
+            io.emit(notifications.motion.online);
         }
     })
 

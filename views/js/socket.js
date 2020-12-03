@@ -17,24 +17,20 @@ const isValidBrowser = browser.satisfies({
 let socket = null;
 
 export async function initSocket() {
+    if (socket != null) return socket;
     if (isValidBrowser) {
         console.log('Using websocket');
-        const io = await import ('socket.io-client');
-        socket = io();
-        socket.on('connect', () => {
-            console.log('Connected to websocket');
-        });
+        socket = (await import('./socket-io')).socket;
     } else {
         console.log('Using polling');
-        socket = {
-            on() { },
-            off() { },
-            connected: true
-        }
+        socket = (await import ('./socket-polling')).socket;
     }
     return socket;
 }
 
+
+
 export function getSocket() {
     return socket;
 }
+

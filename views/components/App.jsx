@@ -1,4 +1,5 @@
 import React, {Fragment, useEffect, useState} from 'react';
+import {subscribe, publish, unsubscribe} from '../js/pubsub';
 
 import Streams from './Streams';
 import Process from './Process';
@@ -28,18 +29,15 @@ export default function App(props) {
             </Fragment>
         );
 
-        socket.on('reconnect', () => {
-            console.log('reconnected')
+        const reconnect = subscribe('reconnect', () => {
             setConnected(true);
         });
 
-        socket.on('connect', () => {
-            console.log('connected')
+        const connect = subscribe('connect', () => {
             setConnected(true);
         });
 
-        socket.on('disconnect', () => {
-            console.log('disconnected')
+        const disconnect = subscribe('disconnect', () => {
             setConnected(false);
         });
 
@@ -53,12 +51,11 @@ export default function App(props) {
         setTimeout(()=>{setConnected(socket.connected)}, 1000);
 
         return () => {
-            socket.off('connect');
-            socket.off('disconnect');
-            socket.off('version-update');
+            unsubscribe(reconnect);
+            unsubscribe(connect);
+            unsubscribe(disconnect);
         }
     }, [1]);
-
 
     if (!connected) {
         return <Spinner/>;

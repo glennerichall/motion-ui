@@ -4,6 +4,10 @@
   table-layout: auto;
   user-select: none;
 
+  img.danger.btn {
+    width: 1.6em;
+  }
+
   td, th {
     padding: 3px 10px;
   }
@@ -40,17 +44,34 @@
   }
 
   tbody tr {
+
+    .danger.btn.hover {
+      display: none;
+    }
+
+    td:last-child:hover .danger.btn {
+      display: none;
+
+      &.hover {
+        display: initial;
+      }
+    }
+
     &:hover {
-      background: red;
+      background: #877abf;
+
+      td:last-child {
+        background: white;
+      }
     }
 
     &:active {
-      background: darkred;
+      background: #9d8ed9;
     }
 
     cursor: pointer;
 
-    :nth-child(1) {
+    >:nth-child(1) {
       font-size: 0.7em;
     }
 
@@ -62,7 +83,7 @@
   .event-list {
 
     > tr {
-      :nth-child(4) {
+      >:nth-child(4) {
         display: none;
       }
 
