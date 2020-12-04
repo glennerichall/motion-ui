@@ -3,6 +3,15 @@ body {
     scrollbar-width: none; /* Firefox */
 }
 
+#panel {
+    font-size: 0;
+}
+
+#panel > * {
+    font-size: initial;
+}
+
+
 body::-webkit-scrollbar {
     display: none;
 }
@@ -36,6 +45,10 @@ body::-webkit-scrollbar {
     content: 'version.  ';
     font-size: 0.7em;
     line-height: 1em;
+}
+
+#process .graph.hidden {
+    visibility: hidden;
 }
 
 #process .graph {

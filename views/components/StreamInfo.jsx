@@ -4,14 +4,15 @@ import {fetch} from '../js/fetch';
 
 
 export default props => {
-    const {id, status, url, name, details} = props.stream;
+    const {id, url, name, details} = props.stream;
 
     const [detailsVisible, setDetailsVisible] = useState(false);
     const [info, setDetails] = useState({
         netCamHighResUrl: 0,
         netCamUrl: 0,
         width: 0,
-        height: 0
+        height: 0,
+        status: ''
     })
 
     useEffect(() => {
@@ -25,7 +26,8 @@ export default props => {
         netCamHighResUrl,
         netCamUrl,
         width,
-        height
+        height,
+        status
     } = info;
 
     return (

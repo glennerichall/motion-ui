@@ -1,3 +1,12 @@
+.spinner::before {
+  content: 'Waiting for connection';
+  color: white;
+  position: absolute;
+  left: 0;
+  top: 100px;
+  text-align: center;
+  width: 100%;
+}
 
 .spinner {
   position: absolute;
@@ -14,7 +23,7 @@
     display: inline-block;
     top: 50%; /* poussé de la moitié de hauteur du référent */
     position: absolute;
-    transform: translateY(-50%); /* tiré de la moitié de sa propre hauteur */
+    transform: translateY(-50%) translateX(-50%); /* tiré de la moitié de sa propre hauteur */
     width: 80px;
     height: 80px;
 

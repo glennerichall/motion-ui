@@ -1,6 +1,7 @@
 import React, {useRef, Component, useState, useEffect} from 'react';
 import {fetch} from '../js/fetch';
 import Graph from './Graph';
+import classNames from 'classnames';
 
 export default props => {
     const cpuStats = useRef(null);
@@ -10,6 +11,7 @@ export default props => {
     const {versionSrc, processSrc} = props;
 
     const [version, setVersion] = useState(0);
+    const [hideGraphs, setHideGraphs] = useState(false);
 
     useEffect(() => {
         // initial get version
@@ -24,7 +26,7 @@ export default props => {
             if (version != 0 && version < res.version) {
                 location.reload();
             }
-        }, 5 * 60 * 1000 /* 5 minutes */);
+        }, 60 * 1000 /* 1 minute */);
         return () => clearInterval(key);
     }, [versionSrc]);
 
@@ -43,10 +45,11 @@ export default props => {
 
     return (
         <div id="process" style={props.style}>
-            <div id="version">{version}</div>
-            <Graph ref={cpuStats} name='cpu' id='cpu' color='white'/>
-            <Graph ref={memStats} name='mem' id='mem'/>
-            <Graph ref={driveStats} name='drive' id='drive' color='#e3c84f'/>
+            <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
+            <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
+            <Graph className={classNames({hidden: hideGraphs})} ref={memStats} name='mem' id='mem'/>
+            <Graph className={classNames({hidden: hideGraphs})} ref={driveStats} name='drive' id='drive'
+                   color='#e3c84f'/>
         </div>
     );
 

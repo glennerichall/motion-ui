@@ -9,7 +9,6 @@ import Events from "./Events";
 
 export default props => {
     const {events, eventStatus} = props;
-
     const [count, setCount] = useState({
         all: {total: 0},
         today: {total: 0},

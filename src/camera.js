@@ -96,13 +96,15 @@ module.exports.Camera = class Camera extends MotionCamera {
         const netCamUrl = this.getNetCamUrl();
         const width = this.getWidth();
         const height = this.getHeight();
+        const status = this.getStatus();
 
         return {
             id: this.getId(),
             netCamHighResUrl: await netCamHighRes,
             netCamUrl: await netCamUrl,
             width: await width,
-            height: await height
+            height: await height,
+            status: await status
         };
     }
 

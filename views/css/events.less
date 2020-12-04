@@ -5,7 +5,7 @@
   user-select: none;
 
   img.danger.btn {
-    width: 1.6em;
+    width: 1.3em;
   }
 
   td, th {
@@ -43,20 +43,23 @@
 
   }
 
+  .danger.btn.hover {
+    display: none;
+  }
+
+  thead th:last-child {
+    cursor: pointer;
+  }
+
+  th:last-child:hover .danger.btn,
+  td:last-child:hover .danger.btn {
+    display: none;
+    &.hover {
+      display: initial;
+    }
+  }
+
   tbody tr {
-
-    .danger.btn.hover {
-      display: none;
-    }
-
-    td:last-child:hover .danger.btn {
-      display: none;
-
-      &.hover {
-        display: initial;
-      }
-    }
-
     &:hover {
       background: #877abf;
 

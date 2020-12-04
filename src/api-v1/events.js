@@ -10,6 +10,11 @@ const cameraEventStatus = {};
 
 const {notifications} = require('../constants');
 
+const appendRoutes = (event)=>{
+
+    return event;
+}
+
 const update = (events) => {
     const calcDuation = event => {
         const {begin, end} = event;
@@ -18,6 +23,7 @@ const update = (events) => {
             end: new Date(end)
         });
         event.duration = formatDuration(duration);
+        event.delete = `/v1/events/${event.camera}/${event.event}`;
     }
 
     if (!Array.isArray(events)) {
@@ -87,7 +93,7 @@ module.exports = express.Router()
     .get('/data/:camera/:event', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getData(req.params);
-        res.send(events);
+        res.send(update(events));
     })
 
     .delete('/:camera', async (req, res) => {

@@ -66,7 +66,7 @@ export default props => {
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
                 <img src={url} draggable="false"
-                     onError={() => console.log('error')}
+                     onError={(e) => console.log(`camera image error ${id}`)}
                      onStalled={() => console.log('stalled')}
                      onClick={() => {
                          if (hasToken(token)) {

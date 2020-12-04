@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import classNames from 'classnames';
 
 export default class Graph extends Component {
     setRef = ref => this.ref = ref;
@@ -85,7 +86,7 @@ export default class Graph extends Component {
 
     render() {
         return (
-            <canvas className="graph" id={this.props.id} ref={this.setRef}/>
+            <canvas className={classNames("graph", this.props.className)} id={this.props.id} ref={this.setRef}/>
         )
     }
 
