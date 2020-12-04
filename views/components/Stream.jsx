@@ -12,7 +12,7 @@ export default props => {
     const {id, status, url, name, events} = props.stream;
 
     const [eventStatus, setEventStatus] = useState('idle');
-    const [connectionStatus, setConnectionStatus] = useState(status);
+    const [connectionStatus, setConnectionStatus] = useState('lost-connection');
 
     const [token, setToken] = useState({});
     const camRef = useRef(null);
@@ -39,8 +39,12 @@ export default props => {
         });
 
         (async () => {
-            const {status} = (await fetch(events.status));
-            setEventStatus(status);
+            const [evt, str] = await Promise.all([
+                fetch(events.status),
+                fetch(status)
+            ]);
+            setEventStatus(evt.status);
+            setConnectionStatus(str.status);
         })();
 
         return () => {
@@ -62,8 +66,8 @@ export default props => {
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
                 <img src={url} draggable="false"
-                     onError={()=>console.log('error')}
-                     onStalled={()=>console.log('stalled')}
+                     onError={() => console.log('error')}
+                     onStalled={() => console.log('stalled')}
                      onClick={() => {
                          if (hasToken(token)) {
                              // const rect = camRef.current.getBoundingClientRect();

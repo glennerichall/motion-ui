@@ -25,6 +25,11 @@ body::-webkit-scrollbar {
     z-index: 100;
     font-size: 0.7em;
     user-select: none;
+    cursor: pointer;
+}
+
+#version:hover {
+    background: #dbdada;
 }
 
 #version::before {
@@ -66,4 +71,8 @@ body::-webkit-scrollbar {
     padding: 3px 20px;
     border-radius: 3px;
     display: inline-block;
+}
+
+#back-btn:hover {
+    background: #4e4e4e;
 }
