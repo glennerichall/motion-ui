@@ -25,6 +25,7 @@ const update = (events) => {
         });
         event.duration = formatDuration(duration);
         event.delete = `/v1/events/${event.camera}/${event.event}`;
+        event.data = `/v1/events/data/${event.camera}/${event.event}`;
     }
 
     if (!Array.isArray(events)) {
@@ -98,8 +99,10 @@ module.exports = express.Router()
     .get('/data/:camera/:event', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getData(req.params);
-        res.send(update(events));
+        res.send(events);
     })
+
+    .get()
 
     .delete('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
@@ -160,8 +163,7 @@ module.exports = express.Router()
         const event = notifications.events.eventTriggered;
         io.emit(event, {camera, status});
         res.send('done');
-    })
-
+    });
 
 module.exports.routes = {
     events: '/',

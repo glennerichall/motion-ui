@@ -2,6 +2,7 @@ const database = require('../events/events');
 const fs = require('fs').promises;
 const {resolve} = require('path');
 const Provider = require('../provider');
+const deleteEmpty = require('delete-empty');
 
 async function* getFiles(dir) {
     const dirents = await fs.readdir(dir, {withFileTypes: true});
@@ -72,27 +73,37 @@ async function* getFiles(dir) {
         const targetDir = await new Provider({params: {camera}}).getCamera().getTargetDir();
         if (!targetDirs.includes(targetDir)) {
             targetDirs.push(targetDir);
-            for await(const file of getFiles(targetDir)) {
-                if (!files.includes(file)) {
-                    try {
-                        countFiles++;
-                        await fs.unlink(file);
-                    } catch (e) {
-                        console.log(e);
+            try {
+                for await(const file of getFiles(targetDir)) {
+                    if (!files.includes(file)) {
+                        try {
+                            countFiles++;
+                            await fs.unlink(file);
+                        } catch (e) {
+                            console.log(e);
+                        }
                     }
                 }
-            }
+            } catch (e) {}
         }
     }
+
+    // remove all empty directories remaining
+    let countEmpty = 0;
+    try {
+        const deleted = targetDirs.map(targetDir => deleteEmpty(targetDir));
+        countEmpty = (await Promise.all(deleted)).length;
+    } catch (e) { }
 
     database.close();
 
     if (process.send) {
-        process.send({countData, countEvents, countFiles});
+        process.send({countData, countEvents, countFiles, countEmpty});
     } else {
         console.log(`removed ${countData} orphans from event data`);
         console.log(`removed ${countEvents} events with no data`);
         console.log(`removed ${countFiles} files with no events`);
+        console.log(`removed ${countEmpty} empty director${countEmpty <=1 ? 'y' : 'ies'}`);
     }
 })();
 

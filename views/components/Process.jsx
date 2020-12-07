@@ -52,7 +52,6 @@ export default props => {
             <div className="actions">
                 <span className="action clean-events"
                       onClick={()=>post('/v1/events/exec/clean-events')}>
-
                     <img src={cleanHover} className="hover"/>
                     <img src={clean} />
                 </span>

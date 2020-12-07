@@ -12,7 +12,7 @@ module.exports.Camera = class Camera extends MotionCamera {
         super(...args);
     }
 
-    async getData(params, {stripTargetDir = true}) {
+    async getData(params, {stripTargetDir = true} = {}) {
         const events = await getBuilder()
             .data()
             .setCamera(this.getId())
