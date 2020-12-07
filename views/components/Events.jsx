@@ -25,7 +25,7 @@ export default props => {
         const response = confirm(`Delete all ${events.length} events ?`);
         if (response === true) {
             console.log(src);
-            // delet(src);
+            delet(src);
             update();
         }
     }

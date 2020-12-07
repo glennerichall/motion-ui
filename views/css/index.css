@@ -17,45 +17,7 @@ body::-webkit-scrollbar {
 }
 
 
-#process {
-    position: fixed;
-    z-index: 1000;
-}
 
-#version {
-    padding-left: 7px;
-    padding-right: 7px;
-    background: white;
-    opacity: 0.8;
-    border-radius: 3px;
-    border: 1px solid lightgray;
-    color: grey;
-    display: block;
-    z-index: 100;
-    font-size: 0.7em;
-    user-select: none;
-    cursor: pointer;
-}
-
-#version:hover {
-    background: #dbdada;
-}
-
-#version::before {
-    content: 'version.  ';
-    font-size: 0.7em;
-    line-height: 1em;
-}
-
-#process .graph.hidden {
-    visibility: hidden;
-}
-
-#process .graph {
-    margin-top: 3px;
-    display: block;
-    border-radius: 3px;
-}
 
 #offline {
     position: fixed;

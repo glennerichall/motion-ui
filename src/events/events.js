@@ -1,11 +1,8 @@
 const Builder = require("./builder");
-
 const Database = require('../database');
 const options = {
     name: process.env.EVENTS || './motion.db'
 };
-
-const queriesSql = require('./queries');
 
 class Events extends Database {
     constructor(options) {
@@ -14,18 +11,6 @@ class Events extends Database {
             readonly: true,
             ...options
         });
-    }
-
-    async init() {
-        await super.init();
-        for (let sql in queriesSql) {
-            const key = sql.replace(/Sql$/, 'Stmt');
-            this[key] = this.db.prepare(queriesSql[sql]);
-        }
-    }
-
-    async deleteEvents(camera) {
-
     }
 
     getBuilder(options = {}) {

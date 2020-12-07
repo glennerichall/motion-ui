@@ -1,5 +1,6 @@
 const {MotionApi} = require('./motion-api');
 const {Camera} = require('./camera');
+const db = require('./events/events');
 
 const apiHost = process.env.API_HOST;
 const streamHost = process.env.STREAM_HOST;
@@ -7,7 +8,7 @@ const streamHost = process.env.STREAM_HOST;
 module.exports = class Provider {
 
     constructor(req) {
-        let xhost = req?.header('X-Stream-Host');
+        let xhost = req?.header ? req.header('X-Stream-Host') : null;
         this.api = new MotionApi(apiHost, {streamHost: xhost || streamHost});
         this.api.newCamera = function (...args) {
             return new Camera(...args);
@@ -20,7 +21,7 @@ module.exports = class Provider {
         return this.api;
     }
 
-    getCamera(){
+    getCamera() {
         return this.getApi().getCamera(this.camera || null);
     }
 

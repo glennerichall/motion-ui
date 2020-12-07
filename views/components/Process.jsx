@@ -1,7 +1,10 @@
 import React, {useRef, Component, useState, useEffect} from 'react';
-import {fetch} from '../js/fetch';
+import {fetch, post} from '../js/fetch';
 import Graph from './Graph';
 import classNames from 'classnames';
+import cleanHover from '../icons/clean-hover.png';
+import clean from '../icons/clean.png';
+import '../css/process.less';
 
 export default props => {
     const cpuStats = useRef(null);
@@ -46,6 +49,14 @@ export default props => {
     return (
         <div id="process" style={props.style}>
             <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
+            <div className="actions">
+                <span className="action clean-events"
+                      onClick={()=>post('/v1/events/exec/clean-events')}>
+
+                    <img src={cleanHover} className="hover"/>
+                    <img src={clean} />
+                </span>
+            </div>
             <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
             <Graph className={classNames({hidden: hideGraphs})} ref={memStats} name='mem' id='mem'/>
             <Graph className={classNames({hidden: hideGraphs})} ref={driveStats} name='drive' id='drive'

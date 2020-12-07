@@ -1,0 +1,88 @@
+#process {
+  position: fixed;
+  z-index: 1000;
+
+  .graph.hidden {
+    visibility: hidden;
+  }
+
+  .graph {
+    margin-top: 3px;
+    display: block;
+    border-radius: 3px;
+  }
+
+  .actions {
+    display: none;
+
+    position: absolute;
+    transform: translateY(-75%);
+    left: 100%;
+
+    .action {
+      margin-left: 10px;
+    }
+  }
+
+  &:hover .actions {
+    display: initial;
+
+    img {
+      width: 1.3em;
+    }
+
+    &:hover {
+      .actions {
+        display: initial;
+      }
+    }
+
+    .action {
+      cursor: pointer;
+
+
+      &:hover {
+        img.hover {
+          display: initial;
+        }
+
+        img:not(.hover) {
+          display: none;
+        }
+      }
+
+      img.hover {
+        display: none;
+      }
+    }
+  }
+
+}
+
+
+#version {
+  padding-left: 7px;
+  padding-right: 7px;
+  background: white;
+  opacity: 0.8;
+  border-radius: 3px;
+  border: 1px solid lightgray;
+  color: grey;
+  display: block;
+  z-index: 100;
+  font-size: 0.7em;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #dbdada;
+  }
+
+  &::before {
+    content: 'version.  ';
+    font-size: 0.7em;
+    line-height: 1em;
+  }
+
+
+}

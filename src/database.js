@@ -12,23 +12,11 @@ const crypto = require("crypto");
 const initSql = `
     create table if not exists migrations
     (
-        id
-        integer
-        not
-        null
+        id integer not null
         constraint
-        migrations_pk
-        primary
-        key
-        autoincrement,
-        version
-        int
-        not
-        null,
-        installation
-        text
-        not
-        null
+            migrations_pk primary key autoincrement,
+        version int not null,
+        installation text not null
     );
 
     create
@@ -96,6 +84,16 @@ class DatabaseManager {
 
     prepare(sql) {
         return this.db.prepare(sql);
+    }
+
+    exec(sql) {
+        this.db.exec(sql);
+        return this;
+    }
+
+    close(){
+        this.db.close();
+        return this;
     }
 }
 

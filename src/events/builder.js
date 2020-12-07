@@ -2,41 +2,84 @@ const {format} = require('date-fns');
 const {
     queryEventsSql,
     queryEventCountSql,
-    queryForEventData,
+    queryEventDataSql,
     deleteEventsSql,
-    deleteEventDataSql
+    deleteEventDataSql,
+    deleteEventsInListSql
 } = require('./queries');
 
-class QueryBuilder {
-    constructor(events) {
-        this.events = events;
-        this.params = {
-            camera: null
-        };
-        this.sql = null;
-        this.fields = {};
-        this.method = null;
+class Param {
+    constructor(params) {
+        this.params = {};
+
+        this.transformParamValue = {};
+        this.acceptParamValue = {};
+
+        for (let name in params) {
+            const param = params[name];
+            if (param?.value !== undefined) {
+                this.params[name] = param.value;
+            } else {
+                this.params[name] = param;
+            }
+            if (param?.accept !== undefined) {
+                this.acceptParamValue[name] = param.accept;
+            } else {
+                this.acceptParamValue[name] = () => true;
+            }
+            if (param?.transform !== undefined) {
+                this.transformParamValue[name] = param.transform;
+            } else {
+                this.transformParamValue[name] = value => value;
+            }
+        }
     }
 
-    for(camera) {
-        this.params = {
-            ...this.params,
-            camera
-        };
+    setValues(params) {
+        Object.keys(this.params).forEach(name => {
+            const value = params[name];
+            if (value !== undefined) {
+                const validate = this.acceptParamValue[name];
+                const transform = this.transformParamValue[name];
+                if (validate(value)) {
+                    this.params[name] = transform(value);
+                }
+            }
+        });
         return this;
     }
 
-    apply(params) {
-        if (params?.camera) this.for(params.camera);
+    getValues() {
+        return this.params;
+    }
+}
+
+class QueryBuilder {
+    constructor(events, {params, fields}) {
+        this.events = events;
+        this.params = new Param(params);
+        this.fields = new Param(fields);
+        this.sql = null;
+        this.method = null;
+    }
+
+    setCamera(camera) {
+        this.params.setValues({camera});
+        return this;
+    }
+
+    setParams(params) {
+        this.params.setValues(params);
+        this.fields.setValues(params);
         return this;
     }
 
     getParams() {
-        return this.params;
+        return this.params.getValues();
     }
 
     getFields() {
-        return this.fields;
+        return this.fields.getValues();
     }
 
     getSql() {
@@ -66,8 +109,8 @@ class QueryBuilder {
 }
 
 class NonRequestBuilder extends QueryBuilder {
-    constructor(events) {
-        super(events);
+    constructor(events, options) {
+        super(events, options);
         this.method = 'run';
     }
 
@@ -77,8 +120,8 @@ class NonRequestBuilder extends QueryBuilder {
 }
 
 class RequestBuilder extends QueryBuilder {
-    constructor(events) {
-        super(events);
+    constructor(events, options) {
+        super(events, options);
         this.method = 'all';
     }
 
@@ -87,61 +130,39 @@ class RequestBuilder extends QueryBuilder {
     }
 }
 
-class RequestDatedBuilder extends RequestBuilder {
+const transformDate = date => {
+    if (date === 'today') return format(new Date(), 'yyyy-MM-dd');
+    return date;
+};
+
+const validateFields = accept =>
+    fields => fields.split(',')
+        .every(field => accept.includes(field.trim()));
+
+const cartesian = (...a) => a.reduce(
+    (a, b) => a.flatMap(
+        d => b.map(
+            e => [d, e].flat())));
+
+class EventCountBuilder extends RequestBuilder {
     constructor(events) {
-        super(events);
-        this.params = {
-            ...this.params,
-            date: null
-        };
-    }
-
-    apply(params) {
-        super.apply(params);
-        if (params?.date === 'today') this.today();
-        else if (params?.date) this.at(params.date);
-        return this;
-    }
-
-    at(date) {
-        this.params = {
-            ...this.params,
-            date
-        };
-        return this;
-    }
-
-    today() {
-        return this.at(format(new Date(), 'yyyy-MM-dd'));
-    }
-}
-
-class EventCountBuilder extends RequestDatedBuilder {
-    constructor(events) {
-        super(events)
-        this.fields = {
-            ...this.fields,
-            groupby: null
-        }
+        super(events,
+            {
+                params: {
+                    camera: null,
+                    date: {
+                        value: null,
+                        transform: transformDate
+                    }
+                },
+                fields: {
+                    groupBy: {
+                        accept: validateFields(['camera', 'date']),
+                        value: null
+                    }
+                }
+            });
         this.sql = queryEventCountSql;
-    }
-
-    groupBy(fields) {
-        // fields may only contain camera or date
-        const validFields = ['camera', 'date'];
-        if (fields.split(',').every(field => validFields.includes(field))) {
-            this.fields = {
-                ...this.fields,
-                groupby: fields
-            }
-        }
-        return this;
-    }
-
-    apply(params) {
-        super.apply(params);
-        if (params.groupBy) this.groupBy(params.groupBy);
-        return this;
     }
 
     async fetch() {
@@ -160,111 +181,80 @@ class EventCountBuilder extends RequestDatedBuilder {
     }
 }
 
-class EventBuilder extends RequestDatedBuilder {
+class EventBuilder extends RequestBuilder {
     constructor(events) {
-        super(events)
-        this.params = {
-            ...this.params,
-            limit: null
-        };
-        this.fields = {
-            ...this.fields,
-            orderby: null
-        }
+        super(events,
+            {
+                params: {
+                    camera: null,
+                    date: {
+                        value: null,
+                        transform: transformDate
+                    },
+                    limit: null,
+                },
+                fields: {
+                    orderBy: {
+                        accept: value => this.validateOrderBy(value),
+                        value: null
+                    }
+                }
+            });
         this.sql = queryEventsSql;
     }
 
-    apply(params) {
-        super.apply(params);
-        if (params?.orderBy) this.orderBy(params.orderBy);
-        if (params?.limit) this.limit(params.limit);
-        return this;
-    }
-
-    orderBy(fields) {
+    validateOrderBy(fields) {
         const validFields = ['camera', 'date', 'begin', 'end', 'id', 'event'];
         const validDirections = ['asc', 'desc'];
 
-        if (fields.split(',').every(
+        return fields.split(',').every(
             field => {
                 const [name, direction] = field.split(/\s+/);
                 return validFields.includes(name.trim()) &&
                     (!direction || validDirections.includes(direction.trim()));
-            })) {
-            this.fields = {
-                ...this.fields,
-                orderby: fields
-            }
-        }
-        return this;
+            });
     }
 
-    limit(n) {
-        this.params = {
-            ...this.params,
-            limit: n
-        };
-        return this;
-    }
 
     async fetch() {
         let events = await super.fetch();
         const {limit} = this.getParams();
-        if (events.length === 1 && limit == 1) events = events[0];
+        if (events?.length === 1 && limit == 1) events = events[0];
         return events;
     }
 }
 
 class EventDataBuilder extends RequestBuilder {
     constructor(events) {
-        super(events)
-        this.params = {
-            ...this.params,
-            event: null
-        }
-        this.sql = queryForEventData;
-    }
-
-    apply(params) {
-        super.apply(params);
-        if (params?.event) this.event(params.event);
-        return this;
-    }
-
-    event(event) {
-        this.params = {
-            ...this.params,
-            event
-        }
-    }
-
-    async fetch() {
-        let events = await super.fetch();
-        return events;
+        super(events,
+            {
+                params: {
+                    camera: null,
+                    event: null,
+                    date: {
+                        transform: transformDate,
+                        value: null
+                    },
+                    type: null
+                }
+            });
+        this.sql = queryEventDataSql;
     }
 }
 
 class DeleteBuilder extends NonRequestBuilder {
     constructor(events) {
-        super(events);
-        this.params = {
-            ...this.params,
-            event: null
-        };
-    }
-
-    apply(params) {
-        super.apply(params);
-        if (params?.event) this.event(params.event);
-        return this;
-    }
-
-    event(event) {
-        this.params = {
-            ...this.params,
-            event
-        };
-        return this;
+        super(events,
+            {
+                params: {
+                    camera: null,
+                    event: null,
+                    date: {
+                        transform: transformDate,
+                        value: null
+                    }
+                }
+            });
     }
 }
 

@@ -15,8 +15,8 @@ module.exports.Camera = class Camera extends MotionCamera {
     async getData(params, {stripTargetDir = true}) {
         const events = await getBuilder()
             .data()
-            .for(this.getId())
-            .apply(params)
+            .setCamera(this.getId())
+            .setParams(params)
             .fetch();
 
         if (stripTargetDir) {
@@ -34,8 +34,8 @@ module.exports.Camera = class Camera extends MotionCamera {
     async getEvents(params) {
         const events = await getBuilder()
             .events()
-            .for(this.getId())
-            .apply(params)
+            .setCamera(this.getId())
+            .setParams(params)
             .fetch();
         return events;
     }
@@ -43,8 +43,8 @@ module.exports.Camera = class Camera extends MotionCamera {
     async getEventCount(params) {
         const count = await getBuilder()
             .count()
-            .for(this.getId())
-            .apply(params)
+            .setCamera(this.getId())
+            .setParams(params)
             .fetch();
 
         return count;
@@ -69,14 +69,14 @@ module.exports.Camera = class Camera extends MotionCamera {
 
         const [count, dataCount] = await getBuilder()
             .remove()
-            .for(this.getId())
-            .apply(params)
+            .setCamera(this.getId())
+            .setParams(params)
             .exec();
 
-        console.log(`deleted ${count} events and ${dataCount} files`);
+        console.log(`deleted ${count.changes} events and ${dataCount.changes} files`);
         return {
-            events: count,
-            files: dataCount
+            events: count.changes,
+            files: dataCount.changes
         };
     }
 

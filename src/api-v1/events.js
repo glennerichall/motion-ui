@@ -5,13 +5,14 @@ const authorizeWhitelistIps = require('../block-ip');
 const Provider = require('../provider');
 const formatDuration = require('date-fns/formatDuration');
 const intervalToDuration = require('date-fns/intervalToDuration');
+const differenceInSeconds = require('date-fns/differenceInSeconds');
+const batch = require('../events/batch');
 
 const cameraEventStatus = {};
 
 const {notifications} = require('../constants');
 
-const appendRoutes = (event)=>{
-
+const appendRoutes = (event) => {
     return event;
 }
 
@@ -33,6 +34,10 @@ const update = (events) => {
     }
     return events;
 }
+
+let exec = {
+    clean: false
+};
 
 module.exports = express.Router()
     .get('/notifications', (req, res) => {
@@ -98,14 +103,42 @@ module.exports = express.Router()
 
     .delete('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
-        const events = await camera.deleteEvents();
+        const events = await camera.deleteEvents(req.query);
         res.send(events);
     })
 
     .delete('/:camera/:event', async (req, res) => {
         const camera = await new Provider(req).getCamera();
-        const events = await camera.deleteEvents(req.params);
+        const events = await camera.deleteEvents({
+            ...req.params,
+            ...req.query
+        });
         res.send(events);
+    })
+
+    .post('/exec/clean-events', async (req, res) => {
+        if (exec.clean) {
+            res.send({
+                message: 'already started'
+            });
+        } else {
+            exec.clean = true;
+            res.send({message: 'started'});
+            io.emit(notifications.events.cleanTriggered, {type: 'start'});
+            const start = new Date();
+            const count = await batch.clean();
+            const end = new Date();
+            const duration = differenceInSeconds(end, start);
+            console.log(`cleaned database and files in ${duration} seconds`);
+            console.log(count);
+            exec.clean = false;
+            io.emit(notifications.events.cleanTriggered,
+                {
+                    type: 'done',
+                    count,
+                    duration
+                });
+        }
     })
 
     .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
