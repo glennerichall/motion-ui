@@ -53,14 +53,16 @@ async function* getFiles(dir) {
     const countEvents = (await database.prepare(cleanEventsSql).run()).changes;
 
     // get cameras
-    const cameras = (await new Provider().getCameras()).map(camera => camera.getId());
+    const cameras = (await new Provider().getCameras())
+        .map(camera => camera.getId());
 
     // fetch data to seek files that are not in the database
     const queryDataSql = `
         select filename
         from events
     `;
-    const files = await database.prepare(queryDataSql).all();
+    const files = (await database.prepare(queryDataSql).all())
+        .map(datum => datum.filename);
 
     let countFiles = 0;
     const targetDirs = [];
