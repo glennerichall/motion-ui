@@ -12,21 +12,12 @@ module.exports.Camera = class Camera extends MotionCamera {
         super(...args);
     }
 
-    async getData(params, {stripTargetDir = true} = {}) {
+    async getData(params) {
         const events = await getBuilder()
             .data()
             .setCamera(this.getId())
             .setParams(params)
             .fetch();
-
-        if (stripTargetDir) {
-            let targetDir = await this.getTargetDir();
-            events?.forEach(event => {
-                if (event.filename) {
-                    event.filename = event.filename.replace(targetDir, '');
-                }
-            });
-        }
 
         return events;
     }
@@ -51,7 +42,7 @@ module.exports.Camera = class Camera extends MotionCamera {
     }
 
     async deleteEvents(params) {
-        const data = await this.getData(params, {stripTargetDir: false});
+        const data = await this.getData(params);
 
         const unlinking = data?.map(async ({filename}) => {
             try {

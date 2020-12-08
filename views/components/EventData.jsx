@@ -18,7 +18,7 @@ export default props => {
 
     const pictures = files
         .filter(file=>file.type == 1)
-        .map(file=> <img key={file.id} src={file.filename}/>);
+        .map(file=> <img key={file.id} src={file.srcSmall}/>);
     
     return <div>{pictures}</div>
 };

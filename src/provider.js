@@ -10,9 +10,7 @@ module.exports = class Provider {
     constructor(req) {
         let xhost = req?.header ? req.header('X-Stream-Host') : null;
         this.api = new MotionApi(apiHost, {streamHost: xhost || streamHost});
-        this.api.newCamera = function (...args) {
-            return new Camera(...args);
-        }
+        this.api.newCamera = (...args) => new Camera(...args);
         this.req = req;
         this.camera = req?.params?.camera;
     }

@@ -7,6 +7,10 @@ const formatDuration = require('date-fns/formatDuration');
 const intervalToDuration = require('date-fns/intervalToDuration');
 const differenceInSeconds = require('date-fns/differenceInSeconds');
 const batch = require('../events/batch');
+const sharp = require('sharp');
+const path = require('path');
+
+const targetDir = process.env.TARGET_DIR;
 
 const cameraEventStatus = {};
 
@@ -99,10 +103,46 @@ module.exports = express.Router()
     .get('/data/:camera/:event', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getData(req.params);
+
+        let dir = await camera.getTargetDir();
+        const id = camera.getId();
+        events?.forEach(event => {
+            event.src = event.filename.replace(dir, `/v1/events/data/${id}/file`);
+            if (event.type == 1) {
+                event.srcSmall = `${event.src}?size=small`;
+            }
+        });
+
         res.send(events);
     })
 
-    .get()
+    .get('/data/:camera/file/*', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        let dir = targetDir ?? await camera.getTargetDir();
+        const file = req.path.replace(
+            `/data/${camera.getId()}/file`, dir);
+
+        if (req.query.size === 'small') {
+            let ext = path.extname(file).substr(1);
+            let stream = await sharp(file).resize({
+                width: 200,
+            });
+
+            if (ext === 'jpg') {
+                ext = 'jpeg';
+            }
+            res.setHeader('content-type', `image/${ext}`);
+            stream[ext]().pipe(res);
+        } else {
+            res.sendFile(file, {
+                dotfiles: 'deny'
+            }, err => {
+                if (err) {
+                    res.status(404).send('not found');
+                }
+            });
+        }
+    })
 
     .delete('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
