@@ -41,7 +41,9 @@
     "pubsub-js": "^1.9.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
+    "react-window": "^1.8.6",
     "regenerator-runtime": "^0.13.7",
-    "socket.io-client": "^2.0.3"
+    "socket.io-client": "^2.0.3",
+    "uuid": "^8.3.2"
   }
 }

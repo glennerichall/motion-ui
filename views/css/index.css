@@ -36,8 +36,6 @@ body::-webkit-scrollbar {
     margin-bottom: 10px;
 }
 
-
-
 #back-btn {
     cursor: pointer;
     z-index: 1000;
@@ -51,3 +49,4 @@ body::-webkit-scrollbar {
 #back-btn:hover {
     background: #4e4e4e;
 }
+

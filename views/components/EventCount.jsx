@@ -7,6 +7,21 @@ import startOfDay from 'date-fns/startOfDay';
 import {pushView} from "./Frame";
 import Events from "./Events";
 
+import Bowser from "bowser";
+
+const browser = Bowser.getParser(window.navigator.userAgent);
+
+const isValidBrowser = browser.satisfies({
+    chrome: ">=16",
+    firefox: ">=11",
+    opera: ">=12.1",
+    edge: ">=12",
+    mobile: {
+        safari: '>=6',
+        'android browser': '>=4.4'
+    },
+});
+
 export default props => {
     const {events, eventStatus} = props;
     const [count, setCount] = useState({
@@ -57,11 +72,15 @@ export default props => {
             <div className={classNames("events", {'has-events': !!all.total})}>
                 <div className="event-count">
                     <div className="all"
-                         onClick={() => pushView(<Events src={events.all} name='all'/>)}>
+                         onClick={() => isValidBrowser ?
+                             pushView(<Events src={events.all} name='all'/>) :
+                             null}>
                         {all && all.total}
                     </div>
                     <div className='today'
-                         onClick={() => pushView(<Events src={events.today} name='today'/>)}>
+                         onClick={() => isValidBrowser ?
+                             pushView(<Events src={events.today} name='today'/>) :
+                             null}>
                         {(today && today.total) || '-'}
                     </div>
                 </div>
