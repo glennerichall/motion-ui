@@ -1,24 +1,9 @@
-import Bowser from "bowser";
-
-const browser = Bowser.getParser(window.navigator.userAgent);
-console.log(browser.getBrowser());
-
-const isValidBrowser = browser.satisfies({
-    chrome: ">=16",
-    firefox: ">=11",
-    opera: ">=12.1",
-    edge: ">=12",
-    mobile: {
-        safari: '>=6',
-        'android browser': '>=4.4'
-    },
-});
+import {supportsSockets} from "./browser-check";
 
 let socket = null;
-
 export async function initSocket() {
     if (socket != null) return socket;
-    if (isValidBrowser) {
+    if (supportsSockets) {
         console.log('Using websocket');
         socket = (await import('./socket-io')).socket;
     } else {
@@ -27,8 +12,6 @@ export async function initSocket() {
     }
     return socket;
 }
-
-
 
 export function getSocket() {
     return socket;

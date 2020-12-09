@@ -20,7 +20,7 @@ module.exports = {
             ref: 'origin/master',
             repo: 'git@scm.velor.ca:glennerichall/motion-ui.git',
             path: '/home/glenn/motion-ui',
-            'post-deploy': 'npm install && PATH=~/.npm-global/bin:$PATH pm2 reload ecosystem.config.js --env production && kill -s SIGHUP $(cat /home/glenn/.motion/pid)',
+            'post-deploy': 'npm install && PATH=~/.npm-global/bin:$PATH pm2 reload ecosystem.config.js --env production',
         }
     }
 };
