@@ -1,9 +1,11 @@
 import React, {Fragment, useState, useEffect, useRef} from "react";
-import {fetch} from "../js/fetch";
+import {delet, fetch} from "../js/fetch";
 import {v4 as uuidv4} from 'uuid';
 import classNames from "classnames";
 import '../css/camera-data.less';
-import {cancelTimeout} from "react-window/src/timer";
+import icon from "../icons/remove-reverse.png";
+import iconHover from "../icons/remove-hover.png";
+import {popView} from './Frame';
 
 class Observer {
     constructor() {
@@ -23,7 +25,7 @@ class Observer {
             this.timeout = undefined;
         }
         this.timeout = setTimeout(() => {
-            if(!this.timeout) return;
+            if (!this.timeout) return;
             for (let id in this.changedComponents) {
                 const changed = this.changedComponents[id];
                 const component = this.componentIndex[id];
@@ -63,7 +65,7 @@ class Observer {
 
 
 const LazyLoad = props => {
-    let {children, observer} = props;
+    let {children, observer, ready} = props;
 
     const ref = useRef();
     const [inViewport, setInViewport] = useState(false);
@@ -85,24 +87,46 @@ const LazyLoad = props => {
 
     if (children.length >= 2 && children[last].props['data-placeholder']) {
         placeholder = children[last];
-        children = children.slice(0, last);
+        // if (ready) {
+        //     children = children.slice(0, last);
+        // }
     }
 
     return (
         <div className={classNames("lazyload-wrapper", {'in-viewport': inViewport}, props.className)}
              ref={ref}>
-            {
-                inViewport ?
-                    children :
-                    placeholder
+            {inViewport ?
+                children :
+                placeholder
             }
         </div>
     )
 };
 
+const LazyLoadImage = props => {
+    const {file, observer, selected, onClick} = props;
+    const [ready, setReady] = useState(false);
+
+    return (
+        <LazyLoad key={file.id}
+                  observer={observer}
+                  ready={ready}
+                  className={classNames({selected: selected})}>
+            <div className="frame-id">{file.frame}</div>
+            <img src={file.srcSmall}
+                 className={classNames('frame', {loading: !ready})}
+                 onLoad={() => setReady(true)}
+                 onClick={onClick}/>
+            <img src="/v1/events/data/placeholder.jpg" data-placeholder
+                 className={classNames('placeholder', {hidden: ready})}/>
+        </LazyLoad>
+    );
+}
+
 
 export default props => {
-    const {data} = props.event;
+    const {event} = props;
+    const {data, id, camera} = event;
 
     const [images, setImages] = useState([]);
     const [selected, setSelected] = useState(null);
@@ -125,21 +149,34 @@ export default props => {
 
     const pictures = images
         .map(file =>
-            <LazyLoad key={file.id}
-                      observer={observer}
-                      className={classNames({selected: file.id === selected?.id})}>
-                <div style={{
-                    position: 'absolute',
-                    fontSize: 'initial',
-                    zIndex: '1000',
-                    background: 'red'
-                }}>{file.id}</div>
-                <img src={file.srcSmall} onClick={() => setSelected(file)}/>
-                <img src={images[0].srcSmall} data-placeholder/>
-            </LazyLoad>);
+            <LazyLoadImage file={file}
+                           key={file.id}
+                           observer={observer}
+                           selected={file.id === selected?.id}
+                           onClick={() => setSelected(file)}>
+            </LazyLoadImage>
+        );
+
+    function remove() {
+        const response = confirm(`Delete event ${id} for camera ${camera} ?`);
+        if (response === true) {
+            delet(event.delete);
+            popView();
+        }
+    }
 
     return (
         <div className="event-data">
+            <div className="header">
+                <span className="event-id">{event.event}</span>&nbsp;
+                <span className="event-time">{event.begin.replace(/\s/g, '\xA0')}</span>
+                <span className="event-time">{event.duration.replace(/\s/g, '\xA0')}</span>
+                <span className="event-camera">Camera: {camera}</span>
+                <span className="delete" onClick={()=>remove(event)}>
+                    <img className="danger btn" src={icon}/>
+                    <img className="danger btn hover" src={iconHover}/>
+                </span>
+            </div>
             <div className="pictures">{pictures}</div>
             <div className="selected-picture">
                 <img src={selected?.src}/>

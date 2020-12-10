@@ -4,10 +4,6 @@
   table-layout: auto;
   user-select: none;
 
-  img.danger.btn {
-    width: 1.3em;
-  }
-
   td, th {
     padding: 3px 10px;
   }
@@ -43,8 +39,9 @@
 
   }
 
-  .danger.btn.hover {
-    display: none;
+  .delete .danger.btn {
+    position: relative;
+    transform: initial;
   }
 
   thead th:last-child {
@@ -57,6 +54,10 @@
     &.hover {
       display: initial;
     }
+  }
+
+  .last-of-day:not(:last-child) td {
+    border-bottom: 1px dashed grey;
   }
 
   tbody tr {

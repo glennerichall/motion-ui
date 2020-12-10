@@ -2,6 +2,7 @@ import React, {Fragment, useState, useEffect, useRef} from "react";
 import classNames from "classnames";
 import {delet, fetch} from "../js/fetch";
 import Event from "./Event";
+import isSameDay from 'date-fns/isSameDay';
 
 import '../css/events.less';
 import icon from "../icons/remove-header.png";
@@ -29,8 +30,18 @@ export default props => {
             update();
         }
     }
-
-    const elems = events.map(event => <Event onDelete={update} key={event.id} id={event.id} event={event}/>);
+    const elems = events.map((event, index) =>
+        <Event onDelete={update}
+               key={event.id}
+               id={event.id}
+               className={
+                   classNames(
+                       {
+                           'last-of-day': !isSameDay(new Date(event.begin),
+                               new Date(events[index + 1]?.begin))
+                       })}
+               event={event}/>
+    );
 
     return (
         <Fragment>

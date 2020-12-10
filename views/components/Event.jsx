@@ -11,7 +11,7 @@ export default props => {
     const {event} = props;
     const {id, begin, end, camera, duration} = event;
 
-    function remove(event) {
+    function remove() {
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
             delet(event.delete);
@@ -20,14 +20,14 @@ export default props => {
     }
 
     return (
-        <tr onClick={() => pushView(<EventData event={event}/>)}>
+        <tr className={props.className} onClick={() => pushView(<EventData event={event}/>)}>
             <td>{id}</td>
             <td>{camera}</td>
             <td>{begin}</td>
             <td>{end}</td>
             <td>{duration}</td>
-            <td onClick={(e) => {
-                remove(event);
+            <td className="delete" onClick={(e) => {
+                remove();
                 e.stopPropagation();
             }}>
                 <img className="danger btn" src={icon}/>

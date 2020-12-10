@@ -8,7 +8,7 @@ export default (props) => {
         const [hour, minute] = time.split(':');
         const hm = `${hour}:${minute}`;
         return (
-            <div className="last-event">
+            <div className="last-event" onClick={props.onClick}>
                 <div>
                     <div className="day">{day}</div>
                     <div className="hour">{hm}</div>

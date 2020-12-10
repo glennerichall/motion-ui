@@ -30,6 +30,29 @@ body::-webkit-scrollbar {
     font-size: 3em;
 }
 
+.delete {
+    cursor: pointer;
+    position: relative;
+}
+
+.delete .danger.btn {
+    width: 1.3em;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.delete .danger.btn.hover {
+    display: none;
+}
+
+.delete:hover .danger.btn.hover {
+    display: initial;
+}
+
+.delete:hover .danger.btn:not(.hover) {
+    display: none;
+}
 
 .frame-header {
     margin-top: 10px;

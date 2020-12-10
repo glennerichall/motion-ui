@@ -116,6 +116,26 @@ module.exports = express.Router()
         res.send(events);
     })
 
+    .get('/data/placeholder.jpg', async (req, res) => {
+        let width = 200;
+        let height = 113;
+        if (req.query.size === 'small') {
+
+        } else {
+
+        }
+        const img = await sharp({
+            create: {
+                width,
+                height,
+                channels: 4,
+                background: {r: 125, g: 125, b: 125, alpha: 0.5}
+            }
+        }).jpeg();
+        res.setHeader('content-type', `image/jpeg`);
+        img.pipe(res);
+    })
+
     .get('/data/:camera/file/*', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         let dir = targetDir ?? await camera.getTargetDir();

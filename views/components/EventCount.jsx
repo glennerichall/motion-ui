@@ -6,6 +6,7 @@ import startOfTomorrow from 'date-fns/startOfTomorrow';
 import startOfDay from 'date-fns/startOfDay';
 import {pushView} from "./Frame";
 import {supportsIntersectionObserver} from "../js/browser-check";
+import EventData from "./EventData";
 
 let Events = props => null;
 if (supportsIntersectionObserver) {
@@ -76,7 +77,8 @@ export default props => {
                         {(today && today.total) || '-'}
                     </div>
                 </div>
-                <DateTime lastEvent={last}/>
+                <DateTime lastEvent={last}
+                    onClick={()=>pushView(<EventData event={last}/>)}/>
             </div>
         </Fragment>
     );
