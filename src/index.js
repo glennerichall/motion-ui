@@ -2,6 +2,7 @@ const {app, init, express} = require('./server');
 const cors = require('cors')
 const version = require('../package').version;
 const {io} = require('./server');
+const Provider = require('./motion/provider');
 
 app.use(cors())
 
@@ -15,7 +16,7 @@ app.use((req, res, next) => {
             console.log('previous message ' + count + ' times');
         }
         previsoulog = req.url;
-        console.log(req.method.toUpperCase() + ': ' +  req.url);
+        console.log(req.method.toUpperCase() + ': ' + req.url);
         count = 1;
     }
     next();
@@ -33,4 +34,9 @@ app.get('/version', (req, res) => {
 
 app.use('/v1', require('./api-v1'));
 
-module.exports = init;
+module.exports = async () => {
+    await init();
+    for (let camera of await new Provider().getCameras()) {
+        await camera.init();
+    }
+};

@@ -9,17 +9,49 @@
 .event-data {
   .selected-picture {
     margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
 
-    img {
+    > img {
       height: auto;
       width: auto;
       max-height: calc(50vh - 100px);
       max-width: calc(100vw - 20px);
       object-fit: contain;
+      user-select: none;
 
       @media screen and (max-height: 400px) {
         max-height: 100vh;
 
+      }
+    }
+
+    > span {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      position: absolute;
+      height: 100%;
+
+      img {
+        user-select: none;
+      }
+
+      &:hover {
+        background: rgba(100,100,100,0.5);
+      }
+
+      &:active {
+        filter: brightness(90%);
+      }
+
+      &:first-child {
+        left: 0px;
+      }
+
+      &:last-child {
+        right: 0px;
       }
     }
   }
@@ -155,13 +187,14 @@
     }
   }
 
-
   .frame.loading {
     display: none;
   }
 
-  .placeholder.hidden {
-    display: none;
+  .in-viewport {
+    .placeholder.hidden {
+      display: none;
+    }
   }
 
 }

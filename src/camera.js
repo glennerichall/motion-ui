@@ -1,5 +1,5 @@
 const db = require('./events/events');
-const {Camera: MotionCamera} = require('./motion-api');
+const {Camera: MotionCamera} = require('./motion/motion-api');
 const fs = require('fs').promises;
 const fs_constants = require('fs').constants;
 
@@ -10,6 +10,14 @@ function getBuilder(options) {
 module.exports.Camera = class Camera extends MotionCamera {
     constructor(...args) {
         super(...args);
+    }
+
+    async init() {
+        const targetDir = await this.getTargetDir();
+        try {
+            await fs.mkdir(targetDir);
+        } catch (e) {}
+        return true;
     }
 
     async getData(params) {

@@ -1,7 +1,7 @@
 const database = require('../events/events');
 const fs = require('fs').promises;
 const {resolve} = require('path');
-const Provider = require('../provider');
+const Provider = require('../motion/provider');
 const deleteEmpty = require('delete-empty');
 
 async function* getFiles(dir) {
@@ -95,6 +95,11 @@ async function* getFiles(dir) {
         countEmpty = (await Promise.all(deleted)).length;
     } catch (e) { }
 
+    try {
+        const created = targetDirs.map(targetDir => fs.mkdir(targetDir).catch(e => {}));
+        await Promise.all(created);
+    } catch (e) {}
+
     database.close();
 
     if (process.send) {
@@ -103,7 +108,7 @@ async function* getFiles(dir) {
         console.log(`removed ${countData} orphans from event data`);
         console.log(`removed ${countEvents} events with no data`);
         console.log(`removed ${countFiles} files with no events`);
-        console.log(`removed ${countEmpty} empty director${countEmpty <=1 ? 'y' : 'ies'}`);
+        console.log(`removed ${countEmpty} empty director${countEmpty <= 1 ? 'y' : 'ies'}`);
     }
 })();
 

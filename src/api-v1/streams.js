@@ -1,7 +1,7 @@
 const express = require('express');
-let Provider = require('../provider');
+let Provider = require('../motion/provider');
 const {io} = require('../server');
-const authorizeWhitelistIps = require('../block-ip');
+const authorizeWhitelistIps = require('../utils/block-ip');
 
 async function getStreams(req) {
     return await new Provider(req).getStreams();

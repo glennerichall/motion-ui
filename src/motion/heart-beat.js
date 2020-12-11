@@ -1,6 +1,6 @@
-const {io} = require('./server');
+const {io} = require('../server');
 const Tail = require('nodejs-tail');
-const {notifications} = require('./constants');
+const {notifications} = require('../constants');
 const Provider = require('./provider');
 
 const logfile = process.env.LOG_FILE;

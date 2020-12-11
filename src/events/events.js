@@ -1,21 +1,15 @@
 const Builder = require("./builder");
-const Database = require('../database');
-const options = {
-    name: process.env.EVENTS || './motion.db'
-};
+const databaseConfigs = require(process.env.DATABASE_CONFIGS || '../../pgconfig.json');
+const Database = require(`../database/database-${databaseConfigs.type}`);
 
 class Events extends Database {
-    constructor(options) {
-        options = options || {};
-        super({
-            readonly: true,
-            ...options
-        });
+    constructor() {
+        super(databaseConfigs.options);
     }
 
-    getBuilder(options = {}) {
+    getBuilder() {
         return new Builder(this);
     }
 }
 
-module.exports = new Events(options);
+module.exports = new Events();

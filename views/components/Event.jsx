@@ -9,7 +9,7 @@ import EventData from "./EventData";
 export default props => {
 
     const {event} = props;
-    const {id, begin, end, camera, duration} = event;
+    const {id, begin, done, camera, duration} = event;
 
     function remove() {
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
@@ -24,7 +24,7 @@ export default props => {
             <td>{id}</td>
             <td>{camera}</td>
             <td>{begin}</td>
-            <td>{end}</td>
+            <td>{done}</td>
             <td>{duration}</td>
             <td className="delete" onClick={(e) => {
                 remove();

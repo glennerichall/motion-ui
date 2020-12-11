@@ -1,14 +1,15 @@
 const express = require('express');
 const events = require('../events/events');
 const {io} = require('../server');
-const authorizeWhitelistIps = require('../block-ip');
-const Provider = require('../provider');
+const authorizeWhitelistIps = require('../utils/block-ip');
+const Provider = require('../motion/provider');
 const formatDuration = require('date-fns/formatDuration');
 const intervalToDuration = require('date-fns/intervalToDuration');
 const differenceInSeconds = require('date-fns/differenceInSeconds');
 const batch = require('../events/batch');
 const sharp = require('sharp');
 const path = require('path');
+const format = require('date-fns/format');
 
 const targetDir = process.env.TARGET_DIR;
 
@@ -22,14 +23,18 @@ const appendRoutes = (event) => {
 
 const update = (events) => {
     const calcDuation = event => {
-        const {begin, end} = event;
+        let {begin, done} = event;
+        begin = new Date(begin);
+        done = new Date(done);
         const duration = intervalToDuration({
-            start: new Date(begin),
-            end: new Date(end)
+            start: begin,
+            end: done
         });
         event.duration = formatDuration(duration);
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
+        event.begin = format(begin, 'yyyy-MM-dd HH:mm');
+        event.done = format(done, 'yyyy-MM-dd HH:mm');
     }
 
     if (!Array.isArray(events)) {
@@ -108,6 +113,7 @@ module.exports = express.Router()
         const id = camera.getId();
         events?.forEach(event => {
             event.src = event.filename.replace(dir, `/v1/events/data/${id}/file`);
+            delete event.filename;
             if (event.type == 1) {
                 event.srcSmall = `${event.src}?size=small`;
             }
@@ -118,7 +124,7 @@ module.exports = express.Router()
 
     .get('/data/placeholder.jpg', async (req, res) => {
         let width = 200;
-        let height = 113;
+        let height = 110;
         if (req.query.size === 'small') {
 
         } else {

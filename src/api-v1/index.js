@@ -23,4 +23,4 @@ module.exports = express.Router()
         res.send(require('../constants').notifications);
     });
 
-require('../heart-beat');
+require('../motion/heart-beat');

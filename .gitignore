@@ -99,3 +99,6 @@ ecosystem.config.js
 
 bin/
 motion.log
+
+pgconfig.properties
+pgconfig.json

@@ -1,35 +1,30 @@
-create table if not exists events
+create table  if not exists events
 (
-	id integer not null
-		constraint events_pk
-			primary key autoincrement,
-	camera text not null,
-	event text not null,
-	time text not null,
-	type text ,
-	frame int not null,
-	filename text not null
+    id       serial  not null
+        constraint events_pk
+            primary key,
+    camera   text    not null,
+    event    text    not null,
+    time     timestamp    not null,
+    type     text,
+    frame    integer not null,
+    filename text    not null
 );
 
-create unique index if not exists events_id_uindex
-	on events (id);
+create unique index  if not exists events_id_uindex
+    on events (id);
 
-create index if not exists events_event_uindex
-    on events (event);
 
 create table if not exists event_logs
 (
-    id     integer not null
+    id     serial not null
         constraint event_logs_pk
-            primary key autoincrement,
-    event  text     not null,
-    begin  text    not null,
-    end    text         ,
-    camera text    not null
+            primary key,
+    event  text   not null,
+    begin  timestamp   not null,
+    done  timestamp,
+    camera text   not null
 );
 
 create unique index if not exists event_logs_id_uindex
     on event_logs (id);
-
-create index if not exists event_logs_event_uindex
-    on event_logs (event);

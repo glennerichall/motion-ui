@@ -1,6 +1,6 @@
 const {MotionApi} = require('./motion-api');
-const {Camera} = require('./camera');
-const db = require('./events/events');
+const {Camera} = require('../camera');
+const db = require('../events/events');
 
 const apiHost = process.env.API_HOST;
 const streamHost = process.env.STREAM_HOST;

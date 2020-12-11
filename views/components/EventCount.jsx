@@ -62,7 +62,7 @@ export default props => {
     return (
         <Fragment>
             <div className="event-status"/>
-            <div className={classNames("events", {'has-events': !!all.total})}>
+            <div className={classNames("events", {'has-events': all.total > 0})}>
                 <div className="event-count">
                     <div className="all"
                          onClick={() => supportsIntersectionObserver ?
@@ -74,11 +74,11 @@ export default props => {
                          onClick={() => supportsIntersectionObserver ?
                              pushView(<Events src={events.today} name='today'/>) :
                              null}>
-                        {(today && today.total) || '-'}
+                        {today?.total > 0 ? today.total : '-'}
                     </div>
                 </div>
                 <DateTime lastEvent={last}
-                    onClick={()=>pushView(<EventData event={last}/>)}/>
+                          onClick={() => pushView(<EventData event={last}/>)}/>
             </div>
         </Fragment>
     );

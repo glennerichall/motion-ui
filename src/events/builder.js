@@ -15,6 +15,8 @@ class Param {
         this.transformParamValue = {};
         this.acceptParamValue = {};
 
+        this.keys = Object.keys(params);
+
         for (let name in params) {
             const param = params[name];
             if (param?.value !== undefined) {
@@ -36,16 +38,16 @@ class Param {
     }
 
     setValues(params) {
-        Object.keys(this.params).forEach(name => {
+        for (let name of this.keys) {
             const value = params[name];
             if (value !== undefined) {
-                const validate = this.acceptParamValue[name];
+                const accept = this.acceptParamValue[name];
                 const transform = this.transformParamValue[name];
-                if (validate(value)) {
-                    this.params[name] = transform(value);
+                if (accept(value)) {
+                    this.params[name] = transform(value, this.params);
                 }
             }
-        });
+        }
         return this;
     }
 
@@ -55,7 +57,7 @@ class Param {
 }
 
 class QueryBuilder {
-    constructor(events, {params, fields}) {
+    constructor(events, {params = {}, fields = {}}) {
         this.events = events;
         this.params = new Param(params);
         this.fields = new Param(fields);
@@ -158,8 +160,17 @@ class EventCountBuilder extends RequestBuilder {
                 fields: {
                     groupBy: {
                         accept: validateFields(['camera', 'date']),
-                        value: null
-                    }
+                        transform: (value, params) => {
+                            params.columns = '';
+                            if (value !== null) {
+                                params.columns = value.replace('date', 'begin::date as date');
+                                return `group by ${value.replace('date', 'begin::date')}`
+                            }
+                            return '';
+                        },
+                        value: ''
+                    },
+                    columns: ''
                 }
             });
         this.sql = queryEventCountSql;
@@ -167,15 +178,6 @@ class EventCountBuilder extends RequestBuilder {
 
     async fetch() {
         let count = await super.fetch();
-        let {camera} = this.getParams();
-        let {groupby} = this.getFields();
-        groupby = groupby ? groupby.split(',') : [];
-        if (!groupby.includes('camera') && !camera) {
-            count.forEach(elem => delete elem.camera);
-        }
-        if (!groupby.includes('date')) {
-            count.forEach(elem => delete elem.date);
-        }
         if (count.length === 1) count = count[0];
         return count;
     }
@@ -196,7 +198,7 @@ class EventBuilder extends RequestBuilder {
                 fields: {
                     orderBy: {
                         accept: value => this.validateOrderBy(value),
-                        value: null
+                        value: 1
                     }
                 }
             });
@@ -204,7 +206,7 @@ class EventBuilder extends RequestBuilder {
     }
 
     validateOrderBy(fields) {
-        const validFields = ['camera', 'date', 'begin', 'end', 'id', 'event'];
+        const validFields = ['camera', 'date', 'begin', 'done', 'id', 'event'];
         const validDirections = ['asc', 'desc'];
 
         return fields.split(',').every(
@@ -214,7 +216,6 @@ class EventBuilder extends RequestBuilder {
                     (!direction || validDirections.includes(direction.trim()));
             });
     }
-
 
     async fetch() {
         let events = await super.fetch();

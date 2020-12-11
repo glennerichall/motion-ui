@@ -5,13 +5,17 @@ import classNames from "classnames";
 import '../css/camera-data.less';
 import icon from "../icons/remove-reverse.png";
 import iconHover from "../icons/remove-hover.png";
+import iconNext from '../icons/next.png';
+import iconPrevious from '../icons/previous.png';
 import {popView} from './Frame';
 
 class Observer {
     constructor() {
         this.componentIndex = {};
         this.changedComponents = {};
-        this.observer = new IntersectionObserver(this.onChange);
+        this.observer = new IntersectionObserver(this.onChange, {
+            threshold: 0.25
+        });
     }
 
     onChange = (events) => {
@@ -128,6 +132,7 @@ export default props => {
     const {event} = props;
     const {data, id, camera} = event;
 
+    const ref = useRef();
     const [images, setImages] = useState([]);
     const [selected, setSelected] = useState(null);
     const [observer, setObserver] = useState(null);
@@ -135,7 +140,7 @@ export default props => {
     const update = async () => {
         const files = await fetch(data);
         setImages(files.filter(file => file.type == 1));
-        setSelected(files[0]);
+        setSelected(0);
     };
 
     useEffect(() => {
@@ -148,12 +153,12 @@ export default props => {
     }, [1]);
 
     const pictures = images
-        .map(file =>
+        .map((file, index) =>
             <LazyLoadImage file={file}
                            key={file.id}
                            observer={observer}
-                           selected={file.id === selected?.id}
-                           onClick={() => setSelected(file)}>
+                           selected={index === selected}
+                           onClick={() => setSelected(index)}>
             </LazyLoadImage>
         );
 
@@ -165,21 +170,46 @@ export default props => {
         }
     }
 
+    const scrollIntoView = () => {
+        requestAnimationFrame(() => {
+            document.querySelector('.event-data .pictures .selected:not(.in-viewport)')
+                ?.scrollIntoView({
+                    behavior: "smooth"
+                });
+        })
+    };
+
     return (
-        <div className="event-data">
+        <div className="event-data" ref={ref}>
             <div className="header">
-                <span className="event-id">{event.event}</span>&nbsp;
+                <span className="event-id">{event.id}</span>&nbsp;
                 <span className="event-time">{event.begin.replace(/\s/g, '\xA0')}</span>
                 <span className="event-time">{event.duration.replace(/\s/g, '\xA0')}</span>
                 <span className="event-camera">Camera: {camera}</span>
-                <span className="delete" onClick={()=>remove(event)}>
+                <span className="delete" onClick={() => remove(event)}>
                     <img className="danger btn" src={icon}/>
                     <img className="danger btn hover" src={iconHover}/>
                 </span>
             </div>
             <div className="pictures">{pictures}</div>
             <div className="selected-picture">
-                <img src={selected?.src}/>
+                <span onClick={() => {
+                    if (selected > 0) {
+                        setSelected(selected - 1);
+                        scrollIntoView();
+                    }
+                }}>
+                    <img src={iconPrevious}/>
+                </span>
+                <img src={images[selected]?.src}/>
+                <span onClick={() => {
+                    if (selected < images.length - 1) {
+                        setSelected(selected + 1);
+                        scrollIntoView();
+                    }
+                }}>
+                    <img src={iconNext}/>
+                </span>
             </div>
         </div>
     );
