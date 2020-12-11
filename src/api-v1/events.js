@@ -33,8 +33,8 @@ const update = (events) => {
         event.duration = formatDuration(duration);
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
-        event.begin = format(begin, 'yyyy-MM-dd HH:mm');
-        event.done = format(done, 'yyyy-MM-dd HH:mm');
+        // event.begin = format(begin, 'yyyy-MM-dd HH:mm');
+        // event.done = format(done, 'yyyy-MM-dd HH:mm');
     }
 
     if (!Array.isArray(events)) {

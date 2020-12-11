@@ -64,11 +64,11 @@ on_camera_found /usr/bin/curl --location --request POST 'localhost:3000/v1/strea
 
 Don't forget to:
 * Create target dir of cameras.
-* Change access `chmod` to target dir of cameras to add `+w` to user motion.
+* Change access `chmod` to target dir of cameras to add `+w` to user/group motion.
 
 @see [motion-project](https://motion-project.github.io/motion_config.html)
 
-### 2.3 Restart motion service
+### 2.4 Restart motion service
 
 ```bash
 sudo service motion restart
@@ -92,7 +92,7 @@ npm install -g pm2
 ### 3.2 Get this project from github
 
 ```bash
-get clone machin
+get clone this repo
 ```
 
 ### 3.3 Start motion ui
@@ -100,3 +100,25 @@ get clone machin
 ```bash
 pm2 start motion-ui
 ```
+
+## 4 Configure tasks
+
+### 4.1 Configure logrotate for motion
+
+Edit logrotate for motion add your own log file
+
+```bash
+/var/log/motion/motion.log
+```
+
+@see [logrotate](https://linux.die.net/man/8/logrotate)
+
+@see [motion config](https://motion-project.github.io/motion_config.html#OptDetail_System_Processing)
+
+### 4.2 Configure logrotate for pm2
+
+```bash
+pm2 install pm2-logrotate
+```
+
+@see [pm2-logrotate](https://github.com/keymetrics/pm2-logrotate#configure)

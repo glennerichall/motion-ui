@@ -8,6 +8,8 @@ import iconHover from "../icons/remove-hover.png";
 import iconNext from '../icons/next.png';
 import iconPrevious from '../icons/previous.png';
 import {popView} from './Frame';
+import format from 'date-fns/format'
+import parseISO from 'date-fns/parseISO'
 
 class Observer {
     constructor() {
@@ -130,7 +132,7 @@ const LazyLoadImage = props => {
 
 export default props => {
     const {event} = props;
-    const {data, id, camera} = event;
+    let {data, id, camera, begin, duration} = event;
 
     const ref = useRef();
     const [images, setImages] = useState([]);
@@ -179,12 +181,15 @@ export default props => {
         })
     };
 
+
+    begin = format(parseISO(begin), 'yyyy-MM-dd HH:mm');
+
     return (
         <div className="event-data" ref={ref}>
             <div className="header">
                 <span className="event-id">{event.id}</span>&nbsp;
-                <span className="event-time">{event.begin.replace(/\s/g, '\xA0')}</span>
-                <span className="event-time">{event.duration.replace(/\s/g, '\xA0')}</span>
+                <span className="event-time">{begin.replace(/\s/g, '\xA0')}</span>
+                <span className="event-time">{duration.replace(/\s/g, '\xA0')}</span>
                 <span className="event-camera">Camera: {camera}</span>
                 <span className="delete" onClick={() => remove(event)}>
                     <img className="danger btn" src={icon}/>

@@ -163,7 +163,7 @@ class EventCountBuilder extends RequestBuilder {
                         transform: (value, params) => {
                             params.columns = '';
                             if (value !== null) {
-                                params.columns = value.replace('date', 'begin::date as date');
+                                params.columns = value.replace('date', "to_json(begin::date)#>>'{}' as date");
                                 return `group by ${value.replace('date', 'begin::date')}`
                             }
                             return '';

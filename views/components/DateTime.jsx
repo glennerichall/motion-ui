@@ -1,11 +1,12 @@
 import React from "react";
 import classNames from "classnames";
 import format from 'date-fns/format'
+import parseISO from 'date-fns/parseISO'
 
 export default (props) => {
     const {lastEvent} = props;
     if (lastEvent?.begin) {
-        const date = new Date(lastEvent.begin);
+        const date = parseISO(lastEvent.begin);
         const day = format(date, 'yyyy-MM-dd');
         const hm = format(date, 'HH:mm');
         return (

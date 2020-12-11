@@ -5,11 +5,10 @@
  */
 const queryEventsSql = `
     select camera,
-           begin::date as date,
-           begin,
+           to_json(begin)#>>'{}' as begin,
            id,
            event,
-           done
+           to_json(done)#>>'{}' as done
     from event_logs
     where done is not null
       AND (camera = @camera OR @camera IS NULL)
@@ -34,8 +33,7 @@ const queryEventCountSql = `
 
 const queryEventDataSql = `
     select camera,
-           time::date as date,
-           time,
+           to_json(time)#>>'{}' as time,
            type,
            id,
            event,
