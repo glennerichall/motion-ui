@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const queryVersionSql = 'select * from migrations order by id desc limit 1;';
+const queryVersionSql = 'select * from migrations order by version desc limit 1;';
 const bumpVersionSql = 'insert into migrations (version, installation) values(@version, @date);';
 
 const migpath = path.join(__dirname, '..', 'migrations');

@@ -32,10 +32,15 @@ export async function delet(url) {
     })
 };
 
-export async function post(url) {
+export async function post(url, body) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", url, true);
-    xhttp.send();
+    if (!!body) {
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+        xhttp.send(JSON.stringify(body));
+    } else {
+        xhttp.send();
+    }
     return new Promise((resolve, reject) => {
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4) {

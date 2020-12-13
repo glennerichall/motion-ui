@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const {parse} = require('./config-parser');
+const {parse} = require('../utils/config-parser');
 
 const urls = {
     config_list: '{host}/{camid}/config/list',                // Lists all the configuration values for the camera.

@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const ps = require('ps-node');
 const {promisify} = require('util');
 let {exec} = require('child_process');
-const {parse} = require('./config-parser');
+const {parse} = require('../utils/config-parser');
 
 exec = promisify(exec);
 

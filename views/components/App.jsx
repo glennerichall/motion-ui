@@ -1,17 +1,16 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {subscribe, publish, unsubscribe} from '../js/pubsub';
+import {subscribe, unsubscribe} from '../js/pubsub';
 
 import Streams from './Streams';
 import Process from './Process';
 import Spinner from "./Spinner";
 
-import classNames from "classnames";
 import {processUrl, streamsUrl, versionUrl} from "../constants";
 
 import '../css/camera.less';
 import '../css/index.css';
+import '../js/push';
 
-import '../js/service-worker';
 import {getSocket} from "../js/socket";
 
 import Frame, {pushView, onFrameChanged} from "./Frame";

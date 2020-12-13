@@ -10,6 +10,8 @@ const connection = client => {
     console.log(`Websocket connection : ${client.id}`);
 }
 
+app.use(express.json());
+
 const init = async () => {
     await promisify(server.listen).bind(server)(port);
     console.log(`listening on port http://localhost:${port}/`);

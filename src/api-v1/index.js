@@ -1,12 +1,15 @@
 const express = require('express');
 const {cpu, drive, mem} = require('node-os-utils');
 
+const appPrivKey = 'j8H_LHJo9nHVir6EWpXKj19g9BG5sFYsrgt2GhrKg_8';
+
 const cors = require('cors')
 
 module.exports = express.Router()
     .use(cors())
     .use('/events', require('./events'))
     .use('/streams', require('./streams'))
+    .use('/push', require('./push'))
 
     .get('/process', async (req, res) => {
         const cpuUsage = cpu.usage();
@@ -21,6 +24,8 @@ module.exports = express.Router()
 
     .get('/notifications', (req, res) => {
         res.send(require('../constants').notifications);
-    });
+    })
+
+
 
 require('../motion/heart-beat');

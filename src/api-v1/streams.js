@@ -47,9 +47,9 @@ module.exports = express.Router()
         res.send(streams);
     })
 
-    .get('/status', async (req,res)=>{
+    .get('/status', async (req, res) => {
         const cameras = await new Provider(req).getCameras();
-        const status = cameras.map(async camera=>{
+        const status = cameras.map(async camera => {
             return {
                 camera: camera.getId(),
                 status: await camera.getStatus()

@@ -1,4 +1,4 @@
-const Builder = require("./builder");
+const Builder = require("../events/builder");
 var path = require('path');
 
 let configs = process.env.DATABASE_CONFIGS ?? 'pgconfig.json';
@@ -7,9 +7,9 @@ if (!path.isAbsolute(configs)) {
     configs = path.join(__dirname, '../..', configs);
 }
 const databaseConfigs = require(configs);
-const Database = require(`../database/database-${databaseConfigs.type}`);
+const Database = require(`./database-${databaseConfigs.type}`);
 
-class Events extends Database {
+class Index extends Database {
     constructor() {
         super(databaseConfigs.options);
     }
@@ -19,4 +19,4 @@ class Events extends Database {
     }
 }
 
-module.exports = new Events();
+module.exports = new Index();

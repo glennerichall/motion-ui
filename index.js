@@ -1,7 +1,7 @@
-const events = require('./src/events/events');
+const database = require('./src/database');
 
 (async () => {
-        await events.init();
+        await database.init();
         await require('./src')();
     }
 )();

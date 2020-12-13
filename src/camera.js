@@ -1,13 +1,12 @@
-const db = require('./events/events');
+const database = require('./database');
 const {Camera: MotionCamera} = require('./motion/motion-api');
 const fs = require('fs').promises;
-const fs_constants = require('fs').constants;
 const addSeconds = require('date-fns/addSeconds');
 const formatDuration = require('date-fns/formatDuration');
 const intervalToDuration = require('date-fns/intervalToDuration');
 
 function getBuilder(options) {
-    return db.getBuilder(options);
+    return database.getBuilder(options);
 }
 
 module.exports.Camera = class Camera extends MotionCamera {

@@ -13,8 +13,11 @@ export default props => {
 
     useEffect(() => {
         (async () => {
-            const streams = await fetch(src);
-            setStreams(streams);
+            if(online) {
+                console.log('fetching streams');
+                const streams = await fetch(src);
+                setStreams(streams);
+            }
         })();
     }, [src, online]);
 
@@ -26,14 +29,16 @@ export default props => {
 
         const online = subscribe(motion.online, events => {
             // wait for streams to stabilize
-            setTimeout(() => setOnline(true), 30 * 1000 /* 30 seconds */);
+            // force reload since <img> keeps a static image in cache and dosen't reload
+            // when motion reconnects
+            location.reload();
         });
 
         return () => {
             unsubscribe(stopped);
             unsubscribe(online);
         }
-    }, [1] /* once */)
+    }, [] /* once */)
 
     if (!online) {
         return <div id='offline'>Streams are offline</div>

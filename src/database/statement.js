@@ -26,7 +26,7 @@ module.exports = class Statement {
 
     async get(params) {
         const result = await this.database.query(this.getQuery(params));
-        if(result.rowCount > 0) return result.rows[0];
+        if(result.length > 0) return result[0];
         return null;
     }
 

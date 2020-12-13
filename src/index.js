@@ -1,7 +1,6 @@
 const {app, init, express} = require('./server');
 const cors = require('cors')
 const version = require('../package').version;
-const {io} = require('./server');
 const Provider = require('./motion/provider');
 var compression = require('compression')
 

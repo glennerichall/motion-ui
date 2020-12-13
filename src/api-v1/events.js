@@ -1,15 +1,12 @@
 const express = require('express');
-const events = require('../events/events');
 const {io} = require('../server');
 const authorizeWhitelistIps = require('../utils/block-ip');
 const Provider = require('../motion/provider');
-const formatDuration = require('date-fns/formatDuration');
-const intervalToDuration = require('date-fns/intervalToDuration');
 const differenceInSeconds = require('date-fns/differenceInSeconds');
 const batch = require('../events/batch');
 const sharp = require('sharp');
 const path = require('path');
-const format = require('date-fns/format');
+const {publish} = require('./push');
 
 const targetDir = process.env.TARGET_DIR;
 
@@ -17,31 +14,16 @@ const cameraEventStatus = {};
 
 const {notifications} = require('../constants');
 
-const appendRoutes = (event) => {
-    return event;
-}
-
-const update = (events, req) => {
-
-    const calcDuation = event => {
-        // let {begin, done} = event;
-        // begin = new Date(begin);
-        // done = new Date(done);
-        // const duration = intervalToDuration({
-        //     start: begin,
-        //     end: done
-        // });
-        // event.duration = formatDuration(duration);
+const update = (events) => {
+    const addRoutes = event => {
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
-        // event.begin = format(begin, 'yyyy-MM-dd HH:mm');
-        // event.done = format(done, 'yyyy-MM-dd HH:mm');
     }
 
     if (!Array.isArray(events)) {
-        calcDuation(events);
+        addRoutes(events);
     } else {
-        events.forEach(calcDuation);
+        events.forEach(addRoutes);
     }
     return events;
 }
@@ -225,6 +207,7 @@ module.exports = express.Router()
 
         const event = notifications.events.eventTriggered;
         io.emit(event, {camera, status});
+        publish(event, {camera, status});
         res.send('done');
     });
 

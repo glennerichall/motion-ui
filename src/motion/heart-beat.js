@@ -1,5 +1,5 @@
 const {io} = require('../server');
-const Tail = require('nodejs-tail');
+const {Tail} = require('tail');
 const {notifications} = require('../constants');
 const Provider = require('./provider');
 
@@ -14,7 +14,9 @@ const logfile = process.env.LOG_FILE;
     }
 
     console.log(`watching log file at ${file}`);
-    const tail = new Tail(file);
+    const tail = new Tail(file, {
+        follow: true
+    });
 
     let exprStopped = /\[0:motion\].+main: Threads finished/;
     let exprRestarting = /\[0:motion\].+motion_restart: Restarting motion/;
@@ -38,8 +40,8 @@ const logfile = process.env.LOG_FILE;
         console.log('watching stopped');
     })
 
-    tail.on('error', ()=>{
-
+    tail.on('error', err => {
+        console.log(err.message);
     });
 
     tail.watch();
