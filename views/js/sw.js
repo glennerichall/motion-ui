@@ -11,7 +11,7 @@ self.addEventListener('push', function (event) {
         badge: 'images/badge.png',
         vibrate: true
     };
-    if (motion.event === 'motion-event-triggered') {
+    if (motion.event === 'motion-event-triggered' && motion.status === 'recording') {
         event.waitUntil(self.registration.showNotification(title, options));
     }
 });
