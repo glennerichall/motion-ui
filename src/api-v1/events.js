@@ -193,6 +193,8 @@ module.exports = express.Router()
         const {camera} = req.params;
         const {type} = req.query;
 
+        const previousStatus = cameraEventStatus[camera];
+
         // FIXME use database ???
         if (type.toLowerCase() === 'start') {
             cameraEventStatus[camera] = true;
@@ -205,9 +207,11 @@ module.exports = express.Router()
             return;
         }
 
-        const event = notifications.events.eventTriggered;
-        io.emit(event, {camera, status});
-        publish(event, {camera, status});
+        if (previousStatus !== cameraEventStatus[camera]) {
+            const event = notifications.events.eventTriggered;
+            io.emit(event, {camera, status});
+            publish(event, {camera, status});
+        }
         res.send('done');
     });
 
