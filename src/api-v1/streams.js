@@ -21,8 +21,8 @@ const appendRoutes = stream => {
             today: `/v1/events/${id}/data?date=today`
         },
         last: `/v1/events/${id}?orderBy=begin%20desc&limit=1`,
-        all: `/v1/events/${id}`,
-        today: `/v1/events/${id}?date=today`,
+        all: `/v1/events/${id}?orderBy=begin`,
+        today: `/v1/events/${id}?date=today&orderBy=begin`,
         status: `/v1/events/${id}/status`
     };
     stream.status = `/v1/streams/${id}/status`;

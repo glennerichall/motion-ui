@@ -17,8 +17,6 @@ body::-webkit-scrollbar {
 }
 
 
-
-
 #offline {
     position: fixed;
     left: 0;
@@ -37,9 +35,9 @@ body::-webkit-scrollbar {
 
 .delete .danger.btn {
     width: 1.3em;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    /*position: absolute;*/
+    /*top: 50%;*/
+    /*transform: translateY(-50%);*/
 }
 
 .delete .danger.btn.hover {

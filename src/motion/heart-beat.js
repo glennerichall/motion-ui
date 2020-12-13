@@ -18,7 +18,7 @@ const logfile = process.env.LOG_FILE;
 
     let exprStopped = /\[0:motion\].+main: Threads finished/;
     let exprRestarting = /\[0:motion\].+motion_restart: Restarting motion/;
-    let exprRestarted = /\[0:motion\].+motion_restart: Motion restarted/;
+    let exprRestarted = /\[0:motion\].+(motion_restart: Motion restarted|motion_startup: Motion running as daemon process)/;
     tail.on('line', (line) => {
         if (line.match(exprStopped)) {
             console.log('Motion has stopped');
@@ -37,6 +37,10 @@ const logfile = process.env.LOG_FILE;
     tail.on('close', () => {
         console.log('watching stopped');
     })
+
+    tail.on('error', ()=>{
+
+    });
 
     tail.watch();
 })();

@@ -21,16 +21,17 @@ const appendRoutes = (event) => {
     return event;
 }
 
-const update = (events) => {
+const update = (events, req) => {
+
     const calcDuation = event => {
-        let {begin, done} = event;
-        begin = new Date(begin);
-        done = new Date(done);
-        const duration = intervalToDuration({
-            start: begin,
-            end: done
-        });
-        event.duration = formatDuration(duration);
+        // let {begin, done} = event;
+        // begin = new Date(begin);
+        // done = new Date(done);
+        // const duration = intervalToDuration({
+        //     start: begin,
+        //     end: done
+        // });
+        // event.duration = formatDuration(duration);
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
         // event.begin = format(begin, 'yyyy-MM-dd HH:mm');
@@ -147,9 +148,9 @@ module.exports = express.Router()
         let dir = targetDir ?? await camera.getTargetDir();
         const file = req.path.replace(
             `/data/${camera.getId()}/file`, dir);
+        let ext = path.extname(file).substr(1);
 
         if (req.query.size === 'small') {
-            let ext = path.extname(file).substr(1);
             let stream = await sharp(file).resize({
                 width: 200,
             });
@@ -162,10 +163,6 @@ module.exports = express.Router()
         } else {
             res.sendFile(file, {
                 dotfiles: 'deny'
-            }, err => {
-                if (err) {
-                    res.status(404).send('not found');
-                }
             });
         }
     })

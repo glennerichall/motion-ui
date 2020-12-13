@@ -1,134 +1,15 @@
-import React, {Fragment, useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {delet, fetch} from "../js/fetch";
-import {v4 as uuidv4} from 'uuid';
-import classNames from "classnames";
+
 import '../css/camera-data.less';
 import icon from "../icons/remove-reverse.png";
 import iconHover from "../icons/remove-hover.png";
-import iconNext from '../icons/next.png';
-import iconPrevious from '../icons/previous.png';
+
 import {popView} from './Frame';
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
-
-class Observer {
-    constructor() {
-        this.componentIndex = {};
-        this.changedComponents = {};
-        this.observer = new IntersectionObserver(this.onChange, {
-            threshold: 0.25
-        });
-    }
-
-    onChange = (events) => {
-
-        for (let event of events) {
-            const {id} = event.target;
-            this.changedComponents[id] = event.isIntersecting;
-        }
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = undefined;
-        }
-        this.timeout = setTimeout(() => {
-            if (!this.timeout) return;
-            for (let id in this.changedComponents) {
-                const changed = this.changedComponents[id];
-                const component = this.componentIndex[id];
-                if (component && changed !== component.visible) {
-                    component.setInViewport(changed);
-                    component.visible = changed;
-                }
-            }
-            this.changedComponents = {};
-            this.timeout = undefined;
-        }, 200);
-
-    };
-
-    observe(elem, setInViewport) {
-        const id = uuidv4();
-        this.componentIndex[id] = {
-            visible: false,
-            setInViewport
-        };
-        elem.id = id;
-        this.observer.observe(elem);
-    }
-
-    unobserve(elem) {
-        delete this.componentIndex[elem.id];
-    }
-
-    dispose() {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = undefined;
-        }
-        this.observer.disconnect();
-    }
-}
-
-
-const LazyLoad = props => {
-    let {children, observer, ready} = props;
-
-    const ref = useRef();
-    const [inViewport, setInViewport] = useState(false);
-
-    useEffect(() => {
-        observer.observe(ref.current, setInViewport);
-        return () => {
-            observer.unobserve(ref.current)
-        }
-    }, [1]);
-
-    let placeholder = <div style={{
-        width: '100%',
-        height: '100%'
-    }}/>;
-
-
-    const last = children.length - 1;
-
-    if (children.length >= 2 && children[last].props['data-placeholder']) {
-        placeholder = children[last];
-        // if (ready) {
-        //     children = children.slice(0, last);
-        // }
-    }
-
-    return (
-        <div className={classNames("lazyload-wrapper", {'in-viewport': inViewport}, props.className)}
-             ref={ref}>
-            {inViewport ?
-                children :
-                placeholder
-            }
-        </div>
-    )
-};
-
-const LazyLoadImage = props => {
-    const {file, observer, selected, onClick} = props;
-    const [ready, setReady] = useState(false);
-
-    return (
-        <LazyLoad key={file.id}
-                  observer={observer}
-                  ready={ready}
-                  className={classNames({selected: selected})}>
-            <div className="frame-id">{file.frame}</div>
-            <img src={file.srcSmall}
-                 className={classNames('frame', {loading: !ready})}
-                 onLoad={() => setReady(true)}
-                 onClick={onClick}/>
-            <img src="/v1/events/data/placeholder.jpg" data-placeholder
-                 className={classNames('placeholder', {hidden: ready})}/>
-        </LazyLoad>
-    );
-}
-
+import DataImage from "./DataImage";
+import DataMp4 from './DataMp4';
 
 export default props => {
     const {event} = props;
@@ -136,33 +17,22 @@ export default props => {
 
     const ref = useRef();
     const [images, setImages] = useState([]);
-    const [selected, setSelected] = useState(null);
-    const [observer, setObserver] = useState(null);
+    const [movie, setMovie] = useState(null);
+    const [selection, setSelection] = useState('');
 
     const update = async () => {
         const files = await fetch(data);
-        setImages(files.filter(file => file.type == 1));
-        setSelected(0);
+        const images = files.filter(file => file.type == 1);
+        const movie = files.filter(file => file.type == 8)[0] ?? null;
+        const selection = selection ?? movie != null ? 'movie' : files.length > 0 ? 'files' : '';
+        setImages(images);
+        setMovie(movie);
+        setSelection(selection);
     };
 
     useEffect(() => {
         update();
     }, [data]);
-
-    useEffect(() => {
-        setObserver(new Observer());
-        return () => observer?.dispose();
-    }, [1]);
-
-    const pictures = images
-        .map((file, index) =>
-            <LazyLoadImage file={file}
-                           key={file.id}
-                           observer={observer}
-                           selected={index === selected}
-                           onClick={() => setSelected(index)}>
-            </LazyLoadImage>
-        );
 
     function remove() {
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
@@ -172,17 +42,18 @@ export default props => {
         }
     }
 
-    const scrollIntoView = () => {
-        requestAnimationFrame(() => {
-            document.querySelector('.event-data .pictures .selected:not(.in-viewport)')
-                ?.scrollIntoView({
-                    behavior: "smooth"
-                });
-        })
-    };
-
-
     begin = format(parseISO(begin), 'yyyy-MM-dd HH:mm');
+
+    let display = null;
+    switch (selection) {
+        case 'images':
+            display = <DataImage images={images}/>;
+            break;
+        case 'movie':
+            display = <DataMp4 movie={movie}/>;
+            break;
+        default: display = <div>No data for this event</div>
+    }
 
     return (
         <div className="event-data" ref={ref}>
@@ -195,27 +66,17 @@ export default props => {
                     <img className="danger btn" src={icon}/>
                     <img className="danger btn hover" src={iconHover}/>
                 </span>
+
+                {
+                    images.length !== 0 && movie !== null ?
+                        <select value={selection} onChange={evt => setSelection(evt.target.value)}>
+                            <option value="movie">Movie</option>
+                            <option value="images">Images</option>
+                        </select>
+                        : null
+                }
             </div>
-            <div className="pictures">{pictures}</div>
-            <div className="selected-picture">
-                <span onClick={() => {
-                    if (selected > 0) {
-                        setSelected(selected - 1);
-                        scrollIntoView();
-                    }
-                }}>
-                    <img src={iconPrevious}/>
-                </span>
-                <img src={images[selected]?.src}/>
-                <span onClick={() => {
-                    if (selected < images.length - 1) {
-                        setSelected(selected + 1);
-                        scrollIntoView();
-                    }
-                }}>
-                    <img src={iconNext}/>
-                </span>
-            </div>
+            {display}
         </div>
     );
 }

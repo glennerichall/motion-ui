@@ -2,6 +2,9 @@ const db = require('./events/events');
 const {Camera: MotionCamera} = require('./motion/motion-api');
 const fs = require('fs').promises;
 const fs_constants = require('fs').constants;
+const addSeconds = require('date-fns/addSeconds');
+const formatDuration = require('date-fns/formatDuration');
+const intervalToDuration = require('date-fns/intervalToDuration');
 
 function getBuilder(options) {
     return db.getBuilder(options);
@@ -36,6 +39,39 @@ module.exports.Camera = class Camera extends MotionCamera {
             .setCamera(this.getId())
             .setParams(params)
             .fetch();
+
+        const [eventGap,
+            postCapture,
+            preCapture,
+            frameRate] = await Promise.all([
+            this.getEventGap(),
+            this.getPostCapture(),
+            this.getPreCapture(),
+            this.getFrameRate()]);
+
+
+        const frameDuration = 1 / frameRate;
+
+        const update = event => {
+            let {begin, done} = event;
+            begin = addSeconds(new Date(begin), -preCapture * frameDuration);
+            done = addSeconds(new Date(done), -eventGap);
+            const duration = intervalToDuration({
+                start: begin,
+                end: done
+            });
+            event.begin = begin.toISOString();
+            event.done = done.toISOString();
+            event.duration = formatDuration(duration);
+        }
+
+        if (Array.isArray(events)) {
+            for (let event of events) {
+                update(event);
+            }
+        } else {
+            update(events);
+        }
         return events;
     }
 

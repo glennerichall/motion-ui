@@ -111,6 +111,22 @@ class Camera {
     getHeight() {
         return this.requestConfig('height');
     }
+
+    getFrameRate() {
+        return this.requestConfig('framerate');
+    }
+
+    getPostCapture() {
+        return this.requestConfig('post_capture');
+    }
+
+    getPreCapture() {
+        return this.requestConfig('pre_capture');
+    }
+
+    getEventGap() {
+        return this.requestConfig('event_gap');
+    }
 }
 
 class WebControl {

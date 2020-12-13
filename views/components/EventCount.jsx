@@ -78,7 +78,9 @@ export default props => {
                     </div>
                 </div>
                 <DateTime lastEvent={last}
-                          onClick={() => pushView(<EventData event={last}/>)}/>
+                          onClick={() => supportsIntersectionObserver ?
+                              pushView(<EventData event={last}/>) :
+                              null}/>
             </div>
         </Fragment>
     );

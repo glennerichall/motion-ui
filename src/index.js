@@ -3,11 +3,14 @@ const cors = require('cors')
 const version = require('../package').version;
 const {io} = require('./server');
 const Provider = require('./motion/provider');
+var compression = require('compression')
 
-app.use(cors())
+app.use(compression());
+app.use(cors());
 
 let previsoulog = null;
 let count = 0;
+
 app.use((req, res, next) => {
     if (req.url == previsoulog) {
         count++;
