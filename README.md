@@ -93,8 +93,10 @@ npm install -g pm2
 
 ```bash
 get clone this repo
+pm2 deploy ecosystem.config.js production setup
 ```
 
+@see [pm2](https://pm2.keymetrics.io/docs/usage/deployment/)
 ### 3.3 Start motion ui
 
 ```bash
