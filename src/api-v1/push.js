@@ -10,7 +10,8 @@ let createSubscriptionSql = `
     values (@subscription, now());
 `;
 let querySubscriptionsSql = `
-    select * from push_subscriptions;
+    select *
+    from push_subscriptions;
 `;
 let createSubscriptionStmt = database.prepare(createSubscriptionSql);
 let querySubscriptionsStmt = database.prepare(querySubscriptionsSql);
@@ -60,6 +61,12 @@ module.exports.publish = async (event, message) => {
     });
     const subscriptions = await querySubscriptionsStmt.all();
     for (let {subscription} of subscriptions) {
-        webpush.sendNotification(subscription, data);
+        try {
+            const res = await webpush.sendNotification(subscription, data,
+                {TTL: 60});
+            console.log(res);
+        } catch (e) {
+            console.error('Failed to send push', e);
+        }
     }
 };

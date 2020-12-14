@@ -1,4 +1,4 @@
-const database = require('../database/events');
+const database = require('../database');
 const fs = require('fs').promises;
 const {resolve} = require('path');
 const Provider = require('../motion/provider');

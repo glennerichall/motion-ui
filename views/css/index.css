@@ -65,6 +65,7 @@ body::-webkit-scrollbar {
     padding: 3px 20px;
     border-radius: 3px;
     display: inline-block;
+    user-select: none;
 }
 
 #back-btn:hover {

@@ -13,7 +13,7 @@ export default props => {
 
     useEffect(() => {
         (async () => {
-            if(online) {
+            if (online) {
                 console.log('fetching streams');
                 const streams = await fetch(src);
                 setStreams(streams);
@@ -31,7 +31,7 @@ export default props => {
             // wait for streams to stabilize
             // force reload since <img> keeps a static image in cache and dosen't reload
             // when motion reconnects
-            location.reload();
+            setTimeout(() => location.reload(), 1000);
         });
 
         return () => {
