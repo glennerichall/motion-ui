@@ -34,11 +34,11 @@ async function* getFiles(dir) {
     const ids = orphans.map(datum => datum.id);
 
     // remove those orphans from the database
-    const cleanDataSql = `
+    const cleanDataSql = ids.length ? `
         delete
         from events
         where id in (${ids.join(',')});
-    `;
+    ` : ``;
 
     // then remove any events that has no data associated
     const cleanEventsSql = `
@@ -50,8 +50,11 @@ async function* getFiles(dir) {
         );
     `;
 
-    const countData = (await database.prepare(cleanDataSql).run()).changes;
-    const countEvents = (await database.prepare(cleanEventsSql).run()).changes;
+    let countData = await database.prepare(cleanDataSql).run() || 0;
+    let countEvents = await database.prepare(cleanEventsSql).run();
+
+    countData = countData?.length;
+    countEvents = countEvents?.length;
 
     // get cameras
     const cameras = (await new Provider().getCameras())

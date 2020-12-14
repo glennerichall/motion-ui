@@ -11,6 +11,10 @@ body {
     font-size: initial;
 }
 
+body {
+    user-select: none;
+}
+
 
 body::-webkit-scrollbar {
     display: none;
