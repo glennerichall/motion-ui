@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump-patch": "npm run build && git add . && git commit && npm version patch && git push",
-    "deploy": "pm2 deploy ecosystem.config.js production",
+    "deploy": "pm2 deploy deploy.config.js production",
     "preinstall": "npx npm-force-resolutions",
     "build": "rm -rf static && parcel build views/index.html -d static  --no-source-maps",
     "watch": "parcel watch views/index.html -d bin"

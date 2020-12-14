@@ -24,7 +24,7 @@ async function* getFiles(dir) {
     const orphans = [];
     const promises = data.map(async datum => {
         try {
-            return await fs.access(datum.filename);
+            return await fs.stat(datum.filename);
         } catch (e) {
             orphans.push(datum);
         }
