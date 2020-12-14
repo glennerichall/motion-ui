@@ -14,12 +14,11 @@ module.exports = {
 
     deploy: {
         production: {
-            user: 'motion',
-            key: "/home/glenn/.ssh/id_rsa.pub",
+            user: 'glenn',
             host: '192.168.1.110',
             ref: 'origin/master',
             repo: 'git@scm.velor.ca:glennerichall/motion-ui.git',
-            path: '/home/motion/motion-ui',
+            path: '/home/glenn/motion-ui',
             'post-deploy': 'npm install && PATH=~/.npm-global/bin:$PATH pm2 reload ecosystem.config.js --env production',
         }
     }
