@@ -15,6 +15,7 @@ module.exports = {
     deploy: {
         production: {
             user: 'motion',
+            key: "/home/glenn/.ssh/id_rsa.pub",
             host: '192.168.1.110',
             ref: 'origin/master',
             repo: 'git@scm.velor.ca:glennerichall/motion-ui.git',
