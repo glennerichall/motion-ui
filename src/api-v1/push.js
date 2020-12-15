@@ -25,8 +25,7 @@ let querySubscriptionSql = `
 let deleteSubscriptionSql = `
     delete
     from push_subscriptions
-    where key = @key
-    returning (subscription, time, key);
+    where key = @key returning (subscription, time, key);
 `;
 let createSubscriptionStmt = database.prepare(createSubscriptionSql);
 let querySubscriptionsStmt = database.prepare(querySubscriptionsSql);
@@ -117,13 +116,14 @@ module.exports.publish = async (event, message) => {
         ...message
     });
     const subscriptions = await querySubscriptionsStmt.all();
-    for (let {subscription} of subscriptions) {
+    for (let {subscription, key} of subscriptions) {
         try {
             const res = await webpush.sendNotification
             (subscription, data, {TTL: 60});
             console.log(res);
         } catch (e) {
             console.error('Failed to send push', e);
+            deleteSubscriptionStmt({key});
         }
     }
 };
