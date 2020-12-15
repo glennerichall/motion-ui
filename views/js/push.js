@@ -15,8 +15,12 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
-async function sendSubscriptionToBackEnd(subscription) {
-    const response = await post('v1/push/subscription/', subscription);
+async function postSubscription(subscription) {
+    return await post('v1/push/subscription/', subscription);
+}
+
+async function validateSubscription(subscription) {
+    return await fetch('v1/push/subscription/validation', subscription);
 }
 
 if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window) {
@@ -33,9 +37,13 @@ if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in
             console.log('Service Worker is registered');
 
             let subscription = await swReg.pushManager.getSubscription();
+            console.log(JSON.stringify(subscription))
+            if(subscription && !(await validateSubscription(subscription)).validity) {
+                await subscription.unsubscribe();
+                subscription = null;
+            }
 
             if (subscription === null) {
-
                 const appPubKey = await fetch('/v1/push/pubkey');
                 // subscribe user
                 const applicationServerKey = urlB64ToUint8Array(appPubKey.publicKey);
@@ -43,7 +51,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in
                     userVisibleOnly: true,
                     applicationServerKey: applicationServerKey
                 });
-                await sendSubscriptionToBackEnd(subscription);
+                await postSubscription(subscription);
             }
         } catch (error) {
             console.error(error);

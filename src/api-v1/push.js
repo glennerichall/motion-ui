@@ -2,19 +2,36 @@ const express = require('express');
 const webpush = require('web-push');
 const database = require('../database');
 const fs = require('fs');
+const crypto = require("crypto");
 
 let vapidKeys;
 let createSubscriptionSql = `
     insert into push_subscriptions
-        (subscription, time)
-    values (@subscription, now());
+        (subscription, time, key)
+    values (@subscription, now(), @key) returning (subscription, time, key);
 `;
+
 let querySubscriptionsSql = `
     select *
     from push_subscriptions;
 `;
+
+let querySubscriptionSql = `
+    select *
+    from push_subscriptions
+    where key = @key;
+`;
+
+let deleteSubscriptionSql = `
+    delete
+    from push_subscriptions
+    where key = @key
+    returning (subscription, time, key);
+`;
 let createSubscriptionStmt = database.prepare(createSubscriptionSql);
 let querySubscriptionsStmt = database.prepare(querySubscriptionsSql);
+let querySubscriptionStmt = database.prepare(querySubscriptionSql);
+let deleteSubscriptionStmt = database.prepare(deleteSubscriptionSql);
 
 try {
     vapidKeys = JSON.parse(fs.readFileSync('./vapidKeys.json').toString());
@@ -30,13 +47,21 @@ webpush.setVapidDetails(
     vapidKeys.privateKey
 );
 
+function createHash(data) {
+    const key = crypto
+        .createHash("MD5")
+        .update(JSON.stringify(data))
+        .digest('hex');
+    return key;
+}
+
 module.exports = express.Router()
     .post('/subscription', async (req, res) => {
         const subscription = req.body;
-
+        const key = createHash(subscription);
         if (subscription?.endpoint) {
-            await createSubscriptionStmt.run({subscription});
-            res.send(subscription);
+            const registered = (await createSubscriptionStmt.run({subscription, key}))[0];
+            res.send(registered);
         } else {
             res.status(400);
             res.send({
@@ -45,6 +70,38 @@ module.exports = express.Router()
                     message: 'Subscription must have an endpoint.'
                 }
             });
+        }
+    })
+
+    .delete('/subscription', async (req, res) => {
+        const subscription = req.body;
+        const key = createHash(subscription);
+        if (subscription?.endpoint) {
+            const registered = (await deleteSubscriptionStmt.run({key}))[0];
+            res.send(registered);
+        } else {
+            res.status(400);
+            res.send({
+                error: {
+                    id: 'no-endpoint',
+                    message: 'Subscription must have an endpoint.'
+                }
+            });
+        }
+    })
+
+
+    .get('/subscription/validation', async (req, res) => {
+        let subscription = req.body;
+        const key = createHash(subscription);
+        const registered_subscription = await querySubscriptionStmt.get({key});
+        try {
+            await webpush.sendNotification(registered_subscription?.subscription,
+                'test-validity',
+                {TTL: 60});
+            res.send({validity: true});
+        } catch (e) {
+            res.send({validity: false});
         }
     })
 
@@ -62,8 +119,8 @@ module.exports.publish = async (event, message) => {
     const subscriptions = await querySubscriptionsStmt.all();
     for (let {subscription} of subscriptions) {
         try {
-            const res = await webpush.sendNotification(subscription, data,
-                {TTL: 60});
+            const res = await webpush.sendNotification
+            (subscription, data, {TTL: 60});
             console.log(res);
         } catch (e) {
             console.error('Failed to send push', e);

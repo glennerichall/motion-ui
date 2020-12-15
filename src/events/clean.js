@@ -3,6 +3,8 @@ const fs = require('fs').promises;
 const {resolve} = require('path');
 const Provider = require('../motion/provider');
 const deleteEmpty = require('delete-empty');
+const remap = process.env.TARGET_DIR ?? '';
+const path = require('path');
 
 async function* getFiles(dir) {
     const dirents = await fs.readdir(dir, {withFileTypes: true});
@@ -24,7 +26,7 @@ async function* getFiles(dir) {
     const orphans = [];
     const promises = data.map(async datum => {
         try {
-            return await fs.stat(datum.filename);
+            return await fs.stat(path.join(remap, datum.filename));
         } catch (e) {
             orphans.push(datum);
         }
@@ -33,12 +35,19 @@ async function* getFiles(dir) {
 
     const ids = orphans.map(datum => datum.id);
 
+    // if no datum is found, use -1 so query won't be ill-formed
+    if(ids.length === 0) ids.push(-1);
+
     // remove those orphans from the database
-    const cleanDataSql = ids.length ? `
+    const cleanDataSql = `
         delete
         from events
-        where id in (${ids.join(',')});
-    ` : ``;
+        where id in (${ids.join(',')})
+        or (camera || event) not in (
+            select distinct (camera || event)
+            from event_logs)
+        returning *;
+    `;
 
     // then remove any events that has no data associated
     const cleanEventsSql = `
@@ -47,7 +56,7 @@ async function* getFiles(dir) {
         where (camera || event) not in (
             select distinct (camera || event)
             from events
-        );
+        ) returning *;
     `;
 
     let countData = await database.prepare(cleanDataSql).run() || 0;
@@ -66,14 +75,14 @@ async function* getFiles(dir) {
         from events
     `;
     const files = (await database.prepare(queryDataSql).all())
-        .map(datum => datum.filename);
+        .map(datum => path.join(remap, datum.filename));
 
     let countFiles = 0;
     const targetDirs = [];
     for (let camera of cameras) {
 
         // get files of target dir of camera
-        const targetDir = await new Provider({params: {camera}}).getCamera().getTargetDir();
+        const targetDir = path.join(remap, await new Provider({params: {camera}}).getCamera().getTargetDir());
         if (!targetDirs.includes(targetDir)) {
             targetDirs.push(targetDir);
             try {
@@ -95,11 +104,12 @@ async function* getFiles(dir) {
     let countEmpty = 0;
     try {
         const deleted = targetDirs.map(targetDir => deleteEmpty(targetDir));
-        countEmpty = (await Promise.all(deleted)).length;
+        countEmpty = (await Promise.all(deleted))
+            .reduce((res, cur) => res + cur.length, 0);
     } catch (e) { }
 
     try {
-        const created = targetDirs.map(targetDir => fs.mkdir(targetDir).catch(e => {}));
+        const created = targetDirs.map(targetDir => fs.mkdir(path.join(remap, targetDir)).catch(e => {}));
         await Promise.all(created);
     } catch (e) {}
 
