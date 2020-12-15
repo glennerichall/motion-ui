@@ -5,32 +5,6 @@ const fs = require('fs');
 const crypto = require("crypto");
 
 let vapidKeys;
-let createSubscriptionSql = `
-    insert into push_subscriptions
-        (subscription, time, key)
-    values (@subscription, now(), @key) returning (subscription, time, key);
-`;
-
-let querySubscriptionsSql = `
-    select *
-    from push_subscriptions;
-`;
-
-let querySubscriptionSql = `
-    select *
-    from push_subscriptions
-    where key = @key;
-`;
-
-let deleteSubscriptionSql = `
-    delete
-    from push_subscriptions
-    where key = @key returning (subscription, time, key);
-`;
-let createSubscriptionStmt = database.prepare(createSubscriptionSql);
-let querySubscriptionsStmt = database.prepare(querySubscriptionsSql);
-let querySubscriptionStmt = database.prepare(querySubscriptionSql);
-let deleteSubscriptionStmt = database.prepare(deleteSubscriptionSql);
 
 try {
     vapidKeys = JSON.parse(fs.readFileSync('./vapidKeys.json').toString());
@@ -45,6 +19,36 @@ webpush.setVapidDetails(
     vapidKeys.publicKey,
     vapidKeys.privateKey
 );
+
+let createSubscriptionSql = `
+    insert into push_subscriptions
+        (subscription, time, key, vapikey)
+    values (@subscription, now(), @key, '${vapidKeys.publicKey}') returning (subscription, time, key);
+`;
+
+let querySubscriptionsSql = `
+    select *
+    from push_subscriptions
+    where vapikey = '${vapidKeys.publicKey}';
+`;
+
+let querySubscriptionSql = `
+    select *
+    from push_subscriptions
+    where key = @key and vapikey='${vapidKeys.publicKey}';
+`;
+
+let deleteSubscriptionSql = `
+    delete
+    from push_subscriptions
+    where key = @key and vapikey='${vapidKeys.publicKey}'
+    returning (subscription, time, key);
+`;
+
+let createSubscriptionStmt = database.prepare(createSubscriptionSql);
+let querySubscriptionsStmt = database.prepare(querySubscriptionsSql);
+let querySubscriptionStmt = database.prepare(querySubscriptionSql);
+let deleteSubscriptionStmt = database.prepare(deleteSubscriptionSql);
 
 function createHash(data) {
     const key = crypto
@@ -90,7 +94,7 @@ module.exports = express.Router()
     })
 
 
-    .get('/subscription/validation', async (req, res) => {
+    .post('/subscription/validation', async (req, res) => {
         let subscription = req.body;
         const key = createHash(subscription);
         const registered_subscription = await querySubscriptionStmt.get({key});

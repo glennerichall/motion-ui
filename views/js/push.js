@@ -20,7 +20,7 @@ async function postSubscription(subscription) {
 }
 
 async function validateSubscription(subscription) {
-    return await fetch('v1/push/subscription/validation', subscription);
+    return await post('v1/push/subscription/validation', subscription);
 }
 
 if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window) {
