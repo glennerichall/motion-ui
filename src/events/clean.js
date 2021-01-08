@@ -18,8 +18,48 @@ async function* getFiles(dir) {
     }
 }
 
-(async () => {
-    await database.init();
+
+async function deleteEvents() {
+    const queryRemovedSql = `
+        select filename
+        from events
+                 inner join event_logs on
+                events.camera = event_logs.camera and
+                events.event = event_logs.event
+        where event_logs.removed = true;
+    `;
+
+    const files = await database.prepare(queryRemovedSql).all();
+
+    const unlinking = files?.map(async filename => {
+        try {
+            // https://nodejs.org/api/fs.html#fs_fs_stat_path_options_callback
+            // Using fs.stat() to check for the existence of a file before
+            // calling fs.open(), fs.readFile() or fs.writeFile() is not recommended.
+            // Instead, user code should open/read/write the file directly and handle
+            // the error raised if the file is not available.
+            return await fs.unlink(filename);
+        } catch (err) {}
+        return Promise.resolve();
+    });
+    await Promise.all(unlinking);
+
+    const deleteRemovedSql = `
+        delete
+        from event_logs
+        where removed = true returning *;
+    `;
+
+    let removedEvents = await database.prepare(deleteRemovedSql).run();
+
+    return {
+        removedEvents: removedEvents.length,
+        removedFiles: files.length
+    };
+}
+
+
+async function removeOrphans() {
     let data = await database.getBuilder().data().fetch();
 
     // find orphans rows ie that has no file associated
@@ -36,7 +76,7 @@ async function* getFiles(dir) {
     const ids = orphans.map(datum => datum.id);
 
     // if no datum is found, use -1 so query won't be ill-formed
-    if(ids.length === 0) ids.push(-1);
+    if (ids.length === 0) ids.push(-1);
 
     // remove those orphans from the database
     const cleanDataSql = `
@@ -65,6 +105,32 @@ async function* getFiles(dir) {
     countData = countData?.length;
     countEvents = countEvents?.length;
 
+    return {
+        countData,
+        countEvents
+    };
+}
+
+
+async function removeEmptyDirectories(targetDirs) {
+    // remove all empty directories remaining
+    let countEmpty = 0;
+    try {
+        const deleted = targetDirs.map(targetDir => deleteEmpty(targetDir));
+        countEmpty = (await Promise.all(deleted))
+            .reduce((res, cur) => res + cur.length, 0);
+    } catch (e) { }
+
+    try {
+        const created = targetDirs.map(targetDir => fs.mkdir(path.join(remap, targetDir)).catch(e => {}));
+        await Promise.all(created);
+    } catch (e) {}
+
+    return countEmpty;
+}
+
+
+async function removeFiles() {
     // get cameras
     const cameras = (await new Provider().getCameras())
         .map(camera => camera.getId());
@@ -100,24 +166,39 @@ async function* getFiles(dir) {
         }
     }
 
-    // remove all empty directories remaining
-    let countEmpty = 0;
-    try {
-        const deleted = targetDirs.map(targetDir => deleteEmpty(targetDir));
-        countEmpty = (await Promise.all(deleted))
-            .reduce((res, cur) => res + cur.length, 0);
-    } catch (e) { }
+    const countEmpty = await removeEmptyDirectories(targetDirs);
 
-    try {
-        const created = targetDirs.map(targetDir => fs.mkdir(path.join(remap, targetDir)).catch(e => {}));
-        await Promise.all(created);
-    } catch (e) {}
+    return {
+        countEmpty,
+        countFiles
+    };
+}
+
+(async () => {
+    await database.init();
+
+    const {
+        removedEvents,
+        removedFiles
+    } = await deleteEvents();
+    
+    const {
+        countData,
+        countEvents
+    } = await removeOrphans();
+
+    const {
+        countEmpty,
+        countFiles
+    } = await removeFiles();
 
     database.close();
 
     if (process.send) {
-        process.send({countData, countEvents, countFiles, countEmpty});
+        process.send({removedEvents, removedFiles, countData, countEvents, countFiles, countEmpty});
     } else {
+        console.log(`removed ${removedEvents} events`);
+        console.log(`removed ${removedFiles} files`);
         console.log(`removed ${countData} orphans from event data`);
         console.log(`removed ${countEvents} events with no data`);
         console.log(`removed ${countFiles} files with no events`);

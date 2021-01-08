@@ -13,6 +13,7 @@ const queryEventsSql = `
     where done is not null
       AND (camera = @camera OR @camera IS NULL)
       AND (@date::date = begin::date OR @date IS NULL)
+      AND removed = false
     order by $orderBy
     limit @limit;
 `;
@@ -28,6 +29,7 @@ const queryEventCountSql = `
     where done is not null
       AND (camera = @camera OR @camera IS NULL)
       AND (@date::date = begin::date OR @date IS NULL)
+      AND removed = false
     $groupBy
 `;
 
@@ -48,22 +50,12 @@ const queryEventDataSql = `
 `;
 
 const deleteEventsSql = `
-    delete from event_logs
+    update event_logs
+    set removed=true
     where (camera = @camera OR @camera IS NULL)
       and (event = @event or @event IS NULL)
-      and (@date::date = begin::date OR @date IS NULL);
-`;
-
-const deleteEventDataSql = `
-    delete from events
-    where (camera = @camera OR @camera IS NULL)
-      and (event = @event or @event IS NULL)
-      and (@date::date = time::date OR @date IS NULL);
-`;
-
-const deleteEventsInListSql = `
-    delete from events
-    where id in ($ids);
+      and (@date::date = begin::date OR @date IS NULL)
+    returning *;
 `;
 
 
@@ -72,6 +64,4 @@ module.exports = {
     queryEventCountSql,
     queryEventDataSql,
     deleteEventsSql,
-    deleteEventDataSql,
-    deleteEventsInListSql
 }

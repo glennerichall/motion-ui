@@ -46,8 +46,12 @@ module.exports = class Migrator {
             const migVersion = file.match(/migrate\.(?<version>\d+)\.sql/).groups.version;
             if (curVersion === undefined || curVersion === null || migVersion > curVersion.version) {
                 const sql = (await fs.readFile(path.join(migpath, file))).toString();
-                await this.database.exec(sql);
-                await this.bumpVersion(migVersion);
+                try {
+                    await this.database.exec(sql);
+                    await this.bumpVersion(migVersion);
+                } catch (e) {
+                    console.error(e);
+                }
             }
         }
     }

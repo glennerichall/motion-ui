@@ -85,32 +85,15 @@ module.exports.Camera = class Camera extends MotionCamera {
     }
 
     async deleteEvents(params) {
-        const data = await this.getData(params);
-
-        const unlinking = data?.map(async ({filename}) => {
-            try {
-                // https://nodejs.org/api/fs.html#fs_fs_stat_path_options_callback
-                // Using fs.stat() to check for the existence of a file before
-                // calling fs.open(), fs.readFile() or fs.writeFile() is not recommended.
-                // Instead, user code should open/read/write the file directly and handle
-                // the error raised if the file is not available.
-                return await fs.unlink(filename);
-            } catch (err) {}
-            return Promise.resolve();
-        });
-
-        await Promise.all(unlinking);
-
-        const [count, dataCount] = await getBuilder()
+        const count = await getBuilder()
             .remove()
             .setCamera(this.getId())
             .setParams(params)
             .exec();
 
-        console.log(`deleted ${count.changes} events and ${dataCount.changes} files`);
+        console.log(`marked ${count?.length} events for deletion`);
         return {
-            events: count.changes,
-            files: dataCount.changes
+            events: count?.length
         };
     }
 

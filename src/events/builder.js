@@ -4,8 +4,6 @@ const {
     queryEventCountSql,
     queryEventDataSql,
     deleteEventsSql,
-    deleteEventDataSql,
-    deleteEventsInListSql
 } = require('./queries');
 
 class Param {
@@ -259,19 +257,13 @@ class DeleteBuilder extends NonRequestBuilder {
     }
 }
 
-class DeleteEventLogs extends DeleteBuilder {
+class DeleteEventsBuilder extends DeleteBuilder {
     constructor(events) {
         super(events);
         this.sql = deleteEventsSql;
     }
 }
 
-class DeleteEventData extends DeleteBuilder {
-    constructor(events) {
-        super(events);
-        this.sql = deleteEventDataSql;
-    }
-}
 
 function toDispatcherProxy() {
     const targets = Array.from(arguments);
@@ -303,10 +295,7 @@ class Builder {
     }
 
     remove() {
-        return toDispatcherProxy(
-            new DeleteEventLogs(this.database),
-            new DeleteEventData(this.database),
-        );
+        return new DeleteEventsBuilder(this.database);
     }
 }
 
