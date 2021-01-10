@@ -22,12 +22,12 @@ export default props => {
         update();
     }, [src]);
 
-    function removeAll() {
+    async function removeAll() {
         const response = confirm(`Delete all ${events.length} events ?`);
         if (response === true) {
             console.log(src);
-            delet(src);
-            update();
+            await delet(src);
+            await update();
         }
     }
     const elems = events.map((event, index) =>

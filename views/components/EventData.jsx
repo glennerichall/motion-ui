@@ -34,10 +34,10 @@ export default props => {
         update();
     }, [data]);
 
-    function remove() {
+    async function remove() {
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
-            delet(event.delete);
+            await delet(event.delete);
             popView();
         }
     }

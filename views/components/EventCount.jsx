@@ -49,7 +49,7 @@ export default props => {
         const now = new Date();
         const tomorrow = startOfTomorrow();
         const delay = tomorrow - now;
-        const timeout = setTimeout(update, delay) + 10 * 1000 /* add 10 seconds */;
+        const timeout = setTimeout(update, delay + 10 * 1000)  /* add 10 seconds */;
         return () => clearTimeout(timeout);
     }, [day]);
 

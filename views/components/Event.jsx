@@ -13,10 +13,10 @@ export default props => {
     const {event} = props;
     let {id, begin, done, camera, duration} = event;
 
-    function remove() {
+    async function remove() {
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
-            delet(event.delete);
+            await delet(event.delete);
             props?.onDelete(event);
         }
     }

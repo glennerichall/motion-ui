@@ -7,7 +7,7 @@ const cors = require('cors')
 
 module.exports = express.Router()
     .use(cors())
-    .use('/events', require('./events'))
+    .use('/3000events', require('./events'))
     .use('/streams', require('./streams'))
     .use('/push', require('./push'))
 
