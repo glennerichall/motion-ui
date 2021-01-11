@@ -39,8 +39,8 @@ export default props => {
                 remove();
                 e.stopPropagation();
             }}>
-                <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
-                <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
+                <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
+                <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
             </td>
         </tr>
     );

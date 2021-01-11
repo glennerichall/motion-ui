@@ -58,8 +58,8 @@ export default props => {
                     <th className="end"></th>
                     <th className="duration"></th>
                     <th className="delete" onClick={removeAll}>
-                        <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
-                        <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
+                        <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
+                        <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
                     </th>
                 </tr>
                 </thead>

@@ -67,8 +67,8 @@ export default props => {
                 <span className="event-time">{duration.replace(/\s/g, '\xA0')}</span>
                 <span className="event-camera">Camera: {camera}</span>
                 <span className="delete" onClick={() => remove(event)}>
-                    <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
-                    <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
+                    <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
+                    <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
                 </span>
 
                 {
