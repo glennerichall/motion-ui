@@ -7,11 +7,13 @@ import isSameDay from 'date-fns/isSameDay';
 import '../css/events.less';
 import icon from "../icons/remove-header.png";
 import iconHover from "../icons/remove-hover.png";
+import iconDisabled from "../icons/remove-reverse-disabled.png";
 
 export default props => {
 
     const {src, name} = props;
     const [events, setEvents] = useState([]);
+    const [deleteRequested, setDeleteRequested] = useState(false);
 
     async function update() {
         const res = await fetch(src);
@@ -23,9 +25,10 @@ export default props => {
     }, [src]);
 
     async function removeAll() {
+        if(deleteRequested) return;
         const response = confirm(`Delete all ${events.length} events ?`);
         if (response === true) {
-            console.log(src);
+            setDeleteRequested(true);
             await delet(src);
             await update();
         }
@@ -55,8 +58,8 @@ export default props => {
                     <th className="end"></th>
                     <th className="duration"></th>
                     <th className="delete" onClick={removeAll}>
-                        <img className="danger btn" src={icon}/>
-                        <img className="danger btn hover" src={iconHover}/>
+                        <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
+                        <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
                     </th>
                 </tr>
                 </thead>

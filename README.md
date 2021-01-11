@@ -1,5 +1,8 @@
 # Motion Front-End Application
 
+![img.png](img.png)
+![img_1.png](img_1.png)
+
 Typical installation has front-end installed on same server as motion.
 
 ## Table of contents
@@ -143,7 +146,7 @@ npm install -g pm2
 ### 3.2 Get this project from github
 
 ```bash
-git clone this repo
+git clone git@github.com:glennerichall/motion-ui.git
 ```
 
 ### 3.3 Edit ecosystem.config.js

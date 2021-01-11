@@ -4,6 +4,7 @@ import {delet, fetch} from "../js/fetch";
 import '../css/camera-data.less';
 import icon from "../icons/remove-reverse.png";
 import iconHover from "../icons/remove-hover.png";
+import iconDisabled from "../icons/remove-reverse-disabled.png";
 
 import {popView} from './Frame';
 import format from 'date-fns/format'
@@ -19,6 +20,7 @@ export default props => {
     const [images, setImages] = useState([]);
     const [movie, setMovie] = useState(null);
     const [selection, setSelection] = useState('');
+    const [deleteRequested, setDeleteRequested] = useState(false);
 
     const update = async () => {
         const files = await fetch(data);
@@ -35,8 +37,10 @@ export default props => {
     }, [data]);
 
     async function remove() {
+        if(deleteRequested) return;
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
+            setDeleteRequested(true);
             await delet(event.delete);
             popView();
         }
@@ -63,8 +67,8 @@ export default props => {
                 <span className="event-time">{duration.replace(/\s/g, '\xA0')}</span>
                 <span className="event-camera">Camera: {camera}</span>
                 <span className="delete" onClick={() => remove(event)}>
-                    <img className="danger btn" src={icon}/>
-                    <img className="danger btn hover" src={iconHover}/>
+                    <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
+                    <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
                 </span>
 
                 {

@@ -6,16 +6,20 @@ import parseISO from 'date-fns/parseISO'
 
 import icon from '../icons/remove.png';
 import iconHover from '../icons/remove-hover.png';
+import iconDisabled from '../icons/remove-reverse-disabled.png';
 import EventData from "./EventData";
 
 export default props => {
 
     const {event} = props;
     let {id, begin, done, camera, duration} = event;
+    const [deleteRequested, setDeleteRequested] = useState(false);
 
     async function remove() {
+        if(deleteRequested) return;
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
+            setDeleteRequested(true);
             await delet(event.delete);
             props?.onDelete(event);
         }
@@ -35,8 +39,8 @@ export default props => {
                 remove();
                 e.stopPropagation();
             }}>
-                <img className="danger btn" src={icon}/>
-                <img className="danger btn hover" src={iconHover}/>
+                <img className="danger btn" src={deleteRequested ? icon : iconDisabled}/>
+                <img className="danger btn hover" src={deleteRequested ? iconHover : iconDisabled}/>
             </td>
         </tr>
     );
