@@ -73,6 +73,7 @@ Add the following configurations to `motion.conf`
 # System control configuration parameters
 ############################################################
 # Start in daemon (background) mode and release terminal.
+# We will use pm2 to start motion
 daemon off
 # Target directory for pictures, snapshots and movies
 target_dir YOUR_TARGET_DIRECTORY_FOR_FILES
@@ -106,7 +107,7 @@ on_camera_found /usr/bin/curl --location --request POST 'localhost:3000/v1/strea
 ############################################################
 # The port number for the live stream.
 stream_port 8081
-# Restrict stream connections to the localhost.
+# Restrict stream connections to the localhost (on is ok if you have set reverse proxy on localhost).
 stream_localhost off
 
 ############################################################
@@ -116,7 +117,7 @@ stream_localhost off
 webcontrol_port 8080
 # Restrict webcontrol connections to the localhost.
 webcontrol_localhost on
-# Type of configuration options to allow via the webcontrol.
+# Type of configuration options to allow via the webcontrol. Must be set to 2.
 webcontrol_parms 2
 ```
 
@@ -147,12 +148,13 @@ git clone this repo
 
 ### 3.3 Edit ecosystem.config.js
 
-Replace API_HOST and STREAM_HOST with your own configs from motion defined at step 2 `webcontrol_port 8080` and `stream_port 8081`
+Replace MOTION_HOST with your own config from motion defined at step 2 `webcontrol_port 8080` if changed from default
 
 ```javascript
+// defaults to
 env_production: {
-    API_HOST: 'http://localhost:8080',
-    STREAM_HOST: 'http://localhost:8081'
+    PORT: 3000,
+    MOTION_HOST: 'http://localhost:8080'
 }
 ```
 
@@ -286,6 +288,7 @@ server {
             proxy_http_version 1.1;
             proxy_set_header X-Forwarded-Proto 'https';
             proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Stream-Host https://$host;
        }
         
@@ -310,7 +313,7 @@ server {
            proxy_pass http://localhost:8081/102/stream;
         }
         
-        # Encrypt communicatoins
+        # Encrypt communications
         ssl on;
         ssl_certificate /etc/letsencrypt/live/YOUR_DNS_NAME/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/YOUR_DNS_NAME/privkey.pem;

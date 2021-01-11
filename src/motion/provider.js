@@ -1,14 +1,14 @@
 const {MotionApi} = require('./motion-api');
 const {Camera} = require('../camera');
 
-const apiHost = process.env.API_HOST;
-const streamHost = process.env.STREAM_HOST;
+const apiHost = process.env.MOTION_HOST  ?? 'http://localhost:8080';
 
 module.exports = class Provider {
 
     constructor(req) {
-        let xhost = req?.header ? req.header('X-Stream-Host') : null;
-        this.api = new MotionApi(apiHost, {streamHost: xhost || streamHost});
+        const streamHost = req?.header('X-Stream-Host') ?? null;
+        const host = process.env.MOTION_HOST ?? `${req?.protocol}://${req?.header('host')}`;
+        this.api = new MotionApi(apiHost, {streamHost, host});
         this.api.newCamera = (...args) => new Camera(...args);
         this.req = req;
         this.camera = req?.params?.camera;

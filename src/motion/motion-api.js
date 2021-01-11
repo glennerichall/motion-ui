@@ -80,11 +80,11 @@ class Camera {
     }
 
     getHost() {
-        return this.api.streamHost;
+        return this.api.getStreamHost();
     }
 
-    getUrl() {
-        return `${this.getHost()}/${this.getId()}/stream`
+    async getUrl() {
+        return `${await this.getHost()}/${this.getId()}/stream`
     }
 
     async requestConfig(param) {
@@ -127,11 +127,16 @@ class Camera {
     getEventGap() {
         return this.requestConfig('event_gap');
     }
+
+    getStreamPort() {
+        return this.requestConfig('stream_port');
+    }
 }
 
 class WebControl {
-    constructor(apiHost, streamHost) {
-        this.host = apiHost;
+    constructor(apiHost, streamHost, host) {
+        this.apiHost = apiHost;
+        this.host = host;
         this.streamHost = streamHost;
 
         for (let key in urls) {
@@ -140,9 +145,19 @@ class WebControl {
         }
     }
 
+    async getStreamHost() {
+        if (!this.streamHost) {
+            const streamPort = await new Camera(this).getStreamPort();
+            const url = new URL(this.host);
+            const {protocol, hostname} = url;
+            this.streamHost = `${protocol}//${hostname}:${streamPort}`;
+        }
+        return this.streamHost;
+    }
+
     getUrl(url, camid, options = {}) {
         let res = url
-            .replace('{host}', this.host)
+            .replace('{host}', this.apiHost)
             .replace('{camid}', camid || '0');
 
         for (let key in options) {
@@ -166,7 +181,13 @@ class MotionApi {
     constructor(apiHost, options) {
         this.options = options || {};
         this.cameras = {};
-        this.api = new WebControl(apiHost, this.options.streamHost || apiHost);
+        this.api = new WebControl(apiHost,
+            this.options.streamHost,
+            this.options.host);
+    }
+
+    async init() {
+        await this.api.init();
     }
 
     async getCameraIds() {

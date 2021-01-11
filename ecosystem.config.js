@@ -5,9 +5,8 @@ module.exports = {
             script: './index.js',
             env_production: {
                 NODE_ENV: 'production',
-                PORT: 3000,
-                API_HOST: 'http://localhost:8080',
-                STREAM_HOST: 'http://localhost:8081'
+                //PORT: 3000,
+                //MOTION_HOST: 'http://localhost:8080'
             }
         },
         // {
