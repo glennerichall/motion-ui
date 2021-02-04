@@ -114,7 +114,7 @@ module.exports = express.Router()
         });
     });
 
-module.exports.publish = async (event, message) => {
+module.exports.push = async (event, message) => {
     const data = JSON.stringify({
         event,
         ...message
@@ -124,7 +124,12 @@ module.exports.publish = async (event, message) => {
         try {
             const res = await webpush.sendNotification
             (subscription, data, {TTL: 60});
-            console.log(res);
+            if(res.statusCode == 410) {
+                console.log('push subscription has unsubscribed or expired.');
+                deleteSubscriptionStmt({key});
+            } else {
+                console.log(res);
+            }
         } catch (e) {
             console.error('Failed to send push', e);
             deleteSubscriptionStmt({key});

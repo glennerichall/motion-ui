@@ -6,7 +6,7 @@ const differenceInSeconds = require('date-fns/differenceInSeconds');
 const batch = require('../events/batch');
 const sharp = require('sharp');
 const path = require('path');
-const {publish} = require('./push');
+const {push} = require('./push');
 
 const targetDir = process.env.TARGET_DIR;
 
@@ -210,7 +210,7 @@ module.exports = express.Router()
         if (previousStatus !== cameraEventStatus[camera]) {
             const event = notifications.events.eventTriggered;
             io.emit(event, {camera, status});
-            publish(event, {camera, status});
+            push(event, {camera, status});
         }
         res.send('done');
     });
