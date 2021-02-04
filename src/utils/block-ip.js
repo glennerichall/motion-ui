@@ -6,10 +6,7 @@ module.exports = async function (req, res, next) {
         || req.socket.remoteAddress
         || req.connection.socket.remoteAddress;
 
-    const permittedIp = process.env.IpCanPost ||
-        process.env.API_HOST
-            .replace(/^http:\/\//, '')
-            .replace(/:\d+$/, '')
+    const permittedIp = process.env.IpCanPost;
 
     const localIp = await internalIp.v4();
 

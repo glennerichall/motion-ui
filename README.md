@@ -3,7 +3,28 @@
 ![img.png](img.png)
 ![img_1.png](img_1.png)
 
-Typical installation has front-end installed on same server as motion.
+
+## About
+
+Motion front-end for motion project. [Motion](https://motion-project.github.io/) is a great software for detecting motion in cameras and saving movies but front end lacks some functionalities, like displaying and deleting saved movies and images. This project aims to circumvent those limitations by providing only a front acces to motion.
+
+### 
+
+With this project, you can:
+ - Configure motion normally (ie config files)
+ - Read movies create by motion safely from your browser
+ - Delete recordings from your browser
+ - Get push notifications when an event occurs
+ - Install a progressive web app (PWA) on your mobile device
+ - Display streams on old devices (ie iPad 1) 
+
+This project does not offer:
+ - An out-of-the-box wizard installer
+ - A configuration page to edit motion parameters
+
+### Rationale
+
+After trying several motion-detecting software (Shinobi, Zoneminder, etc.), we felt that motion had the simplest approach and was more robust and less hardware demanding being coded in C. The server had to run on an old PC while the frontend had to be run on old devices like iPad 1.
 
 ## Table of contents
 
@@ -34,12 +55,12 @@ sudo apt-get -y install postgresql
 @see [Postgresql](https://www.postgresql.org/download/linux/ubuntu/)
 
 ### 1.2 Create User
-
-Remember to update motion-global.properties with the motion database password
-
 ```bash
-sudo -u postgres createuser -D -P DATABASE_USER
-sudo -u postgres createdb -O DATABASE_USER DATABASE_NAME
+# Create motion user in Postgres
+sudo -u postgres createuser -D -P motion
+
+# Create motion database for motion user
+sudo -u postgres createdb -O motion motion
 ```
 
 ### 1.3 Update Postgresql config
@@ -75,7 +96,7 @@ Add the following configurations to `motion.conf`
 ############################################################
 # System control configuration parameters
 ############################################################
-# Start in daemon (background) mode and release terminal.
+# Do not start in daemon (background) mode.
 # We will use pm2 to start motion
 daemon off
 # Target directory for pictures, snapshots and movies
@@ -151,10 +172,10 @@ git clone git@github.com:glennerichall/motion-ui.git
 
 ### 3.3 Edit ecosystem.config.js
 
-Replace MOTION_HOST with your own config from motion defined at step 2 `webcontrol_port 8080` if changed from default
+Optional: If changed from default, replace MOTION_HOST with your own config from motion defined at step 2 `webcontrol_port 8080` 
 
 ```javascript
-// defaults to
+// these configs are optional, they defaults to
 env_production: {
     PORT: 3000,
     MOTION_HOST: 'http://localhost:8080'
@@ -194,15 +215,15 @@ Then read and execute the printed command
 
 ### 4.1 Configure logrotate for motion
 
-Edit logrotate for motion add your own log file
+Edit logrotate for motion.log (or your log file defined in motion.conf)
 
 ```bash
-/var/log/motion/motion.log
+sudo nano /etc/logrotate.d/motion
 ```
 
 @see [logrotate](https://linux.die.net/man/8/logrotate)
 
-@see [motion config](https://motion-project.github.io/motion_config.html#OptDetail_System_Processing)
+@see [motion config / log_file](https://motion-project.github.io/motion_config.html#OptDetail_System_Processing)
 
 ### 4.2 Configure logrotate for pm2
 
@@ -349,3 +370,7 @@ sudo ufw default deny incoming
 # enable firewall
 sudo ufw enable
 ```
+
+## 6. Future considerations
+
+Typical installation has motion-ui installed on same server as motion. While we try to abstract all aspects of the stack as possible, currently motion-ui can only run on the same server as motion. Eventually, motion-ui files and movies could be served statically from a CDN and motion-ui backend run on the cloud, keeping your personal and local network safe from the Internet by disabling NAT all along in your router. 
