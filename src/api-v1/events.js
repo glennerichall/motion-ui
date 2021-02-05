@@ -153,6 +153,11 @@ module.exports = express.Router()
         const camera = await new Provider(req).getCamera();
         const events = await camera.deleteEvents(req.query);
         res.send(events);
+        io.emit(notifications.events.eventsDeleted,
+            {
+                camera,
+                events
+            });
     })
 
     .delete('/:camera/:event', async (req, res) => {
@@ -162,6 +167,11 @@ module.exports = express.Router()
             ...req.query
         });
         res.send(events);
+        io.emit(notifications.events.eventsDeleted,
+            {
+                camera,
+                events
+            });
     })
 
     .post('/exec/clean-events', async (req, res) => {
@@ -193,7 +203,7 @@ module.exports = express.Router()
         const {camera} = req.params;
         const {type} = req.query;
 
-        const previousStatus = cameraEventStatus[camera];
+        const previousStatus = cameraEventStatus[camera] || false;
 
         // FIXME use database ???
         if (type.toLowerCase() === 'start') {
@@ -211,6 +221,8 @@ module.exports = express.Router()
             const event = notifications.events.eventTriggered;
             io.emit(event, {camera, status});
             push(event, {camera, status});
+        } else {
+            console.debug(`Camera ${camera} is already ${type}, not emitting anything`);
         }
         res.send('done');
     });

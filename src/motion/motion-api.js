@@ -134,9 +134,9 @@ class Camera {
 }
 
 class WebControl {
-    constructor(apiHost, streamHost, host) {
+    constructor(apiHost, motionHost, streamHost) {
         this.apiHost = apiHost;
-        this.host = host;
+        this.motionHost = motionHost;
         this.streamHost = streamHost;
 
         for (let key in urls) {
@@ -148,7 +148,7 @@ class WebControl {
     async getStreamHost() {
         if (!this.streamHost) {
             const streamPort = await new Camera(this).getStreamPort();
-            const url = new URL(this.host);
+            const url = new URL(this.motionHost);
             const {protocol, hostname} = url;
             this.streamHost = `${protocol}//${hostname}:${streamPort}`;
         }
@@ -178,12 +178,11 @@ class WebControl {
 
 
 class MotionApi {
-    constructor(apiHost, options) {
+    constructor(apiHost, motionHost, options) {
         this.options = options || {};
         this.cameras = {};
-        this.api = new WebControl(apiHost,
-            this.options.streamHost,
-            this.options.host);
+        this.api = new WebControl(apiHost,motionHost,
+            this.options.streamHost);
     }
 
     async init() {

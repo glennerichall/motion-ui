@@ -62,7 +62,7 @@ export default props => {
                      'fullscreen': hasToken(token)
                  })}>
                 <div className="header">
-                    <EventCount events={events} eventStatus={eventStatus}/>
+                    <EventCount events={events} eventStatus={eventStatus} camera={id}/>
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
                 <img src={url} draggable="false"

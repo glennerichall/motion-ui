@@ -7,6 +7,8 @@ import startOfDay from 'date-fns/startOfDay';
 import {pushView} from "./Frame";
 import {supportsIntersectionObserver} from "../js/browser-check";
 import EventData from "./EventData";
+import {getNotifications} from "../js/notifications";
+import {subscribe, unsubscribe} from "../js/pubsub";
 
 let Events = props => null;
 if (supportsIntersectionObserver) {
@@ -16,6 +18,8 @@ if (supportsIntersectionObserver) {
 }
 
 export default props => {
+    const notifications = getNotifications();
+
     const {events, eventStatus} = props;
     const [count, setCount] = useState({
         all: {total: 0},
@@ -52,6 +56,18 @@ export default props => {
         const timeout = setTimeout(update, delay + 10 * 1000)  /* add 10 seconds */;
         return () => clearTimeout(timeout);
     }, [day]);
+
+    useEffect(() => {
+        const event = subscribe(
+            notifications.events.eventsDeleted,
+            ({camera, events}) => {
+                if(camera === props.camera) {
+                    update();
+                }
+            });
+
+        return () => unsubscribe(event);
+    }, [notifications]);
 
     useEffect(() => {
         // a react effect must return a function or undefined

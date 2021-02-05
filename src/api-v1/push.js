@@ -124,15 +124,16 @@ module.exports.push = async (event, message) => {
         try {
             const res = await webpush.sendNotification
             (subscription, data, {TTL: 60});
-            if(res.statusCode == 410) {
+            if (res.statusCode == 410) {
                 console.log('push subscription has unsubscribed or expired.');
-                deleteSubscriptionStmt({key});
-            } else {
+                deleteSubscriptionStmt.run({key});
+            } else if (res.statusCode != 201 && res.statusCode != 200) {
+                console.log('received response from push server:');
                 console.log(res);
             }
         } catch (e) {
             console.error('Failed to send push', e);
-            deleteSubscriptionStmt({key});
+            deleteSubscriptionStmt.run({key});
         }
     }
 };

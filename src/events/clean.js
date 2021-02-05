@@ -18,7 +18,11 @@ async function* getFiles(dir) {
     }
 }
 
-
+/**
+ * Remove all events marked as removed in the database.
+ * Also remove files associated with these events.
+ * @returns {Promise<{removedFiles: *, removedEvents: *}>}
+ */
 async function deleteEvents() {
     const queryRemovedSql = `
         select filename
@@ -58,7 +62,10 @@ async function deleteEvents() {
     };
 }
 
-
+/**
+ * Remove events from database where event has no associated files.
+ * @returns {Promise<{countData: (*|*|number), countEvents: (*|*)}>}
+ */
 async function removeOrphans() {
     let data = await database.getBuilder().data().fetch();
 
@@ -111,7 +118,11 @@ async function removeOrphans() {
     };
 }
 
-
+/**
+ * Clean directories where files has been removed and no more files remains.
+ * @param targetDirs
+ * @returns {Promise<number>}
+ */
 async function removeEmptyDirectories(targetDirs) {
     // remove all empty directories remaining
     let countEmpty = 0;
@@ -129,7 +140,10 @@ async function removeEmptyDirectories(targetDirs) {
     return countEmpty;
 }
 
-
+/**
+ * Remove files that has not events associated.
+ * @returns {Promise<{countEmpty: number, countFiles: number}>}
+ */
 async function removeFiles() {
     // get cameras
     const cameras = (await new Provider().getCameras())
@@ -149,6 +163,7 @@ async function removeFiles() {
 
         // get files of target dir of camera
         const targetDir = path.join(remap, await new Provider({params: {camera}}).getCamera().getTargetDir());
+
         if (!targetDirs.includes(targetDir)) {
             targetDirs.push(targetDir);
             try {
@@ -181,7 +196,7 @@ async function removeFiles() {
         removedEvents,
         removedFiles
     } = await deleteEvents();
-    
+
     const {
         countData,
         countEvents
