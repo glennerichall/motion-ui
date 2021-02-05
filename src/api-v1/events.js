@@ -155,7 +155,7 @@ module.exports = express.Router()
         res.send(events);
         io.emit(notifications.events.eventsDeleted,
             {
-                camera,
+                camera: req.params.camera,
                 events
             });
     })
@@ -169,7 +169,7 @@ module.exports = express.Router()
         res.send(events);
         io.emit(notifications.events.eventsDeleted,
             {
-                camera,
+                camera: req.params.camera,
                 events
             });
     })

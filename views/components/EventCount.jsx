@@ -61,7 +61,7 @@ export default props => {
         const event = subscribe(
             notifications.events.eventsDeleted,
             ({camera, events}) => {
-                if(camera === props.camera) {
+                if(camera == props.camera) {
                     update();
                 }
             });
