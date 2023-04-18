@@ -103,7 +103,7 @@ motion.log
 pgconfig.json
 pgconfig-dev.json
 vapidKeys.json
-deploy.config.js
+deploy.config.cjs
 
 .parcel-cache/
 dist/

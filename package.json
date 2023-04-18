@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump-patch": "npm run build && git add . && git commit && npm version patch && git push",
-    "deploy": "pm2 deploy deploy.config.js production",
+    "deploy": "pm2 deploy deploy.config.cjs production",
     "build": "rm -rf static && parcel build views/index.html --dist-dir static"
   },
   "type": "module",
