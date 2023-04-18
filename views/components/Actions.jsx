@@ -52,9 +52,9 @@ export default props => {
     }
 
     if (streamStatus?.status === 'connection-ok' || streamStatus?.status === 'idle') {
-        return <div className="btn black-btn" onClick={record}>Start recording</div>
+        return <div className="btn black-btn" onClick={record}>Record</div>
     } else if (streamStatus?.status === 'recording') {
-        return <div className="btn black-btn" onClick={stop}>Stop recording</div>
+        return <div className="btn black-btn" onClick={stop}>Stop</div>
     } else {
         return null
     }
