@@ -136,6 +136,10 @@ export class Camera {
     record() {
         return this.api.requestEventTriggerStart(this.id);
     }
+
+    stopRecord() {
+        return this.api.requestEventTriggerEnd(this.id);
+    }
 }
 
 class WebControl {

@@ -4,31 +4,57 @@ import React, {
     useEffect,
     useRef
 } from "react";
+import {
+    subscribe,
+    unsubscribe
+} from "../js/pubsub.js";
+import {getNotifications} from "../js/notifications.js";
 
 export default props => {
     const {stream} = props;
     const {status} = stream;
 
-    console.log(stream)
-
     const [streamStatus, setStreamStatus] = useState(null);
+    const notifications = getNotifications();
 
     useEffect(() => {
         (async () => {
             const streamStatus = await fetch(status);
             setStreamStatus(await streamStatus.json());
         })();
-    }, [status])
+    }, [status]);
 
-    const record = async()=>{
+    useEffect(() => {
+        const event = subscribe(
+            notifications.events.eventTriggered,
+            ({camera, status}) => {
+                if (camera == props.camera) {
+                    console.log({camera, status})
+                    setStreamStatus({camera, status});
+                }
+            });
+
+        return () => unsubscribe(event);
+    }, [notifications]);
+
+    const record = async () => {
         await fetch(stream.events.trigger,
             {
                 method: 'POST'
             });
     }
 
-    if (streamStatus?.status === 'connection-ok') {
-        return <div className="btn black-btn" onClick={record}>Start record</div>
+    const stop = async () => {
+        await fetch(stream.events.trigger,
+            {
+                method: 'DELETE'
+            });
+    }
+
+    if (streamStatus?.status === 'connection-ok' || streamStatus?.status === 'idle') {
+        return <div className="btn black-btn" onClick={record}>Start recording</div>
+    } else if (streamStatus?.status === 'recording') {
+        return <div className="btn black-btn" onClick={stop}>Stop recording</div>
     } else {
         return null
     }

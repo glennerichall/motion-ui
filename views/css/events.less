@@ -1,8 +1,25 @@
 
+.frame {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.camera-name {
+  font-size: 2em;
+  align-self: flex-end;
+  margin-bottom: 5px;
+}
+
+.delete-all:hover {
+  background: red;
+}
+
 .event-list {
-  position: absolute;
   table-layout: auto;
   user-select: none;
+  border: 1px solid black;
 
   td, th {
     padding: 3px 10px;
@@ -51,6 +68,7 @@
   th:last-child:hover .danger.btn,
   td:last-child:hover .danger.btn {
     display: none;
+
     &.hover {
       display: initial;
     }
@@ -75,7 +93,7 @@
 
     cursor: pointer;
 
-    >:nth-child(1) {
+    > :nth-child(1) {
       font-size: 0.7em;
     }
 
@@ -84,10 +102,11 @@
 }
 
 @media screen and (max-width: 650px) {
+
   .event-list {
 
-     tr {
-      >:nth-child(4) {
+    tr {
+      > :nth-child(4) {
         display: none;
       }
 
@@ -102,8 +121,15 @@
 
 
 @media screen and (max-width: 465px) {
-  .event-list {
+  .frame {
+    .react-calendar {
+      width: 100%;
+    }
+  }
 
+
+  .event-list {
+    width: 100%;
     tr {
       :nth-child(5) {
         display: none;

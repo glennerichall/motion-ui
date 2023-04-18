@@ -1,6 +1,8 @@
 
 .react-calendar {
   margin-bottom: 1em;
+  position: relative;
+  align-self: center;
 
   .react-calendar__month-view__days__day--weekend {
     color: revert;
@@ -10,11 +12,26 @@
     }
   }
 
+  .react-calendar__tile {
+    position: relative;
+    overflow: visible;
+  }
+
   .react-calendar__tile--now {
     background: lightgrey;
+
     &:hover {
       background: #e6e6e6;
     }
+  }
+
+  .react-calendar__navigation {
+    height: 22px;
+    margin-bottom: initial;
+  }
+
+  .react-calendar__month-view__weekdays {
+
   }
 }
 
@@ -23,6 +40,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 3px;
+  margin-bottom: -4px;
 
   span {
     //position: absolute;

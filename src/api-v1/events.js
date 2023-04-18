@@ -187,6 +187,17 @@ export default express.Router()
                 events
             });
     })
+    .post('/:camera/record', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        camera.record();
+        res.send('done');
+    })
+
+    .delete('/:camera/record', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        camera.stopRecord();
+        res.send('done');
+    })
 
     .delete('/:camera/:event', async (req, res) => {
         const camera = await new Provider(req).getCamera();
@@ -227,11 +238,7 @@ export default express.Router()
         }
     })
 
-    .post('/:camera/record', async (req, res) => {
-        const camera = await new Provider(req).getCamera();
-        camera.record();
-        res.send('done');
-    })
+
 
     .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;
@@ -255,7 +262,7 @@ export default express.Router()
         if (previousStatus !== cameraEventStatus[camera]) {
             const event = notifications.events.eventTriggered;
             io.emit(event, {camera, status});
-            push(event, {camera, status});
+            // push(event, {camera, status});
         } else {
             console.debug(`Camera ${camera} is already ${type}, not emitting anything`);
         }

@@ -158,20 +158,21 @@ export default props => {
 
     return (
         <>
+            <div className="camera-name">Camera {camera}</div>
             {calendar ?
                 <>
+                    <div className="black-btn btn delete-all"
+                         onClick={deleteAllEventsInDatabase}
+                         style={{
+                             marginBottom: "1em",
+                             alignSelf: "flex-end"
+                         }}>
+                        Delete all evens for camera {camera}
+                    </div>
                     <Calendar onChange={onChange}
                               tileContent={tileContent}
                               tileDisabled={tileDisabled}
                               value={selectedDate}/>
-                    <div className="black-btn btn"
-                         onClick={deleteAllEventsInDatabase}
-                         style={{
-                             marginTop: "1em",
-                             marginBottom: "1em",
-                         }}>
-                        Delete All Events From Database
-                    </div>
                 </> : null
             }
             <div>{`${elems.length} event(s)`}</div>

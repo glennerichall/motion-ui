@@ -63,7 +63,7 @@ body::-webkit-scrollbar {
 
 .btn {
     cursor: pointer;
-    z-index: 1000;
+    z-index: 0;
     padding: 3px 20px;
     border-radius: 3px;
     display: inline-block;

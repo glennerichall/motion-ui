@@ -3,24 +3,35 @@
   right: 0;
   position: absolute;
   padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
 
   > div {
     display: inline-block;
+  }
+
+  @supports not (display: flex) {
+    .name {
+      margin-left: 10px;
+      float: right;
+    }
+
+    .events.has-events ~ .details {
+      margin-top: 10px;
+    }
+
   }
 
   .name {
     background: red;
     color: white;
     text-shadow: 2px 2px 2px black;
-    margin-left: 10px;
+
     padding: 5px;
     border-radius: 3px;
-    float: right;
     cursor: pointer;
-  }
-
-  .events.has-events ~ .details{
-    margin-top: 10px;
   }
 
   .details {
@@ -73,6 +84,7 @@
 @media screen and (min-width: 475px) {
   .details {
     grid-template-columns: 150px auto;
+
     span:nth-child(2n + 1) {
       font-size: smaller;
     }
