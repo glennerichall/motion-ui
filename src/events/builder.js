@@ -1,10 +1,13 @@
-const {format} = require('date-fns');
-const {
-    queryEventsSql,
+import {format} from "date-fns";
+
+import {
+    deleteEventsSql,
+    queryCalendarSql,
     queryEventCountSql,
     queryEventDataSql,
-    deleteEventsSql,
-} = require('./queries');
+    queryEventsSql
+} from "./queries.js";
+
 
 class Param {
     constructor(params) {
@@ -55,8 +58,8 @@ class Param {
 }
 
 class QueryBuilder {
-    constructor(events, {params = {}, fields = {}}) {
-        this.events = events;
+    constructor(database, {params = {}, fields = {}}) {
+        this.database = database;
         this.params = new Param(params);
         this.fields = new Param(fields);
         this.sql = null;
@@ -87,7 +90,7 @@ class QueryBuilder {
     }
 
     getStatement(sql, fields) {
-        return this.events.getStatement(sql, fields);
+        return this.database.getStatement(sql, fields);
     }
 
     getStatementMethod() {
@@ -120,8 +123,8 @@ class NonRequestBuilder extends QueryBuilder {
 }
 
 class RequestBuilder extends QueryBuilder {
-    constructor(events, options) {
-        super(events, options);
+    constructor(database, options) {
+        super(database, options);
         this.method = 'all';
     }
 
@@ -145,8 +148,8 @@ const cartesian = (...a) => a.reduce(
             e => [d, e].flat())));
 
 class EventCountBuilder extends RequestBuilder {
-    constructor(events) {
-        super(events,
+    constructor(database) {
+        super(database,
             {
                 params: {
                     camera: null,
@@ -182,8 +185,8 @@ class EventCountBuilder extends RequestBuilder {
 }
 
 class EventBuilder extends RequestBuilder {
-    constructor(events) {
-        super(events,
+    constructor(database) {
+        super(database,
             {
                 params: {
                     camera: null,
@@ -224,8 +227,8 @@ class EventBuilder extends RequestBuilder {
 }
 
 class EventDataBuilder extends RequestBuilder {
-    constructor(events) {
-        super(events,
+    constructor(database) {
+        super(database,
             {
                 params: {
                     camera: null,
@@ -242,8 +245,8 @@ class EventDataBuilder extends RequestBuilder {
 }
 
 class DeleteBuilder extends NonRequestBuilder {
-    constructor(events) {
-        super(events,
+    constructor(database) {
+        super(database,
             {
                 params: {
                     camera: null,
@@ -258,9 +261,21 @@ class DeleteBuilder extends NonRequestBuilder {
 }
 
 class DeleteEventsBuilder extends DeleteBuilder {
-    constructor(events) {
-        super(events);
+    constructor(database) {
+        super(database);
         this.sql = deleteEventsSql;
+    }
+}
+
+class CalendarBuilder extends RequestBuilder {
+    constructor(database) {
+        super(database,
+            {
+                params: {
+                    camera: null
+                }
+            });
+        this.sql = queryCalendarSql;
     }
 }
 
@@ -290,6 +305,10 @@ class Builder {
         return new EventBuilder(this.database);
     }
 
+    calendar() {
+        return new CalendarBuilder(this.database);
+    }
+
     data() {
         return new EventDataBuilder(this.database);
     }
@@ -299,4 +318,4 @@ class Builder {
     }
 }
 
-module.exports = Builder;
+export default Builder;

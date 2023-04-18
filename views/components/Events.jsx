@@ -1,6 +1,14 @@
-import React, {Fragment, useState, useEffect, useRef} from "react";
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    useRef
+} from "react";
 import classNames from "classnames";
-import {delet, fetch} from "../js/fetch";
+import {
+    delet,
+    fetch
+} from "../js/fetch";
 import Event from "./Event";
 import isSameDay from 'date-fns/isSameDay';
 
@@ -8,33 +16,86 @@ import '../css/events.less';
 import icon from "../icons/remove-header.png";
 import iconHover from "../icons/remove-hover.png";
 import iconDisabled from "../icons/remove-reverse-disabled.png";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
+import '../css/calendar.less';
+import {format} from "date-fns";
 
 export default props => {
 
-    const {src, name} = props;
-    const [events, setEvents] = useState([]);
-    const [deleteRequested, setDeleteRequested] = useState(false);
+    const {src, name, calendar, camera} = props;
 
-    async function update() {
-        const res = await fetch(src);
+    const [eventSrc, setEventSrc] = useState(src);
+    const [events, setEvents] = useState([]);
+    const [days, setDays] = useState({});
+    const [months, setMonths] = useState({});
+    const [deleteRequested, setDeleteRequested] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    async function updateEvents() {
+        const res = await fetch(eventSrc);
         setEvents(res);
     }
 
-    useEffect(() => {
-        update();
-    }, [src]);
+    async function updateCalendar() {
+        let res = await fetch(calendar);
+        const months = res.reduce((prev, cur) => {
+            let ym = cur.date.split('-');
+            ym = ym[0] + '-' + ym[1];
+            if (!prev[ym]) {
+                prev[ym] = 0;
+            }
+            prev[ym] += Number.parseInt(cur.count);
+            return prev;
+        }, {});
 
-    async function removeAll() {
-        if(deleteRequested) return;
+        res = res.reduce((prev, cur) => {
+            prev[cur.date] = cur;
+            return prev;
+        }, {});
+        setDays(res);
+        setMonths(months);
+    }
+
+    const onChange = date => {
+        setSelectedDate(date);
+    }
+
+    useEffect(() => {
+        const key = format(selectedDate, 'yyyy-MM-dd');
+        const day = days[key];
+        if (!!day) {
+            setEventSrc(day.events);
+        }
+    }, [selectedDate]);
+
+    useEffect(() => {
+        if (!!eventSrc) {
+            updateEvents();
+        }
+    }, [eventSrc]);
+
+    useEffect(() => {
+        if (calendar) {
+            (async () => {
+                await updateCalendar();
+                setSelectedDate(new Date());
+            })();
+        }
+    }, [calendar]);
+
+    async function removeAllInPage() {
+        if (deleteRequested) return;
         const response = confirm(`Delete all ${events.length} events ?`);
         if (response === true) {
             setDeleteRequested(true);
             await delet(src);
-            await update();
+            await updateEvents();
         }
     }
+
     const elems = events.map((event, index) =>
-        <Event onDelete={update}
+        <Event onDelete={updateEvents}
                key={event.id}
                id={event.id}
                className={
@@ -46,8 +107,73 @@ export default props => {
                event={event}/>
     );
 
+    const tileContent = ({activeStartDate, date, view}) => {
+        const key = format(date, 'yyyy-MM-dd');
+        if (view === 'month') {
+            const d = days[key];
+            if (d) {
+                return <div className={'calendar-day'}>
+                <span>
+                    {d.count}
+                </span>
+                </div>
+            } else {
+                return null;
+            }
+        } else if (view === 'year') {
+            let ym = key.split('-');
+            ym = ym[0] + '-' + ym[1];
+            const month = months[ym];
+            if (month) {
+                return <div className={'calendar-day'}>
+                <span>
+                    {month}
+                </span>
+                </div>
+            }
+            return null;
+        }
+    }
+
+    const tileDisabled = ({activeStartDate, date, view}) => {
+        const key = format(date, 'yyyy-MM-dd');
+        if (view === 'month') {
+            return !days[key];
+        } else if (view === 'year') {
+            let ym = key.split('-');
+            ym = ym[0] + '-' + ym[1];
+            return !months[ym];
+        }
+    };
+
+    async function deleteAllEventsInDatabase() {
+        if (deleteRequested) return;
+        const response = confirm(`Delete all events for camera ${camera} from database ? This can't be undone`);
+        if (response === true) {
+            setDeleteRequested(true);
+            await delet(`/v1/events/${camera}`);
+            await updateEvents();
+        }
+    }
+
     return (
-        <Fragment>
+        <>
+            {calendar ?
+                <>
+                    <Calendar onChange={onChange}
+                              tileContent={tileContent}
+                              tileDisabled={tileDisabled}
+                              value={selectedDate}/>
+                    <div className="black-btn btn"
+                         onClick={deleteAllEventsInDatabase}
+                         style={{
+                             marginTop: "1em",
+                             marginBottom: "1em",
+                         }}>
+                        Delete All Events From Database
+                    </div>
+                </> : null
+            }
             <div>{`${elems.length} event(s)`}</div>
             <table className={classNames('event-list', name)}>
                 <thead>
@@ -57,7 +183,7 @@ export default props => {
                     <th className="start"></th>
                     <th className="end"></th>
                     <th className="duration"></th>
-                    <th className="delete" onClick={removeAll}>
+                    <th className="delete" onClick={removeAllInPage}>
                         <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
                         <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
                     </th>
@@ -65,6 +191,6 @@ export default props => {
                 </thead>
                 <tbody>{elems}</tbody>
             </table>
-        </Fragment>
+        </>
     );
 }

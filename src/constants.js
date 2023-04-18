@@ -1,4 +1,4 @@
-module.exports.notifications = {
+export const notifications = {
     events: {
         eventTriggered: 'motion-event-triggered',
         cleanTriggered: 'motion-events-clean',

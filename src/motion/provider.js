@@ -1,5 +1,7 @@
-const {MotionApi} = require('./motion-api');
-const {Camera} = require('../camera');
+import {MotionApi} from "./motion-api.js";
+
+import {Camera} from "../camera.js";
+
 
 const apiHost = process.env.MOTION_HOST ?? 'http://localhost:8080';
 
@@ -44,7 +46,7 @@ class ProviderBuilder {
 
 }
 
-module.exports = class Provider {
+export default class Provider {
 
     constructor(req) {
         new ProviderBuilder(this).build(req);
@@ -72,4 +74,4 @@ module.exports = class Provider {
         return await Promise.all(cameras.map(camera => camera.toStream()));
     };
 
-};
+}

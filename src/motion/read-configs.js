@@ -1,13 +1,16 @@
-const homedir = require('os').homedir();
-const fs = require('fs').promises;
-const ps = require('ps-node');
-const {promisify} = require('util');
-let {exec} = require('child_process');
-const {parse} = require('../utils/config-parser');
+import {homedir} from "os";
+import {promises as fs} from "fs";
+import ps from "ps-node";
+import {promisify} from "util";
+import {exec} from "child_process";
+import {parse} from "../utils/config-parser";
+
+const homedir = homedir();
+
 
 exec = promisify(exec);
 
-module.exports = async () => {
+export default async () => {
 
     let processes = await promisify(ps.lookup)({command: 'motion'});
     let motion_proc = processes[0];
@@ -63,4 +66,4 @@ module.exports = async () => {
             return this.cameras.map(camera => ({...this.glob, ...camera}));
         }
     };
-};
+}

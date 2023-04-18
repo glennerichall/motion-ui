@@ -1,8 +1,11 @@
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-const socket = require('socket.io');
-const {promisify} = require('util');
+import express from "express";
+import {createServer} from "http";
+import {promisify} from "util";
+
+export const app = express();
+export const server = createServer(app);
+import {Server} from 'socket.io';
+
 
 const port = process.env.PORT || 3000;
 
@@ -12,18 +15,10 @@ const connection = client => {
 
 app.use(express.json());
 
-const init = async () => {
+export const init = async () => {
     await promisify(server.listen).bind(server)(port);
     console.log(`listening on port http://localhost:${port}/`);
 }
 
-const io = socket(server);
+export const io = new Server(server);
 io.on('connection', connection);
-
-module.exports = {
-    app,
-    server,
-    io,
-    init,
-    express
-}

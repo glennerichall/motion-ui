@@ -19,17 +19,17 @@ export default props => {
     const ref = useRef();
     const [images, setImages] = useState([]);
     const [movie, setMovie] = useState(null);
-    const [selection, setSelection] = useState('');
+    const [selection, setSelection] = useState(null);
     const [deleteRequested, setDeleteRequested] = useState(false);
 
     const update = async () => {
         const files = await fetch(data);
         const images = files.filter(file => file.type == 1);
         const movie = files.filter(file => file.type == 8)[0] ?? null;
-        const selection = selection ?? movie != null ? 'movie' : files.length > 0 ? 'files' : '';
+        const sel = selection ?? movie != null ? 'movie' : files.length > 0 ? 'files' : '';
         setImages(images);
         setMovie(movie);
-        setSelection(selection);
+        setSelection(sel);
     };
 
     useEffect(() => {

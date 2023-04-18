@@ -82,7 +82,9 @@ export default props => {
                 <div className="event-count">
                     <div className="all"
                          onClick={() => supportsIntersectionObserver ?
-                             pushView(<Events src={events.all} name='all'/>) :
+                             pushView(<Events calendar={events.calendar}
+                                              camera={props.camera}
+                                              name='all'/>) :
                              null}>
                         {all && all.total}
                     </div>

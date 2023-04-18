@@ -61,18 +61,21 @@ body::-webkit-scrollbar {
     margin-bottom: 10px;
 }
 
-#back-btn {
+.btn {
     cursor: pointer;
     z-index: 1000;
-    background: black;
-    color: white;
     padding: 3px 20px;
     border-radius: 3px;
     display: inline-block;
     user-select: none;
 }
 
-#back-btn:hover {
+.black-btn {
+    color: white;
+    background: black;
+}
+
+.black-btn:hover {
     background: #4e4e4e;
 }
 

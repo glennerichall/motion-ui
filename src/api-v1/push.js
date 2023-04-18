@@ -1,8 +1,8 @@
-const express = require('express');
-const webpush = require('web-push');
-const database = require('../database');
-const fs = require('fs');
-const crypto = require("crypto");
+import express from "express";
+import webpush from "web-push";
+import database from "../database/index.js";
+import fs from "fs";
+import crypto from "crypto";
 
 let vapidKeys;
 
@@ -58,7 +58,7 @@ function createHash(data) {
     return key;
 }
 
-module.exports = express.Router()
+export default express.Router()
     .post('/subscription', async (req, res) => {
         const subscription = req.body;
         const key = createHash(subscription);
@@ -114,7 +114,7 @@ module.exports = express.Router()
         });
     });
 
-module.exports.push = async (event, message) => {
+export async function push(event, message) {
     const data = JSON.stringify({
         event,
         ...message
@@ -136,4 +136,4 @@ module.exports.push = async (event, message) => {
             deleteSubscriptionStmt.run({key});
         }
     }
-};
+}

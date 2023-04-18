@@ -1,7 +1,10 @@
-const {io} = require('../server');
-const {Tail} = require('tail');
-const {notifications} = require('../constants');
-const Provider = require('./provider');
+import {io} from "../server.js";
+
+import {Tail} from "tail";
+
+import {notifications} from "../constants.js";
+
+import Provider from "./provider.js";
 
 const logfile = process.env.LOG_FILE;
 

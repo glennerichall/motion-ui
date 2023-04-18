@@ -1,7 +1,7 @@
-const database = require('./src/database');
+import database from "./src/database/index.js";
 
 (async () => {
         await database.init();
-        await require('./src')();
+        await (await import('./src/index.js')).default();
     }
 )();

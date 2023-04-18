@@ -1,7 +1,10 @@
-const {fork} = require("child_process");
-const path = require('path');
+import {fork} from "child_process";
 
-module.exports.clean = function clean() {
+import path, {dirname} from "path";
+import {fileURLToPath} from "url";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export function clean() {
     return new Promise(async (resolve, reject) => {
         // https://github.com/nodejs/node/issues/9435
         const options = {

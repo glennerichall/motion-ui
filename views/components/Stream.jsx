@@ -1,11 +1,24 @@
-import React, {Fragment, useState, useEffect, useRef} from "react";
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    useRef
+} from "react";
 import classNames from "classnames";
 import {fetch} from "../js/fetch";
 import EventCount from "./EventCount";
 import StreamInfo from "./StreamInfo";
-import {acquireToken, releaseToken, hasToken} from "../js/token";
-import {subscribe, unsubscribe} from '../js/pubsub';
+import {
+    acquireToken,
+    releaseToken,
+    hasToken
+} from "../js/token";
+import {
+    subscribe,
+    unsubscribe
+} from '../js/pubsub';
 import {getNotifications} from "../js/notifications";
+import Actions from "./Actions.jsx";
 
 export default props => {
     const notifications = getNotifications();
@@ -63,6 +76,7 @@ export default props => {
                  })}>
                 <div className="header">
                     <EventCount events={events} eventStatus={eventStatus} camera={id}/>
+                    <Actions camera={id} stream={props.stream}/>
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
                 <img src={url} draggable="false"

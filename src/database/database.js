@@ -1,5 +1,5 @@
-const crypto = require("crypto");
-const Migrator = require('./migrator');
+import crypto from "crypto";
+import Migrator from "./migrator.js";
 
 class DatabaseManager {
 
@@ -45,4 +45,4 @@ class DatabaseManager {
     }
 }
 
-module.exports = DatabaseManager;
+export default DatabaseManager;

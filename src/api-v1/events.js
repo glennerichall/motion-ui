@@ -1,20 +1,23 @@
-const express = require('express');
-const {io} = require('../server');
-const authorizeWhitelistIps = require('../utils/block-ip');
-const Provider = require('../motion/provider');
-const differenceInSeconds = require('date-fns/differenceInSeconds');
-const batch = require('../events/batch');
-const sharp = require('sharp');
-const path = require('path');
-const {push} = require('./push');
+import express from "express";
+import {io} from "../server.js";
+
+import authorizeWhitelistIps from "../utils/block-ip.js";
+import Provider from "../motion/provider.js";
+import {differenceInSeconds} from "date-fns";
+import {clean} from "../events/batch.js";
+import sharp from "sharp";
+import path from "path";
+import {push} from "./push.js";
+
+
+import {notifications} from "../constants.js";
 
 const targetDir = process.env.TARGET_DIR;
 
 const cameraEventStatus = {};
 
-const {notifications} = require('../constants');
 
-const update = (events) => {
+const updateEvents = (events) => {
     const addRoutes = event => {
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
@@ -28,11 +31,24 @@ const update = (events) => {
     return events;
 }
 
+const updateCalendar = calendar => {
+    const addRoutes = day => {
+        day.events = `/v1/events/${day.camera}?date=${day.date}`;
+    }
+
+    if (!Array.isArray(calendar)) {
+        addRoutes(calendar);
+    } else {
+        calendar.forEach(addRoutes);
+    }
+    return calendar;
+}
+
 let exec = {
     clean: false
 };
 
-module.exports = express.Router()
+export default express.Router()
     .get('/notifications', (req, res) => {
         res.send(notifications.events);
     })
@@ -79,13 +95,25 @@ module.exports = express.Router()
     .get('/', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getEvents(req.query);
-        res.send(update(events));
+        res.send(updateEvents(events));
+    })
+
+    .get('/calendar', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const calendar = await camera.getCalendar(req.query);
+        res.send(updateCalendar(calendar));
+    })
+
+    .get('/calendar/:camera', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const calendar = await camera.getCalendar(req.query);
+        res.send(updateCalendar(calendar));
     })
 
     .get('/:camera', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         const events = await camera.getEvents(req.query);
-        res.send(update(events));
+        res.send(updateEvents(events));
     })
 
     .get('/data/:camera/:event', async (req, res) => {
@@ -184,7 +212,7 @@ module.exports = express.Router()
             res.send({message: 'started'});
             io.emit(notifications.events.cleanTriggered, {type: 'start'});
             const start = new Date();
-            const count = await batch.clean();
+            const count = await clean();
             const end = new Date();
             const duration = differenceInSeconds(end, start);
             console.log(`cleaned database and files in ${duration} seconds`);
@@ -199,11 +227,18 @@ module.exports = express.Router()
         }
     })
 
+    .post('/:camera/record', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        camera.record();
+        res.send('done');
+    })
+
     .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {
         const {camera} = req.params;
         const {type} = req.query;
 
         const previousStatus = cameraEventStatus[camera] || false;
+        let status;
 
         // FIXME use database ???
         if (type.toLowerCase() === 'start') {
@@ -227,7 +262,7 @@ module.exports = express.Router()
         res.send('done');
     });
 
-module.exports.routes = {
+export const routes = {
     events: '/',
     status: '/:camera/status',
-}
+};

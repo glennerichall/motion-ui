@@ -1,9 +1,12 @@
-const Database = require('./database');
-const Statement = require('./statement');
+import Database from "./database.js";
 
-const {Client} = require('pg');
+import PG from 'pg';
 
-module.exports = class DatabasePostgres extends Database {
+const {Client} = PG;
+import Statement from "./statement.js";
+
+
+export default class DatabasePostgres extends Database {
     constructor(options) {
         super(options);
     }
@@ -20,8 +23,9 @@ module.exports = class DatabasePostgres extends Database {
 
     async query(query) {
         try {
-            return (await this.client.query(query)).rows;
-        }catch (e){
+            const result = await this.client.query(query);
+            return result.rows;
+        } catch (e) {
             console.log(query);
             console.log(e.stack);
         }

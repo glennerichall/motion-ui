@@ -23,9 +23,9 @@ const transpose = separator => (config, current) => {
     return config;
 };
 
-module.exports.transpose = transpose;
+export {transpose}
 
-module.exports.parse = (config, separator) => {
+export function parse(config, separator) {
     config = config.toString().split('\n');
     return config.reduce(transpose(separator || ' '), {});
-};
+}

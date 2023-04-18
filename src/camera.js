@@ -1,15 +1,18 @@
-const database = require('./database');
-const {Camera: MotionCamera} = require('./motion/motion-api');
-const fs = require('fs').promises;
-const addSeconds = require('date-fns/addSeconds');
-const formatDuration = require('date-fns/formatDuration');
-const intervalToDuration = require('date-fns/intervalToDuration');
+import database from "./database/index.js";
+import {Camera as MotionCamera} from "./motion/motion-api.js";
+
+import {promises as fs} from "fs";
+import {
+    addSeconds,
+    formatDuration,
+    intervalToDuration
+} from "date-fns";
 
 function getBuilder(options) {
     return database.getBuilder(options);
 }
 
-module.exports.Camera = class Camera extends MotionCamera {
+export class Camera extends MotionCamera {
     constructor(...args) {
         super(...args);
     }
@@ -29,6 +32,15 @@ module.exports.Camera = class Camera extends MotionCamera {
             .setParams(params)
             .fetch();
 
+        return events;
+    }
+
+    async getCalendar(params) {
+        const events = await getBuilder()
+            .calendar()
+            .setCamera(this.getId())
+            .setParams(params)
+            .fetch();
         return events;
     }
 
@@ -131,4 +143,4 @@ module.exports.Camera = class Camera extends MotionCamera {
             status: await this.getStatus()
         };
     }
-};
+}

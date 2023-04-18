@@ -104,3 +104,6 @@ pgconfig.json
 pgconfig-dev.json
 vapidKeys.json
 deploy.config.js
+
+.parcel-cache/
+dist/

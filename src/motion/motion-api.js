@@ -1,5 +1,6 @@
-const fetch = require('node-fetch');
-const {parse} = require('../utils/config-parser');
+import fetch from "node-fetch";
+import {parse} from "../utils/config-parser.js";
+
 
 const urls = {
     config_list: '{host}/{camid}/config/list',                // Lists all the configuration values for the camera.
@@ -32,7 +33,7 @@ const patternStatus = /Camera\s(?<id>.+)Detection status\s(?<status>NOT RUNNING|
 const patternConnection1 = /Camera\s(?<name>.+)\sCamera\s(?<id>.+)\s--\s${name}\s(?<status>Lost connection|NOT RUNNING|Connection OK)/;
 const patternConnection2 = /Camera\s(?<id>.+)\s--\s(?<name>.+)\s(?<status>Lost connection|NOT RUNNING|Connection OK)/;
 
-class Camera {
+export class Camera {
     constructor(api, id, name, status, configs) {
         this.api = api;
         this.id = id;
@@ -131,6 +132,10 @@ class Camera {
     getStreamPort() {
         return this.requestConfig('stream_port');
     }
+
+    record() {
+        return this.api.requestEventTriggerStart(this.id);
+    }
 }
 
 class WebControl {
@@ -177,7 +182,7 @@ class WebControl {
 }
 
 
-class MotionApi {
+export class MotionApi {
     constructor(apiHost, motionHost, options) {
         this.options = options || {};
         this.cameras = {};
@@ -226,9 +231,4 @@ class MotionApi {
     newCamera(...args) {
         return new Camera(...args);
     }
-}
-
-module.exports = {
-    MotionApi,
-    Camera
 }

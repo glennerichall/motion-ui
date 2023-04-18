@@ -1,15 +1,24 @@
-const express = require('express');
-const {cpu, drive, mem} = require('node-os-utils');
+import express from "express";
 
-const appPrivKey = 'j8H_LHJo9nHVir6EWpXKj19g9BG5sFYsrgt2GhrKg_8';
+import "../motion/heart-beat.js";
+import push from "./push.js";
+import streams from "./streams.js";
+import events from "./events.js";
+import cors from "cors";
+import OsUtils from "node-os-utils";
+const {
+    cpu,
+    drive,
+    mem
+} = OsUtils;
 
-const cors = require('cors')
+import {notifications} from "../constants.js";
 
-module.exports = express.Router()
+export default express.Router()
     .use(cors())
-    .use('/events', require('./events'))
-    .use('/streams', require('./streams'))
-    .use('/push', require('./push'))
+    .use('/events', events)
+    .use('/streams', streams)
+    .use('/push', push)
 
     .get('/process', async (req, res) => {
         const cpuUsage = cpu.usage();
@@ -23,9 +32,5 @@ module.exports = express.Router()
     })
 
     .get('/notifications', (req, res) => {
-        res.send(require('../constants').notifications);
-    })
-
-
-
-require('../motion/heart-beat');
+        res.send(notifications);
+    });

@@ -16,7 +16,7 @@ export default class Graph extends Component {
 
     panel(name, fg, bg) {
 
-        let min = Infinity, max = 0;
+        let _min = Infinity, _max = 0;
         const round = Math.round;
         const PR = round(window.devicePixelRatio || 1);
 
@@ -46,8 +46,8 @@ export default class Graph extends Component {
         context.fillRect(GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT);
 
         this.update = (value, maxValue) => {
-            let min = Math.min(min, value);
-            let max = Math.max(max, value);
+            let min = Math.min(_min, value);
+            let max = Math.max(_max, value);
 
             context.fillStyle = bg;
             context.globalAlpha = 1;

@@ -1,13 +1,18 @@
-const Builder = require("../events/builder");
-var path = require('path');
+import Builder from "../events/builder.js";
+
+import path, {dirname} from "path";
+import {fileURLToPath} from "url";
+import fs from "fs";
 
 let configs = process.env.DATABASE_CONFIGS ?? 'pgconfig.json';
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 if (!path.isAbsolute(configs)) {
     configs = path.join(__dirname, '../..', configs);
 }
-const databaseConfigs = require(configs);
-const Database = require(`./database-${databaseConfigs.type}`);
+
+import Database from "./database-postgres.js";
+
+const databaseConfigs = JSON.parse(fs.readFileSync(configs).toString());
 
 class Index extends Database {
     constructor() {
@@ -19,4 +24,4 @@ class Index extends Database {
     }
 }
 
-module.exports = new Index();
+export default new Index();

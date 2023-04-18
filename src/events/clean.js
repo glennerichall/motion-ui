@@ -1,10 +1,12 @@
-const database = require('../database');
-const fs = require('fs').promises;
-const {resolve} = require('path');
-const Provider = require('../motion/provider');
-const deleteEmpty = require('delete-empty');
+import database from "../database/index.js";
+import {promises as fs} from "fs";
+import {resolve} from "path";
+
+import Provider from "../motion/provider.js";
+import deleteEmpty from "delete-empty";
+import path from "path";
+
 const remap = process.env.TARGET_DIR ?? '';
-const path = require('path');
 
 async function* getFiles(dir) {
     const dirents = await fs.readdir(dir, {withFileTypes: true});

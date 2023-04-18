@@ -1,9 +1,8 @@
-
 /*
  /events                ? date=@date
  /events/:camera        ? date=@date
  */
-const queryEventsSql = `
+export const queryEventsSql = `
     select camera,
            to_json(begin)#>>'{}' as begin,
            id,
@@ -22,7 +21,7 @@ const queryEventsSql = `
  /events/count          ? date=@date & groupby=camera,date
  /events/:camera/count  ? date=@date & groupby=date
 */
-const queryEventCountSql = `
+export const queryEventCountSql = `
     select $columns
            count(distinct event) as total
     from event_logs
@@ -33,7 +32,7 @@ const queryEventCountSql = `
     $groupBy
 `;
 
-const queryEventDataSql = `
+export const queryEventDataSql = `
     select camera,
            to_json(time)#>>'{}' as time,
            type,
@@ -49,7 +48,16 @@ const queryEventDataSql = `
     order by camera, event, type, time, frame;
 `;
 
-const deleteEventsSql = `
+export const queryCalendarSql = `
+    select count(*), camera, to_char(begin, 'YYYY-MM-DD') as date
+    from event_logs
+    where done is not null and
+        (camera = @camera OR @camera IS NULL)
+    group by date, camera
+    order by camera, date;
+`;
+
+export const deleteEventsSql = `
     update event_logs
     set removed=true
     where (camera = @camera OR @camera IS NULL)
@@ -57,11 +65,3 @@ const deleteEventsSql = `
       and (@date::date = begin::date OR @date IS NULL)
     returning *;
 `;
-
-
-module.exports = {
-    queryEventsSql,
-    queryEventCountSql,
-    queryEventDataSql,
-    deleteEventsSql,
-}

@@ -1,20 +1,22 @@
-const express = require('express');
-let Provider = require('../motion/provider');
-const {io} = require('../server');
-const authorizeWhitelistIps = require('../utils/block-ip');
+import express from "express";
+import Provider from "../motion/provider.js";
+import {io} from "../server.js";
+
+import authorizeWhitelistIps from "../utils/block-ip.js";
+import {notifications} from "../constants.js";
 
 async function getStreams(req) {
     return await new Provider(req).getStreams();
 }
 
-const {notifications} = require('../constants');
+
 
 const appendRoutes = stream => {
     const {id} = stream;
     stream.events = {
         count: {
             all: `/v1/events/count/${id}`,
-            today: `/v1/events/count/${id}?date=today`,
+            today: `/v1/events/count/${id}?date=today`
         },
         data: {
             all: `/v1/events/${id}/data`,
@@ -23,7 +25,9 @@ const appendRoutes = stream => {
         last: `/v1/events/${id}?orderBy=begin%20desc&limit=1`,
         all: `/v1/events/${id}?orderBy=begin`,
         today: `/v1/events/${id}?date=today&orderBy=begin`,
-        status: `/v1/events/${id}/status`
+        status: `/v1/events/${id}/status`,
+        calendar: `/v1/events/calendar/${id}`,
+        trigger: `/v1/events/${id}/record`
     };
     stream.status = `/v1/streams/${id}/status`;
     stream.details = `/v1/streams/${id}/details`;
@@ -31,7 +35,7 @@ const appendRoutes = stream => {
 };
 
 
-module.exports = express.Router()
+export default express.Router()
     .get('/', async (req, res) => {
         const streams = await getStreams(req);
         if (!!streams) {

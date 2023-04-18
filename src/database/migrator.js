@@ -1,9 +1,11 @@
-const fs = require('fs').promises;
-const path = require('path');
+import {promises as fs} from "fs";
+
+import path, {dirname} from "path";
+import {fileURLToPath} from "url";
 
 const queryVersionSql = 'select * from migrations order by version desc limit 1;';
 const bumpVersionSql = 'insert into migrations (version, installation) values(@version, @date);';
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const migpath = path.join(__dirname, '..', 'migrations');
 
 const initSql = `
@@ -21,7 +23,7 @@ const initSql = `
 `;
 
 
-module.exports = class Migrator {
+export default class Migrator {
     constructor(database) {
         this.database = database;
     }

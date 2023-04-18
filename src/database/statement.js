@@ -1,4 +1,4 @@
-module.exports = class Statement {
+export default class Statement {
     constructor(sql, database) {
         this.database = database;
         this.sql = sql;
@@ -37,4 +37,4 @@ module.exports = class Statement {
     all(params) {
         return this.database.query(this.getQuery(params));
     }
-};
+}
