@@ -95,7 +95,7 @@ typings/
 
 motion.db
 
-ecosystem.config.js
+ecosystem.config.cjs
 
 bin/
 motion.log
