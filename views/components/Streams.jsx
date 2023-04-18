@@ -44,9 +44,11 @@ export default props => {
         return <div id='offline'>Streams are offline</div>
     }
 
+    let grid = Math.ceil(Math.sqrt(streams.length));
+
     let cameras = streams.map(stream =>
         <Stream key={stream.id} stream={stream}/>);
     return (
-        <div id="panel">{cameras}</div>
+        <div id="panel" className={`grid-${grid}`}>{cameras}</div>
     );
 };

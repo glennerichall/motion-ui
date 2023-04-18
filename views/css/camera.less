@@ -4,27 +4,41 @@
   bottom: 0;
   left: 0;
   right: 0;
+  display: grid;
+
+  &.grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &.grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  &.grid-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 
   .camera {
-    object-fit: contain;
+    overflow: hidden;
     position: relative;
     background: lightgrey;
-    display: inline-block;
     user-select: none;
     top: 0;
     left: 0;
 
+    transition: width 1s, height 1s;
+
     &.fullscreen {
       width: 100%;
       height: 100%;
-      position: fixed;
+      position: absolute;
       z-index: 100;
       left: 0;
       right: 0;
     }
 
     &.fullscreen + .camera.placeholder {
-        display: inline-block;
+      display: inline-block;
     }
 
     &.placeholder {
@@ -39,6 +53,7 @@
     }
 
     &.lost-connection {
+      //display: none;
       img {
         display: none;
       }
@@ -51,33 +66,22 @@
 
 }
 
-@media screen and (orientation: landscape) {
-  #panel .camera {
-    height: 50%;
-    width: 50%;
+@media screen and (max-width: 400px) {
+  #panel {
+    display: block;
+
+    .camera {
+      height: 50%;
+    }
   }
 }
 
-@media screen and (orientation: portrait) {
-  #panel .camera {
-    height: 50%;
-    width: 100%;
-  }
-
-  //#panel .camera.lost-connection::before {
-  //  content: 'Connection lost';
-  //}
-
-  #panel .camera.lost-connection {
-    height: 70px;
-    //text-align: right;
-  }
-  //
-  //#panel .camera.lost-connection .name {
-  //  display: inline-block;
-  //  position: relative;
-  //}
-}
+//@media screen and (min-width: 401px) and (max-width: 400px) {
+//  #panel {
+//    grid-template-columns: 1fr;
+//
+//  }
+//}
 
 
 @keyframes pulse {

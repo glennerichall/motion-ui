@@ -84,35 +84,9 @@ export default props => {
                      onStalled={() => console.log('stalled')}
                      onClick={() => {
                          if (hasToken(token)) {
-                             // const rect = camRef.current.getBoundingClientRect();
-                             // camRef.current.style.top = rect.top + 'px';
-                             // camRef.current.style.left = rect.left + 'px';
-                             // camRef.current.style.width = rect.width + 'px';
-                             // camRef.current.style.height = rect.height + 'px';
                              releaseToken(token);
-                             // setTimeout(() => {
-                             //     camRef.current.style.transition = 'width 1s, height 1s, top 1s, left 1s';
-                             //     camRef.current.style.top = null;
-                             //     camRef.current.style.left = null;
-                             //     camRef.current.style.width = null;
-                             //     camRef.current.style.height = null;
-                             //
-                             // }, 100)
                          } else {
-                             // const rect = camRef.current.getBoundingClientRect();
-                             // camRef.current.style.top = rect.top + 'px';
-                             // camRef.current.style.left = rect.left + 'px';
-                             // camRef.current.style.width = rect.width + 'px';
-                             // camRef.current.style.height = rect.height + 'px';
                              acquireToken(setToken);
-                             // setTimeout(() => {
-                             //     camRef.current.style.transition = 'width 1s, height 1s, top 1s, left 1s';
-                             //     camRef.current.style.top = null;
-                             //     camRef.current.style.left = null;
-                             //     camRef.current.style.width = null;
-                             //     camRef.current.style.height = null;
-                             //
-                             // }, 100)
                          }
                      }}/>
             </div>

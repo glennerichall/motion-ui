@@ -70,6 +70,10 @@ body::-webkit-scrollbar {
     user-select: none;
 }
 
+.btn-fit {
+    padding: 3px 8px;
+}
+
 .black-btn {
     color: white;
     background: black;
