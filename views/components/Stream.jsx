@@ -30,13 +30,13 @@ export default props => {
     const [token, setToken] = useState({});
     const camRef = useRef(null);
 
-    useEffect(() => {
-        if (eventStatus === 'idle') {
-            releaseToken(token);
-        } else {
-            acquireToken(setToken);
-        }
-    }, [eventStatus]);
+    // useEffect(() => {
+    //     if (eventStatus === 'idle') {
+    //         releaseToken(token);
+    //     } else {
+    //         acquireToken(setToken);
+    //     }
+    // }, [eventStatus]);
 
     useEffect(() => {
         const event = subscribe(notifications.events.eventTriggered, event => {
