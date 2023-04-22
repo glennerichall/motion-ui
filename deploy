@@ -11,8 +11,8 @@ git add .
 git commit -m "deploying"
 
 echo patching version
-npm version patch && exit 1
-git push && exit 1
+npm version patch
+git push
 
 echo deploying to production
 pm2 deploy deploy.config.cjs production
