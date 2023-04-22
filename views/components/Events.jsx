@@ -157,7 +157,7 @@ export default props => {
     }
 
     return (
-        <>
+        <div id="events">
             <div className="camera-name">Camera {camera}</div>
             {calendar ?
                 <>
@@ -192,6 +192,6 @@ export default props => {
                 </thead>
                 <tbody>{elems}</tbody>
             </table>
-        </>
+        </div>
     );
 }

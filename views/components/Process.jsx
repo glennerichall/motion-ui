@@ -62,8 +62,8 @@ export default props => {
     }, [processSrc]);
 
     return (
-        <div id="global">
-            <span id="process" style={props.style}>
+        <div id="global" style={props.style}>
+            <span id="process" >
                 <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
                 <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
                 <Graph className={classNames({hidden: hideGraphs})} ref={memStats} name='mem' id='mem'/>

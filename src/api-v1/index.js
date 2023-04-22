@@ -56,12 +56,14 @@ export default express.Router()
 
         pm2.connect((err) => {
             if (err) {
+                console.log(err.message);
                 res.status(500).end();
                 return;
             }
 
             pm2.sendSignalToProcessName('SIGHUP', 'motion', (err) => {
                 if (err) {
+                    console.log(err.message);
                     res.status(500).end();
                     return;
                 }
