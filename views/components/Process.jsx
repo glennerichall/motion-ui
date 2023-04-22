@@ -78,12 +78,12 @@ export default props => {
                 </span>
 
                 <span className="action clean-events btn btn-fit btn-danger black-btn btn-small"
-                      onClick={()=>post('/motion/reload')}>
+                      onClick={()=>post('/v1/motion/restart')}>
                     Restart
                 </span>
 
                 <span className="action clean-events btn btn-fit black-btn btn-small"
-                      onClick={()=>post('/motion/reload')}>
+                      onClick={()=>post('/v1/motion/reload')}>
                     Reload
                 </span>
             </span>
