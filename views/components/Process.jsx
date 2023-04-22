@@ -1,5 +1,13 @@
-import React, {useRef, Component, useState, useEffect} from 'react';
-import {fetch, post} from '../js/fetch';
+import React, {
+    useRef,
+    Component,
+    useState,
+    useEffect
+} from 'react';
+import {
+    fetch,
+    post
+} from '../js/fetch';
 import Graph from './Graph';
 import classNames from 'classnames';
 import cleanHover from '../icons/clean-hover.png';
@@ -14,7 +22,14 @@ export default props => {
     const {versionSrc, processSrc} = props;
 
     const [version, setVersion] = useState(0);
-    const [hideGraphs, setHideGraphs] = useState(false);
+    const [hideGraphs, setHide] = useState(localStorage.getItem('hideGraphs'));
+
+
+    const setHideGraphs = v => {
+        setHide(v);
+        localStorage.setItem('hideGraphs', v);
+    }
+
 
     useEffect(() => {
         // initial get version
@@ -47,19 +62,31 @@ export default props => {
     }, [processSrc]);
 
     return (
-        <div id="process" style={props.style}>
-            <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
-            <div className="actions">
-                <span className="action clean-events"
+        <div id="global">
+            <span id="process" style={props.style}>
+                <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
+                <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
+                <Graph className={classNames({hidden: hideGraphs})} ref={memStats} name='mem' id='mem'/>
+                <Graph className={classNames({hidden: hideGraphs})} ref={driveStats} name='drive' id='drive'
+                       color='#e3c84f'/>
+            </span>
+
+            <span className="actions">
+                <span className="action clean-events btn btn-fit black-btn btn-danger btn-small"
                       onClick={()=>post('/v1/events/exec/clean-events')}>
-                    <img src={cleanHover} className="hover"/>
-                    <img src={clean} />
+                    Clean
                 </span>
-            </div>
-            <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
-            <Graph className={classNames({hidden: hideGraphs})} ref={memStats} name='mem' id='mem'/>
-            <Graph className={classNames({hidden: hideGraphs})} ref={driveStats} name='drive' id='drive'
-                   color='#e3c84f'/>
+
+                <span className="action clean-events btn btn-fit btn-danger black-btn btn-small"
+                      onClick={()=>post('/motion/reload')}>
+                    Restart
+                </span>
+
+                <span className="action clean-events btn btn-fit black-btn btn-small"
+                      onClick={()=>post('/motion/reload')}>
+                    Reload
+                </span>
+            </span>
         </div>
     );
 

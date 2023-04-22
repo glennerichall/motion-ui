@@ -6,6 +6,7 @@ import streams from "./streams.js";
 import events from "./events.js";
 import cors from "cors";
 import OsUtils from "node-os-utils";
+
 const {
     cpu,
     drive,
@@ -13,6 +14,8 @@ const {
 } = OsUtils;
 
 import {notifications} from "../constants.js";
+
+import pm2 from "pm2";
 
 export default express.Router()
     .use(cors())
@@ -29,6 +32,44 @@ export default express.Router()
             drive: Number.parseFloat((await driveUsage).usedPercentage),
             mem: 100 - (await memUsage).freeMemPercentage
         });
+    })
+
+    .post('/motion/restart', async (req, res) => {
+        pm2.connect((err) => {
+            if (err) {
+                res.status(500).end();
+                return;
+            }
+
+            pm2.restart('motion', (err) => {
+                if (err) {
+                    res.status(500).end();
+                    return;
+                }
+                pm2.disconnect();
+                res.status(201).end();
+            });
+        });
+    })
+
+    .post('/motion/reload', async (req, res) => {
+
+        pm2.connect((err) => {
+            if (err) {
+                res.status(500).end();
+                return;
+            }
+
+            pm2.sendSignalToProcessName('SIGHUP', 'motion', (err) => {
+                if (err) {
+                    res.status(500).end();
+                    return;
+                }
+                pm2.disconnect();
+                res.status(201).end();
+            });
+        });
+
     })
 
     .get('/notifications', (req, res) => {

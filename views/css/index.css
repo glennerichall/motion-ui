@@ -82,4 +82,14 @@ body::-webkit-scrollbar {
 .black-btn:hover {
     background: #4e4e4e;
 }
+.btn-danger:hover {
+    background: red;
+}
 
+.btn-small {
+    font-size: 0.8em;
+}
+
+.btn-small.btn-fit {
+    padding: 1px 5px;
+}

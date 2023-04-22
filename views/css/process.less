@@ -1,7 +1,11 @@
-#process {
+#global {
   position: fixed;
   z-index: 1000;
+  display: flex;
+  gap: 0.5em;
+}
 
+#process {
   .graph.hidden {
     visibility: hidden;
   }
@@ -11,54 +15,39 @@
     display: block;
     border-radius: 3px;
   }
+}
 
-  .actions {
-    display: none;
+.actions {
+  z-index: 1000000;
+  position: relative;
 
-    position: absolute;
-    transform: translateY(-75%);
-    left: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 0.3em;
+  align-items: flex-start;
 
-    .action {
-      margin-left: 10px;
-    }
+  img {
+    width: 1.3em;
   }
 
-  &:hover .actions {
-    display: initial;
+  .action {
+    cursor: pointer;
 
-    img {
-      width: 1.3em;
+    img.hover {
+      display: none;
     }
 
     &:hover {
-      .actions {
+      img.hover {
         display: initial;
       }
-    }
 
-    .action {
-      cursor: pointer;
-
-
-      &:hover {
-        img.hover {
-          display: initial;
-        }
-
-        img:not(.hover) {
-          display: none;
-        }
-      }
-
-      img.hover {
+      img:not(.hover) {
         display: none;
       }
     }
   }
-
 }
-
 
 #version {
   padding-left: 7px;

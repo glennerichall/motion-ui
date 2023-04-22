@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<script type="module">
+
+
+
+    const p = new Player({
+        size: {
+            width: 1920 / 2,
+            height: 1080 / 2
+        }
+    });
+
+    console.log(p)
+
+    document.body.append(p.canvas);
+
+    // const client = new WebSocket('ws:localhost:3000');
+
+    let decoded = false;
+    p.decoder.onPictureDecoded = (...args)=> {
+        if(!decoded) {
+            decoded = true;
+            console.log(args)
+        }
+    }
+
+    // console.log(p.renderFrameWebGL)
+    // console.log(p.canvasObj)
+
+    var ws = new WebSocket('ws:localhost:3000')
+    ws.binaryType = 'arraybuffer'
+    ws.onopen = function (e) {
+        console.log('Client connected')
+        ws.onmessage = function (msg) {
+            // decode stream
+            p.decode(new Uint8Array(msg.data));
+        }
+    }
+    ws.onclose = function (e) {
+        console.log('Client disconnected')
+    }
+
+
+    // client.addEventListener('message', async event => {
+    //     //console.log(event)
+    //     // let data = new Uint8Array(await event.data.arrayBuffer());
+    //     // let data = await event.data.arrayBuffer();
+    //     var naltype = "invalid frame";
+    //     if (data.length > 4) {
+    //         if (data[4] == 0x65) {
+    //             naltype = "I frame";
+    //         }
+    //         else if (data[4] == 0x41) {
+    //             naltype = "P frame";
+    //         }
+    //         else if (data[4] == 0x67) {
+    //             naltype = "SPS";
+    //         }
+    //         else if (data[4] == 0x68) {
+    //             naltype = "PPS";
+    //         }
+    //     }
+    //     // console.log(data.length)
+    //     // p.decode(data);
+    //     p.decode(new Uint8Array(event.data));
+    // });
+
+</script>
+</body>
+</html>
