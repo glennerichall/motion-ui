@@ -94,9 +94,11 @@ export default props => {
                                  acquireToken(setToken);
                              }
                          }}/>
-                    : null}
+                    : <div className="camera placeholder">
+                        Connection lost
+                    </div>}
             </div>
-            <div className="camera placeholder"></div>
+
         </Fragment>
     );
 }
