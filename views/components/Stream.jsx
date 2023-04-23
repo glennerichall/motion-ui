@@ -27,6 +27,7 @@ export default props => {
     const [eventStatus, setEventStatus] = useState('idle');
     const [connectionStatus, setConnectionStatus] = useState('lost-connection');
     const [timestamp, setTimestamp] = useState(new Date().getTime());
+    const [src, setSrc] = useState(url);
 
     const [token, setToken] = useState({});
     const camRef = useRef(null);
@@ -51,10 +52,12 @@ export default props => {
                 console.log(`camera ${id} changed to ${event.status}`)
                 if (event.status === 'idle' || event.status === 'connection-ok') {
                     setTimeout(() => {
+                        setSrc(url);
                         setTimestamp(new Date().getTime());
                         setConnectionStatus(event.status);
                     }, 1000);
                 } else {
+                    setSrc(null);
                     setConnectionStatus(event.status);
                 }
             }
@@ -103,7 +106,7 @@ export default props => {
                     connectionStatus === 'idle' ||
                     connectionStatus === 'recording' ||
                     connectionStatus === 'connection-ok' ?
-                        <img src={url} draggable="false"
+                        <img src={src} draggable="false"
                              timestamp={timestamp}
                              onError={(e) => onError()}
                              onStalled={() => onError()}
