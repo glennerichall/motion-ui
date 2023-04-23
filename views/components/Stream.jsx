@@ -26,7 +26,7 @@ export default props => {
 
     const [eventStatus, setEventStatus] = useState('idle');
     const [connectionStatus, setConnectionStatus] = useState('lost-connection');
-    const [timestamp, setTimestamp] = useState(new Date().getTime);
+    const [timestamp, setTimestamp] = useState(new Date().getTime());
 
     const [token, setToken] = useState({});
     const camRef = useRef(null);
@@ -71,9 +71,9 @@ export default props => {
     const onError = () => {
         console.log(`camera image error ${id}`)
         setConnectionStatus('stream-error');
-        setTimestamp(new Date().getTime);
+        setTimestamp(new Date().getTime());
         setTimeout(() => {
-            setTimestamp(new Date().getTime);
+            setTimestamp(new Date().getTime());
             setConnectionStatus('idle');
         }, 1000);
     }
