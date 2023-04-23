@@ -39,8 +39,8 @@ async function sendCameraLost(req) {
         let count = 0;
         for (let camera of cameras) {
             const stat = await camera.getStatus();
-            console.log(`checking camera ${camera.getId()} status` , stat);
-            if (stat === 'idle') {
+            console.log(`checking camera ${camera.getId()} status`, stat);
+            if (stat === 'idle' || stat === 'connection-ok') {
                 count++;
                 io.emit(notifications.streams.connectionStatusChanged, {
                     camera: camera.getId(),
@@ -55,7 +55,7 @@ async function sendCameraLost(req) {
         }
         console.log(`Still waiting for ${cameras.length - count} cameras`);
         await new Promise(resolve => {
-            setTimeout(resolve, 500);
+            setTimeout(() => resolve(), 500);
         });
     }
 
