@@ -47,6 +47,7 @@ export default props => {
 
         const connection = subscribe(notifications.streams.connectionStatusChanged, event => {
             if (event.camera === id) {
+                console.log(`camera ${id} changed to ${event.status}`)
                 setConnectionStatus(event.status);
             }
         });
