@@ -49,7 +49,11 @@ export default props => {
         const connection = subscribe(notifications.streams.connectionStatusChanged, event => {
             if (event.camera === id) {
                 console.log(`camera ${id} changed to ${event.status}`)
-                setConnectionStatus(event.status);
+                if (event.status === 'idle' || event.status === 'connection-ok') {
+                    setTimeout(() => {
+                        setConnectionStatus(event.status);
+                    }, 1000);
+                }
             }
         });
 
@@ -74,7 +78,7 @@ export default props => {
         setTimestamp(new Date().getTime());
         setTimeout(() => {
             setTimestamp(new Date().getTime());
-            setConnectionStatus('idle');
+            setConnectionStatus('connection-ok');
         }, 1000);
     }
 
