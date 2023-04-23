@@ -28,7 +28,7 @@ async function sendCameraLost(req) {
         };
     });
 
-    status = Promise.all(status);
+    status = await Promise.all(status);
     console.log(status);
 
     for (let stat of status) {
