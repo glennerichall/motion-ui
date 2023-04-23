@@ -60,6 +60,8 @@ export default express.Router()
                 res.status(500).end();
                 return;
             }
+            // must send before killing because motion will be dead
+            sendCameraLost(req);
 
             pm2.restart('motion', (err) => {
                 if (err) {
@@ -68,7 +70,6 @@ export default express.Router()
                     return;
                 }
                 console.log('motion restarted');
-                sendCameraLost(req);
                 res.status(201).end();
                 pm2.disconnect();
             });
@@ -84,6 +85,9 @@ export default express.Router()
                 return;
             }
 
+            // must send before killing because motion will be dead
+            sendCameraLost(req);
+
             pm2.sendSignalToProcessName('SIGHUP', 'motion', (err) => {
                 if (err) {
                     console.log(err.message);
@@ -91,7 +95,6 @@ export default express.Router()
                     return;
                 }
                 console.log('motion reloaded');
-                sendCameraLost(req);
                 res.status(201).end();
                 pm2.disconnect();
             });
