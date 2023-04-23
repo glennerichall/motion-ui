@@ -67,6 +67,14 @@ export default props => {
         }
     }, [notifications]);
 
+    const onError = ()=>{
+        console.log(`camera image error ${id}`)
+        setConnectionStatus('stream-error');
+        setTimeout(()=>{
+            setConnectionStatus('idle');
+        }, 100);
+    }
+
     return (
         <Fragment>
             <div id={'cam-' + id}
@@ -87,8 +95,8 @@ export default props => {
                     connectionStatus === 'connection-ok' ?
                         <img src={url} draggable="false"
                              timestamp={new Date().getTime()}
-                             onError={(e) => console.log(`camera image error ${id}`)}
-                             onStalled={() => console.log('stalled')}
+                             onError={(e) => onError()}
+                             onStalled={() => onError()}
                              onClick={() => {
                                  if (hasToken(token)) {
                                      releaseToken(token);
