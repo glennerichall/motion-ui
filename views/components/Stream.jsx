@@ -80,7 +80,9 @@ export default props => {
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
 
-                {connectionStatus === 'idle' || connectionStatus === 'recording' ?
+                {connectionStatus === 'idle' ||
+                connectionStatus === 'recording' ||
+                connectionStatus === 'connection-ok' ?
                     <img src={url} draggable="false"
                          onError={(e) => console.log(`camera image error ${id}`)}
                          onStalled={() => console.log('stalled')}
