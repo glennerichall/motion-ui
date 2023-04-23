@@ -26,7 +26,6 @@ export default props => {
 
     const [eventStatus, setEventStatus] = useState('idle');
     const [connectionStatus, setConnectionStatus] = useState('lost-connection');
-    const [timestamp, setTimestamp] = useState(new Date().getTime());
     const [src, setSrc] = useState(url);
 
     const [token, setToken] = useState({});
@@ -53,7 +52,6 @@ export default props => {
                 if (event.status === 'idle' || event.status === 'connection-ok') {
                     setTimeout(() => {
                         setSrc(url);
-                        setTimestamp(new Date().getTime());
                         setConnectionStatus(event.status);
                     }, 1000);
                 } else {
@@ -81,9 +79,7 @@ export default props => {
     const onError = () => {
         console.log(`camera image error ${id}`)
         setConnectionStatus('stream-error');
-        setTimestamp(new Date().getTime());
         setTimeout(() => {
-            setTimestamp(new Date().getTime());
             setConnectionStatus('connection-ok');
         }, 1000);
     }
@@ -107,7 +103,6 @@ export default props => {
                     connectionStatus === 'recording' ||
                     connectionStatus === 'connection-ok' ?
                         <img src={src} draggable="false"
-                             timestamp={timestamp}
                              onError={(e) => onError()}
                              onStalled={() => onError()}
                              onClick={() => {
