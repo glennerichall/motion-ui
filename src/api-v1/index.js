@@ -35,8 +35,8 @@ async function sendCameraLost(req) {
         io.emit(notifications.streams.connectionStatusChanged, stat);
     }
 
-    // wait for motino to restart
-    await new Promise(resolve => {
+    // wait for motion to restart
+    await new Promise((resolve, reject) => {
         setTimeout(() => resolve(), 1000);
     });
 
@@ -59,8 +59,8 @@ async function sendCameraLost(req) {
             break;
         }
         console.log(`Still waiting for ${cameras.length - count} cameras`);
-        await new Promise(resolve => {
-            setTimeout(() => resolve(), 500);
+        await new Promise((resolve, reject) => {
+            setTimeout(() => resolve(), 1000);
         });
     }
 
