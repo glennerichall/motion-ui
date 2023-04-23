@@ -35,6 +35,11 @@ async function sendCameraLost(req) {
         io.emit(notifications.streams.connectionStatusChanged, stat);
     }
 
+    // wait for motino to restart
+    await new Promise(resolve => {
+        setTimeout(() => resolve(), 1000);
+    });
+
     while (true) {
         let count = 0;
         for (let camera of cameras) {
