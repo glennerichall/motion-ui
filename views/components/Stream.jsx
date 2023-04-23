@@ -72,7 +72,7 @@ export default props => {
         setConnectionStatus('stream-error');
         setTimeout(()=>{
             setConnectionStatus('idle');
-        }, 100);
+        }, 1000);
     }
 
     return (
