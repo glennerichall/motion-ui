@@ -54,6 +54,8 @@ export default props => {
                         setTimestamp(new Date().getTime());
                         setConnectionStatus(event.status);
                     }, 1000);
+                } else {
+                    setConnectionStatus(event.status);
                 }
             }
         });
