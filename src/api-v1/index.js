@@ -56,12 +56,14 @@ export default express.Router()
     .post('/motion/restart', async (req, res) => {
         pm2.connect((err) => {
             if (err) {
+                console.error(err.message);
                 res.status(500).end();
                 return;
             }
 
             pm2.restart('motion', (err) => {
                 if (err) {
+                    console.error(err.message);
                     res.status(500).end();
                     return;
                 }
