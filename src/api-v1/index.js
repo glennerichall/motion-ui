@@ -54,7 +54,7 @@ async function sendCameraLost(req) {
                     });
                 }
             } catch (e) {
-                console.log(`checking camera ${camera.getId()} status failed`, err.message);
+                console.log(`checking camera ${camera.getId()} status failed`, e.message);
             }
         }
 
