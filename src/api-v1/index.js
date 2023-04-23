@@ -21,14 +21,15 @@ import Provider from "../motion/provider.js";
 
 async function sendCameraLost(req) {
     const cameras = await new Provider(req).getCameras();
-    const status = cameras.map(async camera => {
+    let status = cameras.map(async camera => {
         return {
             camera: camera.getId(),
             status: 'lost-connection'
         };
     });
 
-    console.log(status)
+    status = Promise.all(status);
+    console.log(status);
 
     for (let stat of status) {
         io.emit(notifications.streams.connectionStatusChanged, stat);
