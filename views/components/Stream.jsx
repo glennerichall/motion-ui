@@ -94,7 +94,7 @@ export default props => {
                     connectionStatus === 'recording' ||
                     connectionStatus === 'connection-ok' ?
                         <img src={url} draggable="false"
-                             timestamp={new Date().getTime()}
+                             connectionStatus={connectionStatus}
                              onError={(e) => onError()}
                              onStalled={() => onError()}
                              onClick={() => {
