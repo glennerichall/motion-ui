@@ -18,6 +18,7 @@ import {notifications} from "../constants.js";
 import pm2 from "pm2";
 import {io} from "../server.js";
 import Provider from "../motion/provider.js";
+import {resolve} from "path";
 
 async function sendCameraLost(req) {
     const cameras = await new Provider(req).getCameras();
@@ -29,10 +30,40 @@ async function sendCameraLost(req) {
     });
 
     status = await Promise.all(status);
-    console.log(status);
 
     for (let stat of status) {
         io.emit(notifications.streams.connectionStatusChanged, stat);
+    }
+
+    while (true) {
+        status = cameras.map(async camera => {
+            return {
+                camera: camera.getId(),
+                status: await camera.getStatus()
+            };
+        });
+
+        status = await Promise.all(status);
+
+        let count = 0;
+        for (let camera of cameras) {
+            const stat = await camera.getStatus();
+            if (stat === 'idle') {
+                count++;
+                io.emit(notifications.streams.connectionStatusChanged, {
+                    camera: camera.getId(),
+                    status: 'idle'
+                });
+            }
+        }
+
+        if (count === cameras.length) {
+            break;
+        }
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 500);
+        });
     }
 
 }
