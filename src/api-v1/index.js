@@ -48,6 +48,7 @@ async function sendCameraLost(req) {
         let count = 0;
         for (let camera of cameras) {
             const stat = await camera.getStatus();
+            console.log(`checking camera ${camera.getId()} status` , stat);
             if (stat === 'idle') {
                 count++;
                 io.emit(notifications.streams.connectionStatusChanged, {
