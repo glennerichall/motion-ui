@@ -7,7 +7,7 @@ export const subscribe = (event, callback) => {
 export const unsubscribe = unsub;
 
 export const publish = (event, data) => {
-    console.log(event);
+    console.log(event, data);
     pubs(event, data);
 };
 
