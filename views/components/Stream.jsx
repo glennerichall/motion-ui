@@ -86,6 +86,7 @@ export default props => {
                     connectionStatus === 'recording' ||
                     connectionStatus === 'connection-ok' ?
                         <img src={url} draggable="false"
+                             timestamp={new Date().getTime()}
                              onError={(e) => console.log(`camera image error ${id}`)}
                              onStalled={() => console.log('stalled')}
                              onClick={() => {
