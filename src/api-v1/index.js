@@ -36,15 +36,6 @@ async function sendCameraLost(req) {
     }
 
     while (true) {
-        status = cameras.map(async camera => {
-            return {
-                camera: camera.getId(),
-                status: await camera.getStatus()
-            };
-        });
-
-        status = await Promise.all(status);
-
         let count = 0;
         for (let camera of cameras) {
             const stat = await camera.getStatus();
@@ -59,9 +50,10 @@ async function sendCameraLost(req) {
         }
 
         if (count === cameras.length) {
+            console.log(`All cameras are connected and idle`);
             break;
         }
-
+        console.log(`Still waiting for ${cameras.length - count} cameras`);
         await new Promise(resolve => {
             setTimeout(resolve, 500);
         });
