@@ -67,9 +67,10 @@ export default express.Router()
                     res.status(500).end();
                     return;
                 }
-                pm2.disconnect();
+                console.log('motion restarted');
                 sendCameraLost(req);
                 res.status(201).end();
+                pm2.disconnect();
             });
         });
     })
@@ -89,9 +90,10 @@ export default express.Router()
                     res.status(500).end();
                     return;
                 }
-                pm2.disconnect();
+                console.log('motion reloaded');
                 sendCameraLost(req);
                 res.status(201).end();
+                pm2.disconnect();
             });
         });
 
