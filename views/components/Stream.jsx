@@ -51,6 +51,7 @@ export default props => {
                 console.log(`camera ${id} changed to ${event.status}`)
                 if (event.status === 'idle' || event.status === 'connection-ok') {
                     setTimeout(() => {
+                        setTimestamp(new Date().getTime());
                         setConnectionStatus(event.status);
                     }, 1000);
                 }
