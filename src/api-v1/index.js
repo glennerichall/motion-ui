@@ -16,6 +16,23 @@ const {
 import {notifications} from "../constants.js";
 
 import pm2 from "pm2";
+import {io} from "../server.js";
+import Provider from "../motion/provider.js";
+
+async function sendCameraLost(req) {
+    const cameras = await new Provider(req).getCameras();
+    const status = cameras.map(async camera => {
+        return {
+            camera: camera.getId(),
+            status: 'lost-connection'
+        };
+    });
+
+    for (let stat of status) {
+        io.emit(notifications.streams.connectionStatusChanged, stat);
+    }
+
+}
 
 export default express.Router()
     .use(cors())
@@ -47,6 +64,7 @@ export default express.Router()
                     return;
                 }
                 pm2.disconnect();
+                sendCameraLost(req);
                 res.status(201).end();
             });
         });
@@ -68,6 +86,7 @@ export default express.Router()
                     return;
                 }
                 pm2.disconnect();
+                sendCameraLost(req);
                 res.status(201).end();
             });
         });

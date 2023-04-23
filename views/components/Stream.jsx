@@ -79,16 +79,19 @@ export default props => {
                     <EventCount events={events} eventStatus={eventStatus} camera={id}/>
                     <StreamInfo stream={props.stream}>{name}</StreamInfo>
                 </div>
-                <img src={url} draggable="false"
-                     onError={(e) => console.log(`camera image error ${id}`)}
-                     onStalled={() => console.log('stalled')}
-                     onClick={() => {
-                         if (hasToken(token)) {
-                             releaseToken(token);
-                         } else {
-                             acquireToken(setToken);
-                         }
-                     }}/>
+
+                {connectionStatus === 'idle' || connectionStatus === 'recording' ?
+                    <img src={url} draggable="false"
+                         onError={(e) => console.log(`camera image error ${id}`)}
+                         onStalled={() => console.log('stalled')}
+                         onClick={() => {
+                             if (hasToken(token)) {
+                                 releaseToken(token);
+                             } else {
+                                 acquireToken(setToken);
+                             }
+                         }}/>
+                    : null}
             </div>
             <div className="camera placeholder"></div>
         </Fragment>
