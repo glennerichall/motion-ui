@@ -28,6 +28,8 @@ async function sendCameraLost(req) {
         };
     });
 
+    console.log(status)
+
     for (let stat of status) {
         io.emit(notifications.streams.connectionStatusChanged, stat);
     }
