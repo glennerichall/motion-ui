@@ -93,10 +93,10 @@ export default props => {
                     Reload
                 </span>
 
-                <span className="action show-header btn btn-fit black-btn btn-small"
-                      onClick={toggleShow}>
-                    toggle
-                </span>
+                {/*<span className="action show-header btn btn-fit black-btn btn-small"*/}
+                {/*      onClick={toggleShow}>*/}
+                {/*    toggle*/}
+                {/*</span>*/}
             </span>
         </div>
     );
