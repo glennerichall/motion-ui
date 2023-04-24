@@ -19,7 +19,7 @@ export default props => {
     const memStats = useRef(null);
     const driveStats = useRef(null);
 
-    const {versionSrc, processSrc} = props;
+    const {versionSrc, processSrc, headerVisible, setHeaderVisible} = props;
 
     const [version, setVersion] = useState(0);
     const [hideGraphs, setHide] = useState(localStorage.getItem('hideGraphs'));
@@ -28,6 +28,10 @@ export default props => {
     const setHideGraphs = v => {
         setHide(v);
         localStorage.setItem('hideGraphs', v);
+    }
+
+    const toggleShow = ()=>{
+        setHeaderVisible(!headerVisible);
     }
 
 
@@ -62,7 +66,9 @@ export default props => {
     }, [processSrc]);
 
     return (
-        <div id="global" style={props.style}>
+        <div id="global" style={props.style} className={classNames({
+            collapsed: hideGraphs
+        })}>
             <span id="process" >
                 <div id="version" onClick={() => setHideGraphs(!hideGraphs)}>{version}</div>
                 <Graph className={classNames({hidden: hideGraphs})} ref={cpuStats} name='cpu' id='cpu' color='white'/>
@@ -85,6 +91,11 @@ export default props => {
                 <span className="action clean-events btn btn-fit black-btn btn-small"
                       onClick={()=>post('/v1/motion/reload')}>
                     Reload
+                </span>
+
+                <span className="action show-header btn btn-fit black-btn btn-small"
+                      onClick={toggleShow}>
+                    toggle
                 </span>
             </span>
         </div>

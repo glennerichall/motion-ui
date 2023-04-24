@@ -80,12 +80,8 @@ export class Camera {
         }
     }
 
-    getHost() {
-        return this.api.getStreamHost();
-    }
-
-    async getUrl() {
-        return `${await this.getHost()}/${this.getId()}/stream`
+    async getStreamUrl() {
+        return this.api.getStreamUrl(this.id);
     }
 
     async requestConfig(param) {
@@ -154,14 +150,17 @@ class WebControl {
         }
     }
 
-    async getStreamHost() {
-        if (!this.streamHost) {
-            const streamPort = await new Camera(this).getStreamPort();
-            const url = new URL(this.motionHost);
-            const {protocol, hostname} = url;
-            this.streamHost = `${protocol}//${hostname}:${streamPort}`;
+    async getStreamUrl(cameraId) {
+        let streamUrl;
+        let streamPort = await new Camera(this, cameraId).getStreamPort();
+        const {protocol, hostname} = new URL(this.motionHost);
+        if (streamPort === "0") {
+            streamPort = await new Camera(this).getStreamPort();
+            streamUrl = `${protocol}//${hostname}:${streamPort}/${cameraId}/stream`;
+        } else {
+            streamUrl = `${protocol}//${hostname}:${streamPort}/stream`;
         }
-        return this.streamHost;
+        return streamUrl;
     }
 
     getUrl(url, camid, options = {}) {
@@ -190,7 +189,7 @@ export class MotionApi {
     constructor(apiHost, motionHost, options) {
         this.options = options || {};
         this.cameras = {};
-        this.api = new WebControl(apiHost,motionHost,
+        this.api = new WebControl(apiHost, motionHost,
             this.options.streamHost);
     }
 

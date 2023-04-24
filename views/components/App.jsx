@@ -20,6 +20,7 @@ export default function App(props) {
 
     const [connected, setConnected] = useState(socket.connected);
     const [isFrameRoot, setFrameRoot] = useState(true);
+    const [headerVisible, setHeaderVisible] = useState(true);
 
     useEffect(() => {
         pushView(
@@ -62,8 +63,10 @@ export default function App(props) {
     return (
         <Fragment>
             <Process style={isFrameRoot ? {} : {display: 'none'}}
+                     setHeaderVisible={b=> setHeaderVisible(b)}
+                     headerVisible={headerVisible}
                      versionSrc={versionUrl} processSrc={processUrl}/>
-            <Frame/>
+            <Frame headerVisible={headerVisible}/>
         </Fragment>
     );
 };

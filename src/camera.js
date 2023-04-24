@@ -113,7 +113,7 @@ export class Camera extends MotionCamera {
 
     async toStream() {
         return {
-            url: await this.getUrl(),
+            url: await this.getStreamUrl(),
             id: this.getId(),
             name: await this.getName(),
             status: await this.getStatus()

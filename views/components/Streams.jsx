@@ -45,10 +45,11 @@ export default props => {
     }
 
     let grid = Math.ceil(Math.sqrt(streams.length));
+    let streamCount  = streams.length;
 
     let cameras = streams.map(stream =>
         <Stream key={stream.id} stream={stream}/>);
     return (
-        <div id="panel" className={`grid-${grid}`}>{cameras}</div>
+        <div id="panel" className={`grid-${grid} stream-count-${streamCount}`}>{cameras}</div>
     );
 };

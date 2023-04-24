@@ -42,7 +42,8 @@ export default props => {
     return <div className="frame">
         <div>
             <div className="frame-header">
-                {stack.length > 1 ? <div className={'black-btn btn'} id="back-btn" onClick={() => popView()}>Back</div> : null}
+                {stack.length > 1 ? <div className={'black-btn btn'} id="back-btn"
+                                         onClick={() => popView()}>Back</div> : null}
             </div>
             <div className={"frame-content"}>{elem}</div>
         </div>
