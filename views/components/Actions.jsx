@@ -11,31 +11,7 @@ import {
 import {getNotifications} from "../js/notifications.js";
 
 export default props => {
-    const {stream} = props;
-    const {status} = stream;
-
-    const [streamStatus, setStreamStatus] = useState(null);
-    const notifications = getNotifications();
-
-    useEffect(() => {
-        (async () => {
-            const streamStatus = await fetch(status);
-            setStreamStatus(await streamStatus.json());
-        })();
-    }, [status]);
-
-    useEffect(() => {
-        const event = subscribe(
-            notifications.events.eventTriggered,
-            ({camera, status}) => {
-                if (camera == props.camera) {
-                    console.log({camera, status})
-                    setStreamStatus({camera, status});
-                }
-            });
-
-        return () => unsubscribe(event);
-    }, [notifications]);
+    const {stream, connectionStatus, eventStatus} = props;
 
     const record = async () => {
         await fetch(stream.events.trigger,
@@ -51,9 +27,9 @@ export default props => {
             });
     }
 
-    if (streamStatus?.status === 'connection-ok' || streamStatus?.status === 'idle') {
+    if (connectionStatus === 'connection-ok' && eventStatus === 'idle') {
         return <div className="btn black-btn btn-fit" onClick={record}>Rec</div>
-    } else if (streamStatus?.status === 'recording') {
+    } else if (eventStatus === 'recording') {
         return <div className="btn black-btn" onClick={stop}>Stop</div>
     } else {
         return null

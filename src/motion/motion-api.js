@@ -156,9 +156,9 @@ class WebControl {
         const {protocol, hostname} = new URL(this.motionHost);
         if (streamPort === "0") {
             streamPort = await new Camera(this).getStreamPort();
-            streamUrl = `${protocol}//${hostname}:${streamPort}/${cameraId}/stream`;
+            streamUrl = `${protocol}//${hostname}:${streamPort}/${cameraId}/source`;
         } else {
-            streamUrl = `${protocol}//${hostname}:${streamPort}/stream`;
+            streamUrl = `${protocol}//${hostname}:${streamPort}/source`;
         }
         return streamUrl;
     }

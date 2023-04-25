@@ -110,7 +110,7 @@ export default props => {
         const response = confirm(`Delete all ${events.length} events ?`);
         if (response === true) {
             setDeleteRequested(true);
-            await delet(src);
+            await delet(eventSrc);
             await updateEvents();
         }
     }

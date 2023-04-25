@@ -24,11 +24,15 @@ const Stream = props => {
     const notifications = getNotifications();
     const {id, status, url, name, events} = props.stream;
 
-    const [eventStatus, setEventStatus] = useState('idle');
+    const [eventStatus, setEventStatus] = useState(status);
     const [connectionStatus, setConnectionStatus] = useState('lost-connection');
     const [src, setSrc] = useState(url);
 
     const camRef = useRef(null);
+
+    useEffect(()=>{
+
+    }, []);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -108,8 +112,13 @@ const Stream = props => {
              ref={camRef}
              className={classNames("camera", className, eventStatus, connectionStatus)}>
             <div className="header">
-                <Actions camera={id} stream={props.stream}/>
-                <EventCount events={events} eventStatus={eventStatus} camera={id}/>
+                <Actions camera={id}
+                         stream={props.stream}
+                         connectionStatus={connectionStatus}
+                         eventStatus={eventStatus}/>
+                <EventCount events={events}
+                            eventStatus={eventStatus}
+                            camera={id}/>
                 <StreamInfo stream={props.stream}>{name}</StreamInfo>
             </div>
 
