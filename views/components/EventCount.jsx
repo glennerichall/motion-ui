@@ -90,7 +90,9 @@ export default props => {
                     </div>
                     <div className='today'
                          onClick={() => supportsIntersectionObserver ?
-                             pushView(<Events src={events.today} camera={props.camera} name='today'/>) :
+                             pushView(<Events src={events.today}
+                                              camera={props.camera}
+                                              name='today'/>) :
                              null}>
                         {today?.total > 0 ? today.total : '-'}
                     </div>

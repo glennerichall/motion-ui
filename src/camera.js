@@ -67,13 +67,18 @@ export class Camera extends MotionCamera {
             let {begin, done} = event;
             begin = addSeconds(new Date(begin), -preCapture * frameDuration);
             done = addSeconds(new Date(done), -eventGap);
-            const duration = intervalToDuration({
-                start: begin,
-                end: done
-            });
-            event.begin = begin.toISOString();
-            event.done = done.toISOString();
-            event.duration = formatDuration(duration);
+            try {
+                const duration = intervalToDuration({
+                    start: begin,
+                    end: done
+                });
+                event.begin = begin.toISOString();
+                event.done = done.toISOString();
+                event.duration = formatDuration(duration);
+            } catch (e) {
+                console.error(`error in event ${event.id}`)
+                console.error(e.message);
+            }
         }
 
         if (Array.isArray(events)) {

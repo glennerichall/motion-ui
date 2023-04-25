@@ -52,7 +52,8 @@ export const queryCalendarSql = `
     select count(*), camera, to_char(begin, 'YYYY-MM-DD') as date
     from event_logs
     where done is not null and
-        (camera = @camera OR @camera IS NULL)
+        (camera = @camera OR @camera IS NULL) and
+        removed = 'false'
     group by date, camera
     order by camera, date;
 `;

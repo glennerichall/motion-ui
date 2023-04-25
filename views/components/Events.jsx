@@ -21,16 +21,37 @@ import 'react-calendar/dist/Calendar.css';
 import '../css/calendar.less';
 import {format} from "date-fns";
 
+// let statesStack = {};
+// const useStateStack = key => {
+//     return [
+//         value => statesStack[key].push(value),
+//         () => statesStack[key].pop(),
+//     ]
+// }
+//
+// const WrapWithCache = (component, propsToCache) => {
+//     let memoized;
+//     return props => {
+//
+//         useEffect(() => {
+//             return () => {
+//                 memoized = value
+//             }
+//         }, []);
+//         return component({...props});
+//     }
+// }
+
 export default props => {
 
-    const {src, name, calendar, camera} = props;
+    const {src, name, calendar, camera, currentDate = new Date()} = props;
 
     const [eventSrc, setEventSrc] = useState(src);
     const [events, setEvents] = useState([]);
     const [days, setDays] = useState({});
     const [months, setMonths] = useState({});
     const [deleteRequested, setDeleteRequested] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(currentDate);
 
     async function updateEvents() {
         const res = await fetch(eventSrc);
@@ -176,22 +197,24 @@ export default props => {
                 </> : null
             }
             <div>{`${elems.length} event(s)`}</div>
-            <table className={classNames('event-list', name)}>
-                <thead>
-                <tr>
-                    <th className="id"></th>
-                    <th className="camera"></th>
-                    <th className="start"></th>
-                    <th className="end"></th>
-                    <th className="duration"></th>
-                    <th className="delete" onClick={removeAllInPage}>
-                        <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
-                        <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>{elems}</tbody>
-            </table>
+            <div className="scrollable">
+                <table className={classNames('event-list', name)}>
+                    <thead>
+                    <tr>
+                        <th className="id"></th>
+                        <th className="camera"></th>
+                        <th className="start"></th>
+                        <th className="end"></th>
+                        <th className="duration"></th>
+                        <th className="delete" onClick={removeAllInPage}>
+                            <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
+                            <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>{elems}</tbody>
+                </table>
+            </div>
         </div>
     );
 }

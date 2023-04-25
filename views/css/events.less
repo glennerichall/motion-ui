@@ -26,17 +26,35 @@
   background: red;
 }
 
+#events {
+  height: 100%;
+}
+
+.scrollable {
+  //overflow-y: scroll;
+  position: relative;
+
+}
+
 .event-list {
-  table-layout: auto;
+  border-collapse: collapse;
+  //table-layout: auto;
   user-select: none;
   border: 1px solid black;
+  height: 100%;
 
   td, th {
     padding: 3px 10px;
   }
 
-  thead tr {
+  thead th {
+    position: sticky;
+    top:-1px;
+    z-index: 100000;
     background: black;
+  }
+
+  thead tr {
     color: white;
     width: 100%;
     text-align: left;
@@ -111,7 +129,7 @@
   }
 }
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 700px) {
 
   .event-list {
 
@@ -136,7 +154,9 @@
       width: 100%;
     }
   }
+}
 
+@media screen and (max-width: 545px) {
 
   .event-list {
     width: 100%;

@@ -1,5 +1,12 @@
-import {subscribe, publish, unsubscribe} from '../js/pubsub';
-import React, {useState, useEffect} from "react";
+import {
+    subscribe,
+    publish,
+    unsubscribe
+} from '../js/pubsub';
+import React, {
+    useState,
+    useEffect
+} from "react";
 
 const stack = [];
 
@@ -37,13 +44,25 @@ export default props => {
         return () => unsubscribe(token);
     }, [1]);
 
-    const elem = stack[current];
+    let elem = stack[current];
+    // console.log(elem)
+    // let popProps = {};
+    // if(!React.isValidElement(elem)) {
+    //     popProps = elem.props;
+    //     elem = elem.element;
+    // }
 
     return <div className="frame">
         <div>
             <div className="frame-header">
-                {stack.length > 1 ? <div className={'black-btn btn'} id="back-btn"
-                                         onClick={() => popView()}>Back</div> : null}
+                {
+                    stack.length > 1 ?
+                        <div className={'black-btn btn'} id="back-btn"
+                             onClick={() => popView()}>
+                            Back
+                        </div>
+                        : null
+                }
             </div>
             <div className={"frame-content"}>{elem}</div>
         </div>

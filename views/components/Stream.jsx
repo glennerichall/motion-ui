@@ -9,18 +9,18 @@ import {fetch} from "../js/fetch";
 import EventCount from "./EventCount";
 import StreamInfo from "./StreamInfo";
 import {
-    acquireToken,
-    releaseToken,
-    hasToken
-} from "../js/token";
-import {
     subscribe,
     unsubscribe
 } from '../js/pubsub';
 import {getNotifications} from "../js/notifications";
 import Actions from "./Actions.jsx";
+import {
+    popView,
+    pushView
+} from "./Frame.jsx";
 
-export default props => {
+const Stream = props => {
+    const {className, onClick} = props;
     const notifications = getNotifications();
     const {id, status, url, name, events} = props.stream;
 
@@ -28,16 +28,34 @@ export default props => {
     const [connectionStatus, setConnectionStatus] = useState('lost-connection');
     const [src, setSrc] = useState(url);
 
-    const [token, setToken] = useState({});
     const camRef = useRef(null);
 
-    // useEffect(() => {
-    //     if (eventStatus === 'idle') {
-    //         releaseToken(token);
-    //     } else {
-    //         acquireToken(setToken);
-    //     }
-    // }, [eventStatus]);
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setSrc(url);
+                } else {
+                    setSrc(null);
+                }
+            },
+            {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.01,
+            }
+        );
+
+        if (camRef.current) {
+            observer.observe(camRef.current);
+        }
+
+        return () => {
+            if (camRef.current) {
+                observer.unobserve(camRef.current);
+            }
+        };
+    }, [camRef]);
 
     useEffect(() => {
         const event = subscribe(notifications.events.eventTriggered, event => {
@@ -85,38 +103,43 @@ export default props => {
     }
 
     return (
-        <Fragment>
-            <div id={'cam-' + id}
-                 ref={camRef}
-                 onTransitionEnd={() => { camRef.current.style.transition = null;}}
-                 className={classNames("camera", eventStatus, connectionStatus, {
-                     'fullscreen': hasToken(token)
-                 })}>
-                <div className="header">
-                    <Actions camera={id} stream={props.stream}/>
-                    <EventCount events={events} eventStatus={eventStatus} camera={id}/>
-                    <StreamInfo stream={props.stream}>{name}</StreamInfo>
-                </div>
 
-                {
-                    connectionStatus === 'idle' ||
-                    connectionStatus === 'recording' ||
-                    connectionStatus === 'connection-ok' ?
-                        <img src={src} draggable="false"
-                             onError={(e) => onError()}
-                             onStalled={() => onError()}
-                             onClick={() => {
-                                 if (hasToken(token)) {
-                                     releaseToken(token);
-                                 } else {
-                                     acquireToken(setToken);
-                                 }
-                             }}/>
-                        : <div className="camera placeholder">
-                            Connection lost
-                        </div>}
+        <div id={'cam-' + id}
+             ref={camRef}
+             className={classNames("camera", className, eventStatus, connectionStatus)}>
+            <div className="header">
+                <Actions camera={id} stream={props.stream}/>
+                <EventCount events={events} eventStatus={eventStatus} camera={id}/>
+                <StreamInfo stream={props.stream}>{name}</StreamInfo>
             </div>
 
-        </Fragment>
+            {
+                src !== null ?? (
+                    connectionStatus === 'idle' ||
+                    connectionStatus === 'recording' ||
+                    connectionStatus === 'connection-ok') ?
+                    <img src={src} draggable="false"
+                         onError={(e) => onError()}
+                         onStalled={() => onError()}
+                         onClick={onClick}
+                    />
+
+                    : <div className="camera placeholder">
+                        Connection lost
+                    </div>
+            }
+        </div>
     );
+}
+
+
+export default props => {
+    return <Stream {...props}
+                   onClick={() => {
+                       pushView(
+                           <Stream {...props}
+                                   onClick={() => popView()}
+                                   className={"fullscreen"}/>
+                       )
+                   }}/>
 }

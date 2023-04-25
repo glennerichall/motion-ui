@@ -1,11 +1,22 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import {subscribe, unsubscribe} from '../js/pubsub';
+import React, {
+    Fragment,
+    useEffect,
+    useState
+} from 'react';
+import {
+    subscribe,
+    unsubscribe
+} from '../js/pubsub';
 
 import Streams from './Streams';
 import Process from './Process';
 import Spinner from "./Spinner";
 
-import {processUrl, streamsUrl, versionUrl} from "../constants";
+import {
+    processUrl,
+    streamsUrl,
+    versionUrl
+} from "../constants";
 
 import '../css/camera.less';
 import '../css/index.css';
@@ -13,7 +24,10 @@ import '../js/push';
 
 import {getSocket} from "../js/socket";
 
-import Frame, {pushView, onFrameChanged} from "./Frame";
+import Frame, {
+    pushView,
+    onFrameChanged
+} from "./Frame";
 
 export default function App(props) {
     const socket = getSocket();
@@ -24,9 +38,7 @@ export default function App(props) {
 
     useEffect(() => {
         pushView(
-            <Fragment>
-                <Streams src={streamsUrl}/>
-            </Fragment>
+            <Streams src={streamsUrl}/>
         );
 
         const reconnect = subscribe('reconnect', () => {
@@ -48,7 +60,7 @@ export default function App(props) {
         // if when rendering socket was not connected and if it has connected
         // before useEffect is called, socket.on('connect') will not be registered
         // then App will never be show, thus check after 1sec if socket is connected.
-        setTimeout(()=>{setConnected(socket.connected)}, 1000);
+        setTimeout(() => {setConnected(socket.connected)}, 1000);
 
         return () => {
             unsubscribe(reconnect);
@@ -63,10 +75,10 @@ export default function App(props) {
     return (
         <Fragment>
             <Process style={isFrameRoot ? {} : {display: 'none'}}
-                     setHeaderVisible={b=> setHeaderVisible(b)}
+                     setHeaderVisible={b => setHeaderVisible(b)}
                      headerVisible={headerVisible}
                      versionSrc={versionUrl} processSrc={processUrl}/>
-            <Frame headerVisible={headerVisible}/>
+            <Frame />
         </Fragment>
     );
 };

@@ -26,53 +26,52 @@
   &.grid-6 {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   }
+}
 
-  .camera {
-    overflow: hidden;
-    position: relative;
-    background: lightgrey;
-    user-select: none;
-    top: 0;
+.camera {
+  overflow: hidden;
+  position: relative;
+  background: lightgrey;
+  user-select: none;
+  top: 0;
+  left: 0;
+
+  //transition: width 1s, height 1s;
+
+  &.fullscreen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 100;
     left: 0;
-
-    //transition: width 1s, height 1s;
-
-    &.fullscreen {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      z-index: 100;
-      left: 0;
-      right: 0;
-    }
-
-    &.fullscreen + .camera.placeholder {
-      display: inline-block;
-    }
-
-    &.placeholder {
-      display: none;
-    }
-
-    &.fullscreen .placeholder,
-    img {
-      height: 100%;
-      width: 100%;
-      object-fit: fill;
-    }
-
-    &.lost-connection {
-      //display: none;
-      img {
-        display: none;
-      }
-    }
-
-    @import 'camera-header.less';
-
-    @import 'camera-events.less';
+    right: 0;
   }
 
+  &.fullscreen + .camera.placeholder {
+    display: inline-block;
+  }
+
+  &.placeholder {
+    display: none;
+  }
+
+  &.fullscreen .placeholder,
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: fill;
+  }
+
+  &.lost-connection {
+    //display: none;
+    img {
+      display: none;
+    }
+  }
+
+  @import 'camera-header.less';
+
+  @import 'camera-events.less';
 }
 
 @media screen and (max-width: 500px) {
