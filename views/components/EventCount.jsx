@@ -76,7 +76,7 @@ export default props => {
 
     const {all, today, last} = count;
     return (
-        <Fragment>
+        <>
             <div className="event-status"/>
             <div className={classNames("events", {'has-events': all.total > 0})}>
                 <div className="event-count">
@@ -102,7 +102,7 @@ export default props => {
                               pushView(<EventData event={last}/>) :
                               null}/>
             </div>
-        </Fragment>
+        </>
     );
 };
 

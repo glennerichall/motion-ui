@@ -51,22 +51,25 @@ export class Camera extends MotionCamera {
             .setParams(params)
             .fetch();
 
-        const [eventGap,
-            postCapture,
-            preCapture,
-            frameRate] = await Promise.all([
-            this.getEventGap(),
-            this.getPostCapture(),
-            this.getPreCapture(),
-            this.getFrameRate()]);
+        // const [eventGap,
+        //     postCapture,
+        //     preCapture,
+        //     frameRate] = await Promise.all([
+        //     this.getEventGap(),
+        //     this.getPostCapture(),
+        //     this.getPreCapture(),
+        //     this.getFrameRate()]);
 
 
-        const frameDuration = 1 / frameRate;
+        // const frameDuration = 1 / frameRate;
 
         const update = event => {
             let {begin, done} = event;
-            begin = addSeconds(new Date(begin), -preCapture * frameDuration);
-            done = addSeconds(new Date(done), -eventGap);
+            begin = new Date(begin);
+            done = new Date(done);
+
+            // begin = addSeconds(new Date(begin), -preCapture * frameDuration);
+            // done = addSeconds(new Date(done), -eventGap);
             try {
                 const duration = intervalToDuration({
                     start: begin,

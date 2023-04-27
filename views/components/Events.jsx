@@ -20,6 +20,11 @@ import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import '../css/calendar.less';
 import {format} from "date-fns";
+import {
+    subscribe,
+    unsubscribe
+} from "../js/pubsub.js";
+import {getNotifications} from "../js/notifications.js";
 
 // let statesStack = {};
 // const useStateStack = key => {
@@ -43,7 +48,7 @@ import {format} from "date-fns";
 // }
 
 export default props => {
-
+    const notifications = getNotifications();
     const {src, name, calendar, camera, currentDate = new Date()} = props;
 
     const [eventSrc, setEventSrc] = useState(src);
@@ -58,7 +63,24 @@ export default props => {
         setEvents(res);
     }
 
+    useEffect(() => {
+        const event = subscribe(
+            notifications.events.eventsDeleted,
+            ({camera, events}) => {
+                if(camera == props.camera) {
+                    updateEvents();
+                    updateCalendar();
+                }
+            });
+
+        return () => unsubscribe(event);
+    }, [notifications]);
+
     async function updateCalendar() {
+        if(!calendar) {
+            console.log('no calendar, skipping update calendar')
+            return;
+        }
         let res = await fetch(calendar);
         const months = res.reduce((prev, cur) => {
             let ym = cur.date.split('-');
@@ -116,8 +138,7 @@ export default props => {
     }
 
     const elems = events.map((event, index) =>
-        <Event onDelete={updateEvents}
-               key={event.id}
+        <Event key={event.id}
                id={event.id}
                className={
                    classNames(

@@ -18,6 +18,7 @@ import {
     popView,
     pushView
 } from "./Frame.jsx";
+import {supportsIntersectionObserver} from "../js/browser-check.js";
 
 const Stream = props => {
     const {className, onClick} = props;
@@ -30,36 +31,34 @@ const Stream = props => {
 
     const camRef = useRef(null);
 
-    useEffect(()=>{
-
-    }, []);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setSrc(url);
-                } else {
-                    setSrc(null);
+    if (supportsIntersectionObserver) {
+        useEffect(() => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setSrc(url);
+                    } else {
+                        setSrc(null);
+                    }
+                },
+                {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.01,
                 }
-            },
-            {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.01,
-            }
-        );
+            );
 
-        if (camRef.current) {
-            observer.observe(camRef.current);
-        }
-
-        return () => {
             if (camRef.current) {
-                observer.unobserve(camRef.current);
+                observer.observe(camRef.current);
             }
-        };
-    }, [camRef]);
+
+            return () => {
+                if (camRef.current) {
+                    observer.unobserve(camRef.current);
+                }
+            };
+        }, [camRef]);
+    }
 
     useEffect(() => {
         const event = subscribe(notifications.events.eventTriggered, event => {
