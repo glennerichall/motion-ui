@@ -5,8 +5,10 @@ import {
     queryCalendarSql,
     queryEventCountSql,
     queryEventDataSql,
-    queryEventsSql
+    queryEventsSql,
+    updateLockEventsSql
 } from "./queries.js";
+import database from "../database/database.js";
 
 
 class Param {
@@ -279,6 +281,25 @@ class CalendarBuilder extends RequestBuilder {
     }
 }
 
+class LockEventsBuilder extends NonRequestBuilder {
+    constructor(database, locked) {
+        super(database,{
+            params:{
+                camera: null,
+                event: null,
+                date: {
+                    transform: transformDate,
+                    value: null
+                }
+            },
+            fields: {
+                locked
+            }
+        });
+        this.sql = updateLockEventsSql;
+    }
+}
+
 
 function toDispatcherProxy() {
     const targets = Array.from(arguments);
@@ -315,6 +336,14 @@ class Builder {
 
     remove() {
         return new DeleteEventsBuilder(this.database);
+    }
+
+    lock() {
+        return new LockEventsBuilder(this.database, true);
+    }
+
+    unlock() {
+        return new LockEventsBuilder(this.database, false);
     }
 }
 

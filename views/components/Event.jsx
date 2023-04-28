@@ -1,5 +1,14 @@
-import React, {Fragment, useState, useEffect, useRef} from "react";
-import {delet} from "../js/fetch";
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    useRef
+} from "react";
+import {
+    delet,
+    fetch,
+    post
+} from "../js/fetch";
 import {pushView} from './Frame';
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
@@ -16,7 +25,7 @@ export default props => {
     const [deleteRequested, setDeleteRequested] = useState(false);
 
     async function remove() {
-        if(deleteRequested) return;
+        if (deleteRequested) return;
         const response = confirm(`Delete event ${id} for camera ${camera} ?`);
         if (response === true) {
             setDeleteRequested(true);
@@ -27,6 +36,12 @@ export default props => {
 
     begin = format(parseISO(begin), 'yyyy-MM-dd HH:mm');
     done = format(parseISO(done), 'yyyy-MM-dd HH:mm');
+
+    const onLock = async (e) => {
+        e.stopPropagation();
+        const method = event.locked ? delet : post;
+        await method(event.lock);
+    }
 
     return (
         <tr className={props.className} onClick={() => pushView(<EventData event={event}/>)}>
@@ -41,6 +56,12 @@ export default props => {
             }}>
                 <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
                 <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
+            </td>
+            <td>
+                <dir onClick={onLock}
+                     className="btn black-btn btn-fit btn-small">
+                    {event.locked ? "Unlock" : "Lock"}
+                </dir>
             </td>
         </tr>
     );

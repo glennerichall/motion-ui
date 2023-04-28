@@ -64,20 +64,21 @@ export default props => {
     }
 
     useEffect(() => {
-        const event = subscribe(
-            notifications.events.eventsDeleted,
-            ({camera, events}) => {
-                if(camera == props.camera) {
-                    updateEvents();
-                    updateCalendar();
-                }
-            });
-
-        return () => unsubscribe(event);
-    }, [notifications]);
+        const onEvent = ({camera, events}) => {
+            if (camera == props.camera) {
+                updateEvents();
+                updateCalendar();
+            }
+        };
+        const event1 = subscribe(notifications.events.eventsDeleted, onEvent);
+        const event2 = subscribe(notifications.events.eventsLocked, onEvent);
+        return () => {
+            unsubscribe(event1, event2);
+        }
+    }, [notifications, props.camera, eventSrc, calendar]);
 
     async function updateCalendar() {
-        if(!calendar) {
+        if (!calendar) {
             console.log('no calendar, skipping update calendar')
             return;
         }
@@ -129,11 +130,12 @@ export default props => {
 
     async function removeAllInPage() {
         if (deleteRequested) return;
-        const response = confirm(`Delete all ${events.length} events ?`);
+        const response = confirm(`Delete all ${events.filter(evt => !evt.locked).length} events ?`);
         if (response === true) {
             setDeleteRequested(true);
             await delet(eventSrc);
             await updateEvents();
+            setDeleteRequested(false);
         }
     }
 
@@ -198,6 +200,13 @@ export default props => {
         }
     }
 
+    const onLockAll = async (e) => {
+        e.stopPropagation();
+        await fetch(`/v1/events/${camera}/lock`, {
+            method: 'POST'
+        });
+    }
+
     return (
         <div id="events">
             <div className="camera-name">Camera {camera}</div>
@@ -230,6 +239,12 @@ export default props => {
                         <th className="delete" onClick={removeAllInPage}>
                             <img className="danger btn" src={!deleteRequested ? icon : iconDisabled}/>
                             <img className="danger btn hover" src={!deleteRequested ? iconHover : iconDisabled}/>
+                        </th>
+                        <th>
+                            <dir onClick={onLockAll}
+                                 className="btn-black btn-fit btn-small">
+                                Lock
+                            </dir>
                         </th>
                     </tr>
                     </thead>

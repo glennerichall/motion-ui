@@ -21,6 +21,7 @@ const updateEvents = (events) => {
     const addRoutes = event => {
         event.delete = `/v1/events/${event.camera}/${event.event}`;
         event.data = `/v1/events/data/${event.camera}/${event.event}`;
+        event.lock = `/v1/events/${event.camera}/lock?event=${event.event}`;
     }
 
     if (!Array.isArray(events)) {
@@ -78,6 +79,28 @@ export default express.Router()
             camera,
             status
         });
+    })
+
+    .post('/:camera/lock', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.lock(req.query);
+        res.status(201).send();
+        io.emit(notifications.events.eventsLocked,
+            {
+                camera: req.params.camera,
+                events
+            });
+    })
+
+    .delete('/:camera/lock', async (req, res) => {
+        const camera = await new Provider(req).getCamera();
+        const events = await camera.unlock(req.query);
+        res.status(201).send();
+        io.emit(notifications.events.eventsLocked,
+            {
+                camera: req.params.camera,
+                events
+            });
     })
 
     .get('/count', async (req, res) => {
@@ -187,6 +210,7 @@ export default express.Router()
                 events
             });
     })
+
     .post('/:camera/record', async (req, res) => {
         const camera = await new Provider(req).getCamera();
         camera.record();
@@ -237,7 +261,6 @@ export default express.Router()
                 });
         }
     })
-
 
 
     .post('/:camera/status', authorizeWhitelistIps, async (req, res) => {

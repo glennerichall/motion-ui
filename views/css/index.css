@@ -80,7 +80,8 @@ body::-webkit-scrollbar {
 }
 
 .black-btn:hover {
-    background: #4e4e4e;
+    background: #c0c0c0;
+    color: black;
 }
 .btn-danger:hover {
     background: red;

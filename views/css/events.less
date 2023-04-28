@@ -108,15 +108,16 @@
 
   tbody tr {
     &:hover {
-      background: #877abf;
+      background: #eaeaea;
 
-      td:last-child {
+      td:nth-last-child(1),
+      td:nth-last-child(2) {
         background: white;
       }
     }
 
     &:active {
-      background: #9d8ed9;
+      background: #a6a6a6;
     }
 
     cursor: pointer;
@@ -129,7 +130,7 @@
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 760px) {
 
   .event-list {
 
@@ -156,7 +157,27 @@
   }
 }
 
-@media screen and (max-width: 545px) {
+@media screen and (max-width: 450px) {
+  .event-list {
+    tr {
+      > :first-child {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .event-list {
+    tr {
+      > :nth-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
 
   .event-list {
     width: 100%;

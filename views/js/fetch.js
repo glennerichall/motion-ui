@@ -13,7 +13,7 @@ export async function fetch(url) {
             }
         }
     })
-};
+}
 
 export async function delet(url) {
     const xhttp = new XMLHttpRequest();
@@ -24,13 +24,15 @@ export async function delet(url) {
             if (this.readyState === 4) {
                 if (this.status === 200) {
                     resolve(JSON.parse(xhttp.responseText));
+                } else if (this.status === 201) {
+                    resolve();
                 } else {
                     reject(this.status);
                 }
             }
         }
     })
-};
+}
 
 export async function post(url, body) {
     const xhttp = new XMLHttpRequest();
@@ -46,10 +48,12 @@ export async function post(url, body) {
             if (this.readyState === 4) {
                 if (this.status === 200) {
                     resolve(JSON.parse(xhttp.responseText));
+                } else if (this.status === 201) {
+                    resolve();
                 } else {
                     reject(this.status);
                 }
             }
         }
     })
-};
+}

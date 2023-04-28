@@ -21,9 +21,9 @@ export default props => {
 
     const {versionSrc, processSrc, headerVisible, setHeaderVisible} = props;
 
-    const [version, setVersion] = useState(0);
-    const [hideGraphs, setHide] = useState(localStorage.getItem('hideGraphs'));
 
+    const [version, setVersion] = useState(0);
+    const [hideGraphs, setHide] = useState(localStorage.getItem('hideGraphs') === "true");
 
     const setHideGraphs = v => {
         setHide(v);

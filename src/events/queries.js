@@ -7,7 +7,8 @@ export const queryEventsSql = `
            to_json(begin)#>>'{}' as begin,
            events.id,
            events.event,
-           to_json(done)#>>'{}' as done
+           to_json(done)#>>'{}' as done,
+           event_logs.locked
     from events
     inner join event_logs on events.event = event_logs.event
         and events.camera = event_logs.camera
@@ -64,12 +65,26 @@ export const queryCalendarSql = `
     order by events.camera, date;
 `;
 
+export const updateLockEventsSql = `
+    update event_logs
+    set locked=$locked
+    from events
+    where events.event = event_logs.event
+        and event_logs.removed = false
+        and events.camera = event_logs.camera
+        and (events.camera = @camera OR @camera IS NULL)
+        and (events.event = @event or @event IS NULL)
+        and (@date::date = begin::date OR @date IS NULL)
+    returning *;
+`;
+
 export const deleteEventsSql = `
     update event_logs
     set removed=true
     from events
     where events.event = event_logs.event
         and event_logs.removed = false
+        and event_logs.locked = false
         and events.camera = event_logs.camera
         and (events.camera = @camera OR @camera IS NULL)
         and (events.event = @event or @event IS NULL)

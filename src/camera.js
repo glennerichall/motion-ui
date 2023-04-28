@@ -151,4 +151,20 @@ export class Camera extends MotionCamera {
             status: await this.getStatus()
         };
     }
+
+    async lock(params) {
+        return getBuilder()
+            .lock()
+            .setCamera(this.getId())
+            .setParams(params)
+            .exec();
+    }
+
+    async unlock(params) {
+        return getBuilder()
+            .unlock()
+            .setCamera(this.getId())
+            .setParams(params)
+            .exec();
+    }
 }
