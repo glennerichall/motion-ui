@@ -4,16 +4,16 @@ module.exports = {
             name: 'motion-ui',
             script: './index.js',
             env_production: {
-                NODE_ENV: 'production',
-                //PORT: 3000,
-                //MOTION_HOST: 'http://localhost:8080'
+                NODE_ENV: 'production'
             }
         },
-        // {
-        //     name: 'motion-cron',
-        //     env_production: {
-        //         NODE_ENV: 'production',
-        //     }
-        // }
+        {
+            name: 'motion-clean',
+            script: './clean.js',
+            env_production: {
+                NODE_ENV: 'production',
+                TIMEOUT: 24 * 60 * 60 * 1000 // every 24 hours
+            }
+        }
     ]
 };

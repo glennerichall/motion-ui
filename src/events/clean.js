@@ -5,6 +5,7 @@ import {resolve} from "path";
 import Provider from "../motion/provider.js";
 import deleteEmpty from "delete-empty";
 import path from "path";
+import url from "url";
 
 const remap = process.env.TARGET_DIR ?? '';
 
@@ -45,7 +46,8 @@ async function deleteEvents() {
             // Instead, user code should open/read/write the file directly and handle
             // the error raised if the file is not available.
             return await fs.unlink(filename);
-        } catch (err) {}
+        } catch (err) {
+        }
         return Promise.resolve();
     });
     await Promise.all(unlinking);
@@ -132,12 +134,15 @@ async function removeEmptyDirectories(targetDirs) {
         const deleted = targetDirs.map(targetDir => deleteEmpty(targetDir));
         countEmpty = (await Promise.all(deleted))
             .reduce((res, cur) => res + cur.length, 0);
-    } catch (e) { }
+    } catch (e) {
+    }
 
     try {
-        const created = targetDirs.map(targetDir => fs.mkdir(path.join(remap, targetDir)).catch(e => {}));
+        const created = targetDirs.map(targetDir => fs.mkdir(path.join(remap, targetDir)).catch(e => {
+        }));
         await Promise.all(created);
-    } catch (e) {}
+    } catch (e) {
+    }
 
     return countEmpty;
 }
@@ -179,7 +184,8 @@ async function removeFiles() {
                         }
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+            }
         }
     }
 
@@ -191,7 +197,7 @@ async function removeFiles() {
     };
 }
 
-(async () => {
+export async function run() {
     await database.init();
 
     const {
@@ -221,5 +227,10 @@ async function removeFiles() {
         console.log(`removed ${countFiles} files with no events`);
         console.log(`removed ${countEmpty} empty director${countEmpty <= 1 ? 'y' : 'ies'}`);
     }
-})();
+}
 
+if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+    (async () => {
+        await run();
+    })();
+}

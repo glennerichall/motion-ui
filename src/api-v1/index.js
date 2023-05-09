@@ -1,7 +1,7 @@
 import express from "express";
 
 import "../motion/heart-beat.js";
-import push from "./push.js";
+// import push from "./push.js";
 import streams from "./streams.js";
 import events from "./events.js";
 import cors from "cors";
@@ -74,7 +74,7 @@ export default express.Router()
     .use(cors())
     .use('/events', events)
     .use('/streams', streams)
-    .use('/push', push)
+    // .use('/push', push)
 
     .get('/process', async (req, res) => {
         const cpuUsage = cpu.usage();
